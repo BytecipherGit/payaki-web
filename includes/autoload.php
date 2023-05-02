@@ -1,0 +1,15 @@
+<?php
+require_once('config.php');
+require_once('sql_builder/idiorm.php');
+require_once('db.php');
+require_once('lib/HTMLPurifier/HTMLPurifier.standalone.php');
+require_once('lib/urlify-master/URLify.php');
+require_once('lib/class.upload.php-master/src/class.upload.php');
+require_once('classes/class.template_engine.php');
+require_once('classes/class.country.php');
+require_once('functions/func.global.php');
+require_once('functions/func.admin.php');
+require_once('functions/func.users.php');
+require_once('functions/func.sqlquery.php');
+require_once('classes/GoogleTranslate.php');
+require_once('seo-url.php');

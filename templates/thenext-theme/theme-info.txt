@@ -1,0 +1,8 @@
+/*
+Theme Name: The Next Theme
+Theme URI: https://bylancer.com/products/demo/classified/
+Author: Bylancer
+Version: 2.0
+Price: Free
+Description: A Beautiful, Professional and Ultimate
+*/
