@@ -28,12 +28,12 @@ require_once('includes.php');
                                             <li class="quickad-nav-item" data-target="#quickad_logo_watermark" data-toggle="tab">Logo / Watermark</li>
                                             <li class="quickad-nav-item" data-target="#quick_map" data-toggle="tab">Map</li>
                                             <li class="quickad-nav-item" data-target="#quickad_live_location" data-toggle="tab">Live Location Setting</li>
-                                            <li class="quickad-nav-item" data-target="#quickad_android" data-toggle="tab">Android App Setting</li>
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_android" data-toggle="tab">Android App Setting</li> -->
                                             <li class="quickad-nav-item" data-target="#quickad_push_notification" data-toggle="tab">App Push Notification</li>
-                                            <li class="quickad-nav-item" data-target="#quickad_blog" data-toggle="tab">Blog Setting</li>
-                                            <li class="quickad-nav-item" data-target="#quickad_testimonials" data-toggle="tab">Testimonials Setting</li>
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_blog" data-toggle="tab">Blog Setting</li> -->
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_testimonials" data-toggle="tab">Testimonials Setting</li> -->
                                             <li class="quickad-nav-item" data-target="#quickad_billing_details" data-toggle="tab">Billing Details <span class="label label-warning">New</span></li>
-                                            <li class="quickad-nav-item" data-target="#quickad_international" data-toggle="tab">International</li>
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_international" data-toggle="tab">International</li> -->
                                             <li class="quickad-nav-item" data-target="#quickad_email" data-toggle="tab">Email Setting</li>
 
                                             <li class="quickad-nav-item" data-target="#quickad_theme_setting" data-toggle="tab">Theme Setting</li>
@@ -41,7 +41,7 @@ require_once('includes.php');
                                             <li class="quickad-nav-item" data-target="#quickad_social_login_setting" data-toggle="tab">Social Login Setting</li>
                                             <li class="quickad-nav-item" data-target="#quickad_recaptcha" data-toggle="tab">Google reCAPTCHA</li>
                                             <li class="quickad-nav-item" data-target="#quickad_sms_setting" data-toggle="tab">SMS API Setting</li>
-                                            <li class="quickad-nav-item" data-target="#quickad_purchase_code" data-toggle="tab">Purchase Code</li>
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_purchase_code" data-toggle="tab">Purchase Code</li> -->
                                         </ul>
                                     </div>
 

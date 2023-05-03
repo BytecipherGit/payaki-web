@@ -1,7 +1,7 @@
 <?php 
 
 	/*Security*/
-	define('SECRETE_KEY', 'Payki@123456!');
+	define('SECRETE_KEY', 'payaki@bytecipher!');
 	
 	/*Data Type*/
 	define('BOOLEAN', 	'1');
@@ -19,7 +19,6 @@
 	define('API_DOST_NOT_EXIST', 					107);
 	define('INVALID_USER_PASS', 					108);
 	define('USER_NOT_ACTIVE', 						109);
-	define('USER_ALLREADY_EXISTS', 					110);
 
 	define('SUCCESS_RESPONSE', 						200);
 

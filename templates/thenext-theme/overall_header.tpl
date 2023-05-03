@@ -245,7 +245,7 @@
                         </nav>
                     </div>
                     IF({LANG_SEL}){
-                    <div class="header-widget">
+                    <!--<div class="header-widget">
                         <div class="btn-group bootstrap-select language-switcher">
                             <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown"
                                     title="English">
@@ -263,7 +263,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     {:IF}
                     <span class="mmenu-trigger">
                 <button class="hamburger hamburger--collapse" type="button">

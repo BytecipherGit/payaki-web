@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4">
-                    <div class="footer-links">
+                    <!--<div class="footer-links">
                         <h3>{LANG_HELP_SUPPORT}</h3>
                         <ul>
                             IF({BLOG_ENABLE}){
@@ -41,10 +41,10 @@
                             <li><a href="{LINK_FEEDBACK}">{LANG_FEEDBACK}</a></li>
                             <li><a href="{LINK_CONTACT}">{LANG_CONTACT}</a></li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-4">
-                    <div class="footer-links">
+                    <!--<div class="footer-links">
                         <h3>{LANG_INFORMATION}</h3>
                         <ul>
                             <li><a href="{LINK_ADVERTISE_HERE}">{LANG_ADVERTISE_HERE}</a></li>
@@ -56,7 +56,7 @@
                             {:IF}
                             <li><a href="{LINK_SITEMAP}">{LANG_SITE_MAP}</a></li>
                         </ul>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
