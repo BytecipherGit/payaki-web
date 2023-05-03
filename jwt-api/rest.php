@@ -20,7 +20,7 @@
 			$this->dbConn = $db->connect();
 
 			
-			if ('login' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendTestEmail' != strtolower($this->serviceName)) {
+			if ('login' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendtestemail' != strtolower($this->serviceName) && 'forgetpassword' != strtolower($this->serviceName) && 'verifyforgetpassword' != strtolower($this->serviceName) && 'generatenewpassword' != strtolower($this->serviceName)) {
 				$this->validateToken();
 			}
 		}

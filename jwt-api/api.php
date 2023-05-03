@@ -145,6 +145,125 @@ class Api extends Rest
         }
     }
 
+    public function verifyPhone()
+    {
+        try {
+            $otp = $this->validateParameter('otp', $this->param['otp'], STRING);
+            $user = $this->getUserDetailThroughToken();
+            if (!empty($user) && ($user['otp'] === $otp)) {
+                // Prepare the SQL UPDATE statement
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET isPhoneVerified = :isPhoneVerified WHERE id = :id');
+
+                // Bind the parameters and execute the statement
+                $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
+                $stmt->bindValue(':isPhoneVerified', true, PDO::PARAM_STR);
+                $stmt->execute();
+                // Check for errors and return a response
+                if ($stmt->rowCount() > 0) {
+                    $response = ["status" => false, "code" => 200, "Message" => 'Mobile successfully verified. Thank you'];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => 'Record not found'];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => 'OTP does not matched.'];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function forgetPassword()
+    {
+        try {
+            $mobile = $this->validateParameter('mobile', $this->param['mobile'], STRING);
+            if (!empty($mobile)) {
+                $getuser = "SELECT `id` FROM `ad_user` WHERE `phone`=:phone";
+                $userData = $this->dbConn->prepare($getuser);
+                $userData->bindValue(':phone', $mobile, PDO::PARAM_STR);
+                $userData->execute();
+                $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                if ($userData['id']) {
+                    $otp = mt_rand(111111, 999999);
+                    // Prepare the SQL UPDATE statement
+                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET otp = :otp WHERE id = :id');
+
+                    // Bind the parameters and execute the statement
+                    $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
+                    $stmt->bindValue(':otp', $otp, PDO::PARAM_STR);
+                    // Check for errors and return a response
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => 'Please verify otp for generating new password', "data" => ["otp" => (string) $otp, "user_id" => $userData['id']]];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 422, "Message" => "User not found."];
+                    $this->returnResponse($response);
+                }
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function verifyForgetPassword()
+    {
+        try {
+            $otp = $this->validateParameter('otp', $this->param['otp'], STRING);
+            $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+            if (!empty($otp) && !empty($user_id)) {
+
+                $getuser = "SELECT `otp` FROM `ad_user` WHERE `id`=:id";
+                $userData = $this->dbConn->prepare($getuser);
+                $userData->bindValue(':id', $user_id, PDO::PARAM_STR);
+                $userData->execute();
+                $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($userData['otp']) && ($userData['otp'] == $otp)) {
+                    $response = ["status" => true, "code" => 200, "Message" => 'OTP successfully matched.', "data" => ["user_id" => $user_id]];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 422, "Message" => "OTP do not match."];
+                    $this->returnResponse($response);
+                }
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function generateNewPassword()
+    {
+        try {
+            $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+            $password = $this->validateParameter('password', $this->param['password'], STRING);
+            if (!empty($password) && !empty($user_id)) {
+                
+                // Prepare the SQL UPDATE statement
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET password_hash = :password_hash WHERE id = :id');
+
+                // Bind the parameters and execute the statement
+                $stmt->bindValue(':id', $user_id, PDO::PARAM_STR);
+                $stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+                // Check for errors and return a response
+                if ($stmt->execute()) {
+                    $response = ["status" => true, "code" => 200, "Message" => 'Password successfully updated'];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 422, "Message" => "Password not updated."];
+                    $this->returnResponse($response);
+                }
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
     public function getUserDetailThroughToken()
     {
         $token = $this->getBearerToken();
@@ -190,9 +309,9 @@ class Api extends Rest
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
                 $stmt->execute();
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (36000),'userId' => $user['id']];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (36000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
-                $response = [ "status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
+                $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
             } else {
                 //Create
@@ -217,13 +336,12 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (36000),'userId' => $last_id];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (36000), 'userId' => $last_id];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
-                $response = [ "status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
+                $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
             }
 
-            
         } catch (Exception $e) {
             $this->throwError(JWT_PROCESSING_ERROR, $e->getMessage());
         }
