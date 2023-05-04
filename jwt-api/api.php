@@ -121,11 +121,11 @@ class Api extends Rest
             $user = $this->getUserDetailThroughToken();
             if (!empty($user) && ($user['otp'] === $otp)) {
                 // Prepare the SQL UPDATE statement
-                $stmt = $this->dbConn->prepare('UPDATE ad_user SET isEmailVerified = :isEmailVerified WHERE id = :id');
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET status = :status WHERE id = :id');
 
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
-                $stmt->bindValue(':isEmailVerified', true, PDO::PARAM_STR);
+                $stmt->bindValue(':status', 1, PDO::PARAM_STR);
                 $stmt->execute();
                 // Check for errors and return a response
                 if ($stmt->rowCount() > 0) {
@@ -152,11 +152,11 @@ class Api extends Rest
             $user = $this->getUserDetailThroughToken();
             if (!empty($user) && ($user['otp'] === $otp)) {
                 // Prepare the SQL UPDATE statement
-                $stmt = $this->dbConn->prepare('UPDATE ad_user SET isPhoneVerified = :isPhoneVerified WHERE id = :id');
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET status = :status WHERE id = :id');
 
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
-                $stmt->bindValue(':isPhoneVerified', true, PDO::PARAM_STR);
+                $stmt->bindValue(':status', 1, PDO::PARAM_STR);
                 $stmt->execute();
                 // Check for errors and return a response
                 if ($stmt->rowCount() > 0) {
@@ -242,7 +242,7 @@ class Api extends Rest
             $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
             $password = $this->validateParameter('password', $this->param['password'], STRING);
             if (!empty($password) && !empty($user_id)) {
-                
+
                 // Prepare the SQL UPDATE statement
                 $stmt = $this->dbConn->prepare('UPDATE ad_user SET password_hash = :password_hash WHERE id = :id');
 
@@ -432,6 +432,86 @@ class Api extends Rest
         $this->returnResponse(SUCCESS_RESPONSE, $message);
     }
 
+    public function getCategories()
+    {
+        try {
+            $cat = new Category;
+            $category = $cat->getAllCategories();
+            if (!is_array($category)) {
+                $response = ["status" => false, "code" => 400, "Message" => 'Categories not found.'];
+                $this->returnResponse($response);
+            }
+            $response = ["status" => true, "code" => 200, "Message" => "Category list successfully fetched.", "data" => $category];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getSubCategories()
+    {
+        try {
+            $categoryId = $this->validateParameter('categoryId', $this->param['categoryId'], INTEGER);
+            $cat = new Category;
+            $cat->setCatId($categoryId);
+            $category = $cat->getSubCategoryListingById();
+            if (!is_array($category)) {
+                $response = ["status" => false, "code" => 400, "Message" => 'Categories not found.'];
+                $this->returnResponse($response);
+            }
+            $response = ["status" => true, "code" => 200, "Message" => "Category list successfully fetched.", "data" => $category];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getCountries()
+    {
+        try {
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_countries ORDER BY id ASC");
+            $stmt->execute();
+            $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response = ["status" => true, "code" => 200, "Message" => "Country list successfully fetched.", "data" => $countries];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function getStates()
+    {
+        try {
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_subadmin1 ORDER BY id ASC");
+            $stmt->execute();
+            $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response = ["status" => true, "code" => 200, "Message" => "States list successfully fetched.", "data" => $countries];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function getCities()
+    {
+        try {
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_cities ORDER BY id ASC");
+            $stmt->execute();
+            $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response = ["status" => true, "code" => 200, "Message" => "City list successfully fetched.", "data" => $countries];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
     public function sendMail($toEmail, $subject, $body)
     {
         $mail = new PHPMailer(true);
@@ -472,18 +552,19 @@ class Api extends Rest
 
     }
 
-    public function uploadFile(){
+    public function uploadFile()
+    {
         try {
             $image = $this->validateParameter('image', $this->param['image'], STRING);
             $image_name = '';
-            if(strlen($image) > 0){
-                $image_name = round(microtime(true) * 1000).".jpg";
-                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'].'/PAYAKI/storage/image/'.$image_name;
-                $flag = file_put_contents($image_upload_dir,base64_decode($image));
-                if($flag){
+            if (strlen($image) > 0) {
+                $image_name = round(microtime(true) * 1000) . ".jpg";
+                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/image/' . $image_name;
+                $flag = file_put_contents($image_upload_dir, base64_decode($image));
+                if ($flag) {
                     //Write insert db code here like given below
                     // $q = mysqli_query($conn,'insert into image');
-                    $response = ["status" => true, "code" => 200, "Message" => "Image successfully uploaded", "image_name"  => $image_name];
+                    $response = ["status" => true, "code" => 200, "Message" => "Image successfully uploaded", "image_name" => $image_name];
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
@@ -493,7 +574,7 @@ class Api extends Rest
                 $response = ["status" => false, "code" => 400, "Message" => "Please post image"];
                 $this->returnResponse($response);
             }
-            
+
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);

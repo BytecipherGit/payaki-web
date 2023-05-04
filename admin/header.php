@@ -278,13 +278,13 @@ if(isset($_SESSION['admin']['id'])){
         <?php
         if(!isset($config['purchase_key']) && $config['purchase_key'] == ""){
             ?>
-            <div class="app-layout-content">
+            <!-- <div class="app-layout-content">
                     <div class="alert alert-warning" style="margin: 10px 10px 0 10px">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                         <strong>Important!</strong> Please verify purchase code to use admin feature.
                         <a class="text-info" style="cursor: pointer" href="setting.php#quickad_purchase_code"><strong>Click here</strong></a>
                     </div>
-                </div>
+                </div> -->
         <?php
         }
         ?>
