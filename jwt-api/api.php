@@ -76,6 +76,7 @@ class Api extends Rest
             $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
             $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
             $email = $this->validateParameter('email', $this->param['email'], STRING);
+            $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
             $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
             $password = $this->validateParameter('pass', $this->param['pass'], STRING);
             $check_email = "SELECT `email` FROM `ad_user` WHERE `email`=:email OR `phone`=:phone";
@@ -90,12 +91,13 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`phone`,`status`,`password_hash`,`otp`) VALUES(:username,:name,:email,:phone,:status,:password_hash,:otp)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':name', htmlspecialchars(strip_tags($fName)), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':email', $email, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':status', 0, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
@@ -104,10 +106,21 @@ class Api extends Rest
                 $subject = 'Plese verify OTP';
                 $body = 'Your verification OTP is ' . $otp;
                 $this->sendMail($email, $subject, $body);
-                $response = ["status" => true, "code" => 200, "Message" => "You have successfully registered."];
+
+                // Get the last insert ID
+                $last_id = $this->dbConn->lastInsertId();
+                // Select the last insert row
+                $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id=:id");
+                $stmt->bindParam(':id', $last_id);
+                $stmt->execute();
+                // Fetch the row
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (36000), 'userId' => $last_id];
+                $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+                $response = ["status" => true, "code" => 200, "Message" => "You have successfully registered.", "token" => $token, "data" => $user, "otp" => $otp];
+
                 $this->returnResponse($response);
             endif;
-
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
@@ -681,17 +694,17 @@ class Api extends Rest
     public function multipleFileUpload()
     {
         try {
-            $image = $this->validateParameter('image', $this->param['image'], STRING);
-            $image_name = '';
+            $productImages = $this->validateParameter('product_images', $this->param['product_images'], STRING);
+            echo '<pre>';
+            print_r($productImages);
+            exit;
+            /*$image_name = '';
             if (strlen($image) > 0) {
                 $image_name = round(microtime(true) * 1000) . ".jpg";
                 $image_upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/image/' . $image_name;
                 $flag = file_put_contents($image_upload_dir, base64_decode($image));
                 if ($flag) {
-                    //Write insert db code here like given below
-                    // $q = mysqli_query($conn,'insert into image');
-                    // $response = ["status" => true, "code" => 200, "Message" => "Image successfully uploaded", "image_name" => $image_name];
-                    // $this->returnResponse($response);
+                    
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
                     $this->returnResponse($response);
@@ -699,7 +712,7 @@ class Api extends Rest
             } else {
                 $response = ["status" => false, "code" => 400, "Message" => "Please post image"];
                 $this->returnResponse($response);
-            }
+            }*/
 
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
