@@ -471,4 +471,32 @@ class Api extends Rest
         echo 'Mail successfully sent';
 
     }
+
+    public function uploadFile(){
+        try {
+            $image = $this->validateParameter('image', $this->param['image'], STRING);
+            $image_name = '';
+            if(strlen($image) > 0){
+                $image_name = round(microtime(true) * 1000).".jpg";
+                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'].'/PAYAKI/storage/image/'.$image_name;
+                $flag = file_put_contents($image_upload_dir,base64_decode($image));
+                if($flag){
+                    //Write insert db code here like given below
+                    // $q = mysqli_query($conn,'insert into image');
+                    $response = ["status" => true, "code" => 200, "Message" => "Image successfully uploaded", "image_name"  => $image_name];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Please post image"];
+                $this->returnResponse($response);
+            }
+            
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
 }
