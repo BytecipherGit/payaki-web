@@ -362,7 +362,8 @@ class Api extends Rest
         }
     }
 
-    public function createSlug($productName) {
+    public function createSlug($productName)
+    {
         // Convert to lowercase
         $slug = strtolower($productName);
         // Replace non-alphanumeric characters with hyphens
@@ -382,7 +383,7 @@ class Api extends Rest
             $urgent = $this->validateParameter('urgent', $this->param['urgent'], INTEGER, false);
             $highlight = $this->validateParameter('highlight', $this->param['highlight'], INTEGER, false);
             $product_name = $this->validateParameter('product_name', $this->param['product_name'], STRING, false);
-            if(!empty($product_name)){
+            if (!empty($product_name)) {
                 $slug = $this->createSlug($product_name);
             }
             $description = $this->validateParameter('description', $this->param['description'], STRING, false);
@@ -400,7 +401,7 @@ class Api extends Rest
             $username = $this->validateParameter('username', $this->param['username'], STRING, false);
             $email = $this->validateParameter('email', $this->param['email'], STRING, false);
             $phone = $this->validateParameter('phone', $this->param['phone'], STRING, false);
-            
+
             // $urgent = $this->validateParameter('urgent', $this->param['urgent'], STRING, false);
             // $highlight = $this->validateParameter('highlight', $this->param['highlight'], INTEGER, false);
             // $slug = $this->validateParameter('slug', $this->param['slug'], STRING, false);
@@ -447,7 +448,7 @@ class Api extends Rest
             $stmt->bindParam(':admin_seen', $admin_seen);
             $stmt->bindParam(':emailed', $emailed);
             $stmt->bindParam(':hide', $hide);
-            
+
             if ($stmt->execute()) {
                 return true;
             } else {
@@ -696,26 +697,34 @@ class Api extends Rest
     public function multipleFileUpload()
     {
         try {
-            $productImages = $this->validateParameter('product_images', $this->param['product_images'], STRING);
-            echo '<pre>';
-            print_r($productImages);
-            exit;
-            /*$image_name = '';
-            if (strlen($image) > 0) {
-                $image_name = round(microtime(true) * 1000) . ".jpg";
-                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/image/' . $image_name;
-                $flag = file_put_contents($image_upload_dir, base64_decode($image));
-                if ($flag) {
-                    
-                } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
-                    $this->returnResponse($response);
-                }
-            } else {
-                $response = ["status" => false, "code" => 400, "Message" => "Please post image"];
-                $this->returnResponse($response);
-            }*/
+            $total_count = count($_FILES['product_images']['name']);
+            if ($total_count > 0) {
+                $imageNameCommoSeperate = '';
+                for ($i = 0; $i < $total_count; $i++) {
+                    $new_name = '';
+                    //The temp file path is obtained
+                    $tmpFilePath = $_FILES['product_images']['tmp_name'][$i];
+                    //A file path needs to be present
+                    if ($tmpFilePath != "") {
+                        //Setup our new file path
+                        $timestamp = microtime(true);
+                        $original_name = $_FILES['product_images']['name'][$i];
+                        $extension = pathinfo($original_name, PATHINFO_EXTENSION);
+                        $new_name = $timestamp . '.' . $extension;
 
+                        $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/' . $new_name;
+                        $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/'. $new_name;
+                        if (move_uploaded_file($tmpFilePath, $newMainFilePath)) {
+                            chmod($newMainFilePath,0777);
+                            copy($newMainFilePath, $newThumbnailFilePath);
+                            $imageNameCommoSeperate .= $new_name.',';
+                        }
+                    }
+                }
+            }
+            echo rtrim($imageNameCommoSeperate, ",");
+            // echo $imageNameCommoSeperate;
+            exit;
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
