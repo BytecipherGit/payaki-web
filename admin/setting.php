@@ -1129,19 +1129,19 @@ require_once('includes.php');
                                                             <div class="form-group">
                                                                 <h4>Modify Post form fields</h4>
                                                             </div>
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label>Post Without Login :</label>
                                                                 <div>
                                                                     <select name="post_without_login" class="form-control">
-                                                                        <option <?php if(get_option("post_without_login") == '1'){ echo "selected"; } ?> value="1">
+                                                                        <option <?php // if(get_option("post_without_login") == '1'){ echo "selected"; } ?> value="1">
                                                                             Enable (User can post without login.)
                                                                         </option>
-                                                                        <option <?php if(get_option("post_without_login") == '0'){ echo "selected"; } ?> value="0">
+                                                                        <option <?php // if(get_option("post_without_login") == '0'){ echo "selected"; } ?> value="0">
                                                                             Disable (User required login to post ad.)
                                                                         </option>
                                                                     </select>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                             <div class="form-group">
                                                                 <label>Ads Auto Approve :</label>
                                                                 <div>
