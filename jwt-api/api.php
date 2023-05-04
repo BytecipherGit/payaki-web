@@ -200,7 +200,7 @@ class Api extends Rest
                         $this->returnResponse($response);
                     }
                 } else {
-                    $response = ["status" => false, "code" => 422, "Message" => "User not found."];
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found."];
                     $this->returnResponse($response);
                 }
             }
@@ -226,7 +226,7 @@ class Api extends Rest
                     $response = ["status" => true, "code" => 200, "Message" => 'OTP successfully matched.', "data" => ["user_id" => $user_id]];
                     $this->returnResponse($response);
                 } else {
-                    $response = ["status" => false, "code" => 422, "Message" => "OTP do not match."];
+                    $response = ["status" => false, "code" => 400, "Message" => "OTP do not match."];
                     $this->returnResponse($response);
                 }
             }
@@ -254,7 +254,7 @@ class Api extends Rest
                     $response = ["status" => true, "code" => 200, "Message" => 'Password successfully updated'];
                     $this->returnResponse($response);
                 } else {
-                    $response = ["status" => false, "code" => 422, "Message" => "Password not updated."];
+                    $response = ["status" => false, "code" => 400, "Message" => "Password not updated."];
                     $this->returnResponse($response);
                 }
             }
@@ -278,7 +278,7 @@ class Api extends Rest
                 if ($userData) {
                     return $userData;
                 } else {
-                    $response = ["status" => false, "code" => 422, "Message" => "User not found by given token."];
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
                     $this->returnResponse($response);
                 }
 
