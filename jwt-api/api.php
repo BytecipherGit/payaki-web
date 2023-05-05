@@ -30,7 +30,6 @@ class Api extends Rest
             // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email");
             $stmt->bindParam(":email", $email);
-            $stmt->bindParam(":username", $email);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($user)) {
