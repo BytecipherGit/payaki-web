@@ -13,8 +13,16 @@
 			if($_SERVER['REQUEST_METHOD'] !== 'POST') {
 				$this->throwError(REQUEST_METHOD_NOT_VALID, 'Request Method is not valid.');
 			}
-			$handler = fopen('php://input', 'r');
-			$this->request = stream_get_contents($handler);
+			
+			if(!empty($_POST)){
+				$this->request = json_encode($_POST);
+			} else {
+
+				$handler = fopen('php://input', 'r');
+				$this->request = stream_get_contents($handler);
+			}
+			
+			
 			$this->validateRequest();
 
 			$db = new DbConnect;
@@ -27,7 +35,9 @@
 		}
 
 		Public function validateRequest() {
-			if($_SERVER['CONTENT_TYPE'] !== 'application/json') {
+			$contentTypeArr = explode(" ", $_SERVER['CONTENT_TYPE']);
+			$contentType = str_replace(";", "", $contentTypeArr[0]);
+			if($contentType !== 'application/json' && $contentType !== 'multipart/form-data') {
 				$this->throwError(REQUEST_CONTENTTYPE_NOT_VALID, 'Request content type is not valid');
 			}
 
@@ -37,18 +47,19 @@
 				$this->throwError(API_NAME_REQUIRED, "API name is required.");
 			}
 			$this->serviceName = $data['name'];
-
-			if(!is_array($data['param'])) {
-				$this->throwError(API_PARAM_REQUIRED, "API PARAM is required.");
-			}
-			$this->param = $data['param'];
+			if(empty($_POST)){
+				if(!is_array($data['param'])) {
+					$this->throwError(API_PARAM_REQUIRED, "API PARAM is required.");
+				}
+				$this->param = $data['param'];
+			} 
+			
 		}
 
 		public function validateParameter($fieldName, $value, $dataType, $required = true) {
 			if($required == true && empty($value) == true) {
 				$this->throwError(VALIDATE_PARAMETER_REQUIRED, $fieldName . " parameter is required.");
 			}
-
 			switch ($dataType) {
 				case BOOLEAN:
 					if(!is_bool($value)) {
