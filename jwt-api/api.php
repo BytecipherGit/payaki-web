@@ -709,13 +709,25 @@ class Api extends Rest
         try {
             $userId = $this->validateParameter('userId', $this->param['userId'], INTEGER);
             if (!empty($userId)) {
+                $responseArr = array();
                 $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId";
                 $postData = $this->dbConn->prepare($getpost);
                 $postData->bindValue(':userId', $userId, PDO::PARAM_STR);
                 $postData->execute();
                 $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
-                if ($postData) {
-                    $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $postData];
+                if (count($postData) > 0) {
+                    foreach ($postData as $key => $post) {
+                        $responseArr[$key] = $post;
+                        if (!empty($post['screen_shot'])) {
+                            $screenShotArr = explode(",", $post['screen_shot']);
+                            if (count($screenShotArr) > 0) {
+                                for ($i = 0; $i < count($screenShotArr); $i++) {
+                                    $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                                }
+                            }
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $responseArr];
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
