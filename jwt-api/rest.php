@@ -29,7 +29,7 @@
 			$this->dbConn = $db->connect();
 
 			
-			if ('login' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendtestemail' != strtolower($this->serviceName) && 'forgetpassword' != strtolower($this->serviceName) && 'verifyforgetpassword' != strtolower($this->serviceName) && 'generatenewpassword' != strtolower($this->serviceName) && 'uploadfile' != strtolower($this->serviceName) && 'getcategories' != strtolower($this->serviceName) && 'getsubcategories' != strtolower($this->serviceName) && 'getcountries' != strtolower($this->serviceName) && 'getstates' != strtolower($this->serviceName) && 'getcities' != strtolower($this->serviceName) && 'addpost' != strtolower($this->serviceName) && 'multiplefileupload' != strtolower($this->serviceName)) {
+			if ('login' != strtolower($this->serviceName) && 'loginwithphone' != strtolower($this->serviceName) && 'verifyloginotp' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendtestemail' != strtolower($this->serviceName) && 'forgetpassword' != strtolower($this->serviceName) && 'verifyforgetpassword' != strtolower($this->serviceName) && 'generatenewpassword' != strtolower($this->serviceName) && 'uploadfile' != strtolower($this->serviceName) && 'getcategories' != strtolower($this->serviceName) && 'getsubcategories' != strtolower($this->serviceName) && 'getcountries' != strtolower($this->serviceName) && 'getstates' != strtolower($this->serviceName) && 'getcities' != strtolower($this->serviceName) && 'addpost' != strtolower($this->serviceName) && 'multiplefileupload' != strtolower($this->serviceName)) {
 				$this->validateToken();
 			}
 		}

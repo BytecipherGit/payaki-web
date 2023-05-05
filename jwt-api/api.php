@@ -27,7 +27,8 @@ class Api extends Rest
         $email = $this->validateParameter('email', $this->param['email'], STRING);
         $password = $this->validateParameter('pass', $this->param['pass'], STRING);
         try {
-            $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
+            // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email");
             $stmt->bindParam(":email", $email);
             $stmt->bindParam(":username", $email);
             $stmt->execute();
@@ -70,15 +71,116 @@ class Api extends Rest
         }
     }
 
+    public function loginWithPhone()
+    {
+        $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
+        $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
+
+        try {
+            // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE country_code =:country_code AND phone =:phone");
+            $stmt->bindParam(":country_code", $countryCode);
+            $stmt->bindParam(":phone", $phone);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($user['id'])) {
+                $otp = mt_rand(111111, 999999);
+                // Prepare the SQL UPDATE statement
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET otp = :otp WHERE id = :id');
+                // Bind the parameters and execute the statement
+                $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
+                $stmt->bindValue(':otp', $otp, PDO::PARAM_STR);
+                $stmt->execute();
+                // Check for errors and return a response
+                if ($stmt->rowCount() > 0) {
+                    $response = ["status" => false, "code" => 200, "Message" => 'User details successfully fetched. Please verity otp for sign in', "data" => ["country_code" => $countryCode, "phone" => $phone, "otp" => (string) $otp]];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => 'Record not found'];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User does not exist with this phone number."];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $this->throwError(JWT_PROCESSING_ERROR, $e->getMessage());
+        }
+    }
+
+    public function verifyLoginOTP()
+    {
+        $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
+        $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
+        $otp = $this->validateParameter('otp', $this->param['otp'], STRING);
+
+        try {
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE country_code =:country_code AND phone =:phone");
+            $stmt->bindParam(":country_code", $countryCode);
+            $stmt->bindParam(":phone", $phone);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($user['id'])) {
+                if ($user['otp'] === $otp) {
+                    $paylod = [
+                        'iat' => time(),
+                        'iss' => 'localhost',
+                        'exp' => time() + (36000),
+                        'userId' => $user['id'],
+                    ];
+                    $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+                    $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => 'Given OTP does not match.'];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User does not exist with this phone number."];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $this->throwError(JWT_PROCESSING_ERROR, $e->getMessage());
+        }
+    }
+
     public function register()
     {
         try {
-            $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
-            $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
-            $email = $this->validateParameter('email', $this->param['email'], STRING);
-            $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
-            $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
-            $password = $this->validateParameter('pass', $this->param['pass'], STRING);
+            // $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
+            // $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
+            // $email = $this->validateParameter('email', $this->param['email'], STRING);
+            // $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
+            // $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
+            // $password = $this->validateParameter('pass', $this->param['pass'], STRING);
+
+            $fName = $_POST['full_name'];
+            $uName = $_POST['user_name'];
+            $email = $_POST['email'];
+            $countryCode = $_POST['country_code'];
+            $phone = $_POST['phone'];
+            $password = $_POST['pass'];
+            $id_proof_new_file_name = '';
+            $addess_proof_new_file_name = '';
+            if (isset($_FILES['id_proof'])) {
+                $id_proof_file_name = $_FILES['id_proof']['name'];
+                $id_proof_file_tmp = $_FILES['id_proof']['tmp_name'];
+                if ($id_proof_file_tmp != '') {
+                    $id_proof_new_file_name = microtime(true);
+                    $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/id_proof/' . $id_proof_new_file_name;
+                    move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
+                }
+            }
+
+            if (isset($_FILES['address_proof'])) {
+                $address_proof_file_name = $_FILES['address_proof']['name'];
+                $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
+                if ($address_proof_file_tmp != '') {
+                    $address_proof_new_file_name = microtime(true);
+                    $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/address_proof/' . $address_proof_new_file_name;
+                    move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
+                }
+            }
             $check_email = "SELECT `email` FROM `ad_user` WHERE `email`=:email OR `phone`=:phone";
             $check_email_stmt = $this->dbConn->prepare($check_email);
             $check_email_stmt->bindValue(':email', $email, PDO::PARAM_STR);
@@ -91,7 +193,7 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof`,`address_proof`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp,:id_proof,:address_proof)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
@@ -102,6 +204,8 @@ class Api extends Rest
                 $insert_stmt->bindValue(':status', 0, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':otp', $otp, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':id_proof', $id_proof_new_file_name, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':address_proof', $address_proof_new_file_name, PDO::PARAM_STR);
                 $insert_stmt->execute();
                 $subject = 'Plese verify OTP';
                 $body = 'Your verification OTP is ' . $otp;
@@ -403,10 +507,10 @@ class Api extends Rest
                 $state = $_POST['state'];
                 $tag = $_POST['tag'];
                 $view = $_POST['view'];
-                $expire_date = $_POST['expire_date'];
-                $featured_exp_date = $_POST['featured_exp_date'];
-                $urgent_exp_date = $_POST['urgent_exp_date'];
-                $highlight_exp_date = $_POST['highlight_exp_date'];
+                // $expire_date = $_POST['expire_date'];
+                // $featured_exp_date = $_POST['featured_exp_date'];
+                // $urgent_exp_date = $_POST['urgent_exp_date'];
+                // $highlight_exp_date = $_POST['highlight_exp_date'];
                 $adminSeen = $_POST['admin_seen'];
                 $emailed = $_POST['emailed'];
                 $hide = $_POST['hide'];
@@ -488,39 +592,42 @@ class Api extends Rest
                 $expire_timestamp = strtotime($expire_time);
 
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
-
+                $status = 'pending';
+                $createdDate = date('Y-m-d H:i:s');
+                $featuredExpDate = null;
                 $stmt = $this->dbConn->prepare($sql);
-                $stmt->bindParam(':status', 'pending');
+                $stmt->bindParam(':status', $status);
                 $stmt->bindParam(':user_id', $userId);
-                $stmt->bindParam(':featured', !empty($featured) ? $featured : 0);
-                $stmt->bindParam(':urgent', !empty($urgent) ? $urgent : 0);
-                $stmt->bindParam(':highlight', !empty($highlight) ? $highlight : 0);
-                $stmt->bindParam(':product_name', !empty($productName) ? $productName : '');
-                $stmt->bindParam(':slug', !empty($slug) ? $slug : '');
-                $stmt->bindParam(':description', !empty($description) ? $description : '');
-                $stmt->bindParam(':category', !empty($category) ? $category : null);
-                $stmt->bindParam(':sub_category', !empty($subCategory) ? $subCategory : null);
-                $stmt->bindParam(':price', !empty($price) ? $price : 0);
-                $stmt->bindParam(':negotiable', !empty($negotiable) ? $negotiable : 0);
-                $stmt->bindParam(':phone', !empty($phone) ? $phone : null);
-                $stmt->bindParam(':hide_phone', !empty($hidePhone) ? $hidePhone : 0);
-                $stmt->bindParam(':location', !empty($location) ? $location : null);
-                $stmt->bindParam(':city', !empty($city) ? $city : null);
-                $stmt->bindParam(':state', !empty($state) ? $state : null);
-                $stmt->bindParam(':country', !empty($country) ? $country : null);
-                $stmt->bindParam(':latlong', !empty($latlong) ? $latlong : null);
+                // $stmt->bindParam(':featured', !empty($featured) ? $featured : 0);
+                $stmt->bindParam(':featured', $featured);
+                $stmt->bindParam(':urgent', $urgent);
+                $stmt->bindParam(':highlight', $highlight);
+                $stmt->bindParam(':product_name', $productName);
+                $stmt->bindParam(':slug', $slug);
+                $stmt->bindParam(':description', $description);
+                $stmt->bindParam(':category', $category);
+                $stmt->bindParam(':sub_category', $subCategory);
+                $stmt->bindParam(':price', $price);
+                $stmt->bindParam(':negotiable', $negotiable);
+                $stmt->bindParam(':phone', $phone);
+                $stmt->bindParam(':hide_phone', $hidePhone);
+                $stmt->bindParam(':location', $location);
+                $stmt->bindParam(':city', $city);
+                $stmt->bindParam(':state', $state);
+                $stmt->bindParam(':country', $country);
+                $stmt->bindParam(':latlong', $latlong);
                 $stmt->bindParam(':screen_shot', $screenShot);
-                $stmt->bindParam(':tag', !empty($tag) ? $tag : null);
-                $stmt->bindParam(':view', !empty($view) ? $view : 1);
-                $stmt->bindParam(':created_at', date('Y-m-d H:i:s'));
-                $stmt->bindParam(':updated_at', date('Y-m-d H:i:s'));
+                $stmt->bindParam(':tag', $tag);
+                $stmt->bindParam(':view', $view);
+                $stmt->bindParam(':created_at', $createdDate);
+                $stmt->bindParam(':updated_at', $createdDate);
                 $stmt->bindParam(':expire_date', $expire_timestamp);
-                $stmt->bindParam(':featured_exp_date', null);
-                $stmt->bindParam(':urgent_exp_date', null);
-                $stmt->bindParam(':highlight_exp_date', null);
-                $stmt->bindParam(':admin_seen', !empty($adminSeen) ? $adminSeen : 0);
-                $stmt->bindParam(':emailed', !empty($emailed) ? $emailed : 0);
-                $stmt->bindParam(':hide', !empty($hide) ? $hide : 0);
+                $stmt->bindParam(':featured_exp_date', $featuredExpDate);
+                $stmt->bindParam(':urgent_exp_date', $featuredExpDate);
+                $stmt->bindParam(':highlight_exp_date', $featuredExpDate);
+                $stmt->bindParam(':admin_seen', $adminSeen);
+                $stmt->bindParam(':emailed', $emailed);
+                $stmt->bindParam(':hide', $hide);
 
                 if ($stmt->execute()) {
                     // Get the last insert ID
@@ -531,7 +638,7 @@ class Api extends Rest
                     $stmt->execute();
                     // Fetch the row
                     $product = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "data" => $product];
+                    $response = ["status" => true, "code" => 200, "Message" => "Advertisement successfuly posted.", "data" => $product];
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
@@ -545,6 +652,64 @@ class Api extends Rest
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
         }
+    }
+
+    public function getPostDetails()
+    {
+        try {
+            $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
+            if (!empty($postId)) {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id=:id";
+                $postData = $this->dbConn->prepare($getpost);
+                $postData->bindValue(':id', $postId, PDO::PARAM_STR);
+                $postData->execute();
+                $postData = $postData->fetch(PDO::FETCH_ASSOC);
+                if ($postData) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Advertisement details fetched.", "data" => $postData];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "postId required."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getAllUserPostDetails()
+    {
+        try {
+            $userId = $this->validateParameter('userId', $this->param['userId'], INTEGER);
+            if (!empty($userId)) {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId";
+                $postData = $this->dbConn->prepare($getpost);
+                $postData->bindValue(':userId', $userId, PDO::PARAM_STR);
+                $postData->execute();
+                $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                if ($postData) {
+                    $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $postData];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "postId required."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
     }
 
     public function addCustomer()
