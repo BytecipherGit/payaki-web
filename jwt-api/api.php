@@ -161,7 +161,7 @@ class Api extends Rest
             $phone = $_POST['phone'];
             $password = $_POST['pass'];
             $id_proof_new_file_name = '';
-            $addess_proof_new_file_name = '';
+            $address_proof_new_file_name = '';
             if (isset($_FILES['id_proof'])) {
                 $id_proof_file_name = $_FILES['id_proof']['name'];
                 $id_proof_file_tmp = $_FILES['id_proof']['tmp_name'];
