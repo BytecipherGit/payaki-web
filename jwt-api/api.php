@@ -17,9 +17,19 @@ class Api extends Rest
     protected $SMTPSecure = 'tls';
     protected $Port = 465;
 
+    protected $protocol;
+    protected $host_url;
+
+    protected $current_url;
+    protected $display_image_url;
+
     public function __construct()
     {
         parent::__construct();
+        $this->protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+        $this->host_url = $_SERVER['HTTP_HOST'];
+        $this->current_url = $this->protocol . "://" . $this->host_url . $_SERVER['REQUEST_URI'];
+        $this->display_image_url = str_replace("jwt-api/", "", $this->current_url);
     }
 
     public function login()
@@ -145,7 +155,7 @@ class Api extends Rest
 
     public function register()
     {
-        
+
         try {
             // $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
             // $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
@@ -167,7 +177,7 @@ class Api extends Rest
                 $id_proof_file_tmp = $_FILES['id_proof']['tmp_name'];
                 if ($id_proof_file_tmp != '') {
                     $extension = pathinfo($id_proof_file_name, PATHINFO_EXTENSION);
-                    $id_proof_new_file_name = microtime(true). '.' . $extension;
+                    $id_proof_new_file_name = microtime(true) . '.' . $extension;
                     $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/id_proof/' . $id_proof_new_file_name;
                     move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
                 }
@@ -178,7 +188,7 @@ class Api extends Rest
                 $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
                 if ($address_proof_file_tmp != '') {
                     $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
-                    $address_proof_new_file_name = microtime(true). '.' . $extension;
+                    $address_proof_new_file_name = microtime(true) . '.' . $extension;
                     $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
                     move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
                 }
@@ -666,7 +676,16 @@ class Api extends Rest
                 $postData->bindValue(':id', $postId, PDO::PARAM_STR);
                 $postData->execute();
                 $postData = $postData->fetch(PDO::FETCH_ASSOC);
-                if ($postData) {
+                if (!empty($postData)) {
+                    if (!empty($postData['screen_shot'])) {
+                        $screenShotArr = explode(",", $postData['screen_shot']);
+                        if (count($screenShotArr) > 0) {
+                            for ($i = 0; $i < count($screenShotArr); $i++) {
+                                // echo $screenShotArr[$i].'<br>';
+                                $postData['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                            }
+                        }
+                    }
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement details fetched.", "data" => $postData];
                     $this->returnResponse($response);
                 } else {
