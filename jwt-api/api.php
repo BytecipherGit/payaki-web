@@ -166,7 +166,8 @@ class Api extends Rest
                 $id_proof_file_name = $_FILES['id_proof']['name'];
                 $id_proof_file_tmp = $_FILES['id_proof']['tmp_name'];
                 if ($id_proof_file_tmp != '') {
-                    $id_proof_new_file_name = microtime(true);
+                    $extension = pathinfo($id_proof_file_name, PATHINFO_EXTENSION);
+                    $id_proof_new_file_name = microtime(true). '.' . $extension;
                     $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/id_proof/' . $id_proof_new_file_name;
                     move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
                 }
@@ -176,7 +177,8 @@ class Api extends Rest
                 $address_proof_file_name = $_FILES['address_proof']['name'];
                 $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
                 if ($address_proof_file_tmp != '') {
-                    $address_proof_new_file_name = microtime(true);
+                    $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
+                    $address_proof_new_file_name = microtime(true). '.' . $extension;
                     $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/address_proof/' . $address_proof_new_file_name;
                     move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
                 }
