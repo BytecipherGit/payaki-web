@@ -201,7 +201,7 @@ class Api extends Rest
                 $userData->bindValue(':phone', $mobile, PDO::PARAM_STR);
                 $userData->execute();
                 $userData = $userData->fetch(PDO::FETCH_ASSOC);
-                if ($userData['id']) {
+                if (!empty($userData['id'])) {
                     $otp = mt_rand(111111, 999999);
                     // Prepare the SQL UPDATE statement
                     $stmt = $this->dbConn->prepare('UPDATE ad_user SET otp = :otp WHERE id = :id');
@@ -377,82 +377,169 @@ class Api extends Rest
     public function addPost()
     {
         try {
+            $userId = $_POST['user_id'];
+            if (!empty($userId)) {
 
-            $userId = $this->validateParameter('user_id', $this->param['user_id'], STRING, false);
-            $featured = $this->validateParameter('featured', $this->param['featured'], STRING, false);
-            $urgent = $this->validateParameter('urgent', $this->param['urgent'], INTEGER, false);
-            $highlight = $this->validateParameter('highlight', $this->param['highlight'], INTEGER, false);
-            $product_name = $this->validateParameter('product_name', $this->param['product_name'], STRING, false);
-            if (!empty($product_name)) {
-                $slug = $this->createSlug($product_name);
-            }
-            $description = $this->validateParameter('description', $this->param['description'], STRING, false);
-            $category = $this->validateParameter('category', $this->param['category'], STRING, false);
-            $sub_category = $this->validateParameter('sub_category', $this->param['sub_category'], STRING, false);
-            $price = $this->validateParameter('price', $this->param['price'], STRING, false);
-            $negotiable = $this->validateParameter('negotiable', $this->param['negotiable'], STRING, false);
-            $productImages = $this->validateParameter('productImages', $this->param['productImages'], STRING, false);
+                $featured = $_POST['featured'];
+                $urgent = $_POST['urgent'];
+                $highlight = $_POST['highlight'];
+                $productName = $_POST['product_name'];
+                if (!empty($productName)) {
+                    $slug = $this->createSlug($productName);
+                } else {
+                    $slug = '';
+                }
+                $description = $_POST['description'];
+                $category = $_POST['category'];
+                $subCategory = $_POST['sub_category'];
+                $price = $_POST['price'];
+                $negotiable = $_POST['negotiable'];
+                $phone = $_POST['phone'];
+                $hidePhone = $_POST['hide_phone'];
+                $location = $_POST['location'];
+                $city = $_POST['city'];
+                $country = $_POST['country'];
+                $latlong = $_POST['latlong'];
+                $state = $_POST['state'];
+                $tag = $_POST['tag'];
+                $view = $_POST['view'];
+                $expire_date = $_POST['expire_date'];
+                $featured_exp_date = $_POST['featured_exp_date'];
+                $urgent_exp_date = $_POST['urgent_exp_date'];
+                $highlight_exp_date = $_POST['highlight_exp_date'];
+                $adminSeen = $_POST['admin_seen'];
+                $emailed = $_POST['emailed'];
+                $hide = $_POST['hide'];
 
-            $location = $this->validateParameter('location', $this->param['location'], STRING, false);
-            $city = $this->validateParameter('city', $this->param['city'], STRING, false);
-            $state = $this->validateParameter('state', $this->param['state'], STRING, false);
-            $country = $this->validateParameter('country', $this->param['country'], STRING, false);
-            $latlong = $this->validateParameter('latlong', $this->param['latlong'], STRING, false);
-            $username = $this->validateParameter('username', $this->param['username'], STRING, false);
-            $email = $this->validateParameter('email', $this->param['email'], STRING, false);
-            $phone = $this->validateParameter('phone', $this->param['phone'], STRING, false);
+                //Upload Images gally
+                $total_count = count($_FILES['product_images']['name']);
+                if ($total_count > 0) {
+                    $screenShot = '';
+                    for ($i = 0; $i < $total_count; $i++) {
+                        $new_name = '';
+                        //The temp file path is obtained
+                        $tmpFilePath = $_FILES['product_images']['tmp_name'][$i];
+                        //A file path needs to be present
+                        if ($tmpFilePath != "") {
+                            //Setup our new file path
+                            $timestamp = microtime(true);
+                            $original_name = $_FILES['product_images']['name'][$i];
+                            $extension = pathinfo($original_name, PATHINFO_EXTENSION);
+                            $new_name = $timestamp . '.' . $extension;
 
-            // $urgent = $this->validateParameter('urgent', $this->param['urgent'], STRING, false);
-            // $highlight = $this->validateParameter('highlight', $this->param['highlight'], INTEGER, false);
-            // $slug = $this->validateParameter('slug', $this->param['slug'], STRING, false);
-            // $phone = $this->validateParameter('phone', $this->param['phone'], STRING, false);
-            // $hide_phone = $this->validateParameter('hide_phone', $this->param['hide_phone'], STRING, false);
-            // $city = $this->validateParameter('city', $this->param['city'], STRING, false);
-            // $state = $this->validateParameter('state', $this->param['state'], STRING, false);
-            // $country = $this->validateParameter('country', $this->param['country'], STRING, false);
-            // $latlong = $this->validateParameter('latlong', $this->param['latlong'], STRING, false);
-            // $screen_shot = $this->validateParameter('screen_shot', $this->param['screen_shot'], STRING, false);
-            // $tag = $this->validateParameter('tag', $this->param['tag'], STRING, false);
-            // $view = $this->validateParameter('view', $this->param['view'], STRING, false);
+                            $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/' . $new_name;
+                            $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/' . $new_name;
+                            if (move_uploaded_file($tmpFilePath, $newMainFilePath)) {
+                                chmod($newMainFilePath, 0777);
+                                copy($newMainFilePath, $newThumbnailFilePath);
+                                $screenShot .= $new_name . ',';
+                            }
+                        }
+                    }
+                }
+                $screenShot = rtrim($screenShot, ",");
 
-            $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+                /*if(checkloggedin()) {
+                $group_id = get_user_group();
+                // Get usergroup details
+                switch ($group_id)
+                {
+                case 'free':
+                $plan = json_decode(get_option('free_membership_plan'), true);
+                $group_get_info = $plan['settings'];
 
-            $stmt = $this->dbConn->prepare($sql);
-            $stmt->bindParam(':status', 'pending');
-            $stmt->bindParam(':user_id', $userId);
-            $stmt->bindParam(':featured', $featured);
-            $stmt->bindParam(':urgent', $urgent);
-            $stmt->bindParam(':highlight', $highlight);
-            $stmt->bindParam(':product_name', $product_name);
-            $stmt->bindParam(':slug', $slug);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':sub_category', $sub_category);
-            $stmt->bindParam(':price', $price);
-            $stmt->bindParam(':negotiable', $negotiable);
-            $stmt->bindParam(':phone', $phone);
-            $stmt->bindParam(':hide_phone', $hide_phone);
-            $stmt->bindParam(':location', $location);
-            $stmt->bindParam(':city', $city);
-            $stmt->bindParam(':state', $state);
-            $stmt->bindParam(':country', $country);
-            $stmt->bindParam(':latlong', $latlong);
-            $stmt->bindParam(':screen_shot', $screen_shot);
-            $stmt->bindParam(':tag', $tag);
-            $stmt->bindParam(':view', $view);
-            $stmt->bindParam(':created_at', $created_at);
-            $stmt->bindParam(':updated_at', $updated_at);
-            $stmt->bindParam(':expire_date', $expire_date);
-            $stmt->bindParam(':featured_exp_date', $featured_exp_date);
-            $stmt->bindParam(':urgent_exp_date', $urgent_exp_date);
-            $stmt->bindParam(':highlight_exp_date', $highlight_exp_date);
-            $stmt->bindParam(':admin_seen', $admin_seen);
-            $stmt->bindParam(':emailed', $emailed);
-            $stmt->bindParam(':hide', $hide);
+                break;
+                case 'trial':
+                $plan = json_decode(get_option('trial_membership_plan'), true);
+                $group_get_info = $plan['settings'];
 
-            if ($stmt->execute()) {
-                return true;
+                break;
+                default:
+                $plan = ORM::for_table($config['db']['pre'] . 'plans')
+                ->select('settings')
+                ->where('id', $group_id)
+                ->find_one();
+                if(!isset($plan['settings'])){
+                $plan = json_decode(get_option('free_membership_plan'), true);
+                $group_get_info = $plan['settings'];
+
+                }else{
+                $group_get_info = json_decode($plan['settings'],true);
+
+                }
+                break;
+                }
+                }else{
+                $plan = json_decode(get_option('free_membership_plan'), true);
+                $group_get_info = $plan['settings'];
+                }
+
+                $urgent_project_fee = $group_get_info['urgent_project_fee'];
+                $featured_project_fee = $group_get_info['featured_project_fee'];
+                $highlight_project_fee = $group_get_info['highlight_project_fee'];
+
+                $ad_duration = $group_get_info['ad_duration'];
+                $timenow = date('Y-m-d H:i:s');
+                $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$ad_duration.' day'));
+                $expire_timestamp = strtotime($expire_time);*/
+                $ad_duration = 7;
+                $timenow = date('Y-m-d H:i:s');
+                $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
+                $expire_timestamp = strtotime($expire_time);
+
+                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+
+                $stmt = $this->dbConn->prepare($sql);
+                $stmt->bindParam(':status', 'pending');
+                $stmt->bindParam(':user_id', $userId);
+                $stmt->bindParam(':featured', !empty($featured) ? $featured : 0);
+                $stmt->bindParam(':urgent', !empty($urgent) ? $urgent : 0);
+                $stmt->bindParam(':highlight', !empty($highlight) ? $highlight : 0);
+                $stmt->bindParam(':product_name', !empty($productName) ? $productName : '');
+                $stmt->bindParam(':slug', !empty($slug) ? $slug : '');
+                $stmt->bindParam(':description', !empty($description) ? $description : '');
+                $stmt->bindParam(':category', !empty($category) ? $category : null);
+                $stmt->bindParam(':sub_category', !empty($subCategory) ? $subCategory : null);
+                $stmt->bindParam(':price', !empty($price) ? $price : 0);
+                $stmt->bindParam(':negotiable', !empty($negotiable) ? $negotiable : 0);
+                $stmt->bindParam(':phone', !empty($phone) ? $phone : null);
+                $stmt->bindParam(':hide_phone', !empty($hidePhone) ? $hidePhone : 0);
+                $stmt->bindParam(':location', !empty($location) ? $location : null);
+                $stmt->bindParam(':city', !empty($city) ? $city : null);
+                $stmt->bindParam(':state', !empty($state) ? $state : null);
+                $stmt->bindParam(':country', !empty($country) ? $country : null);
+                $stmt->bindParam(':latlong', !empty($latlong) ? $latlong : null);
+                $stmt->bindParam(':screen_shot', $screenShot);
+                $stmt->bindParam(':tag', !empty($tag) ? $tag : null);
+                $stmt->bindParam(':view', !empty($view) ? $view : 1);
+                $stmt->bindParam(':created_at', date('Y-m-d H:i:s'));
+                $stmt->bindParam(':updated_at', date('Y-m-d H:i:s'));
+                $stmt->bindParam(':expire_date', $expire_timestamp);
+                $stmt->bindParam(':featured_exp_date', null);
+                $stmt->bindParam(':urgent_exp_date', null);
+                $stmt->bindParam(':highlight_exp_date', null);
+                $stmt->bindParam(':admin_seen', !empty($adminSeen) ? $adminSeen : 0);
+                $stmt->bindParam(':emailed', !empty($emailed) ? $emailed : 0);
+                $stmt->bindParam(':hide', !empty($hide) ? $hide : 0);
+
+                if ($stmt->execute()) {
+                    // Get the last insert ID
+                    $last_id = $this->dbConn->lastInsertId();
+                    // Select the last insert row
+                    $stmt = $this->dbConn->prepare("SELECT * FROM ad_product WHERE id=:id");
+                    $stmt->bindParam(':id', $last_id);
+                    $stmt->execute();
+                    // Fetch the row
+                    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "data" => $product];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                    $this->returnResponse($response);
+                }
             } else {
-                return false;
+                $response = ["status" => false, "code" => 400, "Message" => "Userid required"];
+                $this->returnResponse($response);
             }
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
@@ -713,11 +800,11 @@ class Api extends Rest
                         $new_name = $timestamp . '.' . $extension;
 
                         $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/' . $new_name;
-                        $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/'. $new_name;
+                        $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/' . $new_name;
                         if (move_uploaded_file($tmpFilePath, $newMainFilePath)) {
-                            chmod($newMainFilePath,0777);
+                            chmod($newMainFilePath, 0777);
                             copy($newMainFilePath, $newThumbnailFilePath);
-                            $imageNameCommoSeperate .= $new_name.',';
+                            $imageNameCommoSeperate .= $new_name . ',';
                         }
                     }
                 }

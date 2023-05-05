@@ -60,7 +60,6 @@
 			if($required == true && empty($value) == true) {
 				$this->throwError(VALIDATE_PARAMETER_REQUIRED, $fieldName . " parameter is required.");
 			}
-
 			switch ($dataType) {
 				case BOOLEAN:
 					if(!is_bool($value)) {
