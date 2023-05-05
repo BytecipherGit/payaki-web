@@ -146,6 +146,7 @@ class Api extends Rest
 
     public function register()
     {
+        
         try {
             // $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
             // $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
@@ -168,7 +169,7 @@ class Api extends Rest
                 if ($id_proof_file_tmp != '') {
                     $extension = pathinfo($id_proof_file_name, PATHINFO_EXTENSION);
                     $id_proof_new_file_name = microtime(true). '.' . $extension;
-                    $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/id_proof/' . $id_proof_new_file_name;
+                    $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/id_proof/' . $id_proof_new_file_name;
                     move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
                 }
             }
@@ -179,7 +180,7 @@ class Api extends Rest
                 if ($address_proof_file_tmp != '') {
                     $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
                     $address_proof_new_file_name = microtime(true). '.' . $extension;
-                    $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/user_documents/address_proof/' . $address_proof_new_file_name;
+                    $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
                     move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
                 }
             }
@@ -533,8 +534,8 @@ class Api extends Rest
                             $extension = pathinfo($original_name, PATHINFO_EXTENSION);
                             $new_name = $timestamp . '.' . $extension;
 
-                            $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/' . $new_name;
-                            $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/' . $new_name;
+                            $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/products/' . $new_name;
+                            $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/products/thumb/' . $new_name;
                             if (move_uploaded_file($tmpFilePath, $newMainFilePath)) {
                                 chmod($newMainFilePath, 0777);
                                 copy($newMainFilePath, $newThumbnailFilePath);
@@ -926,7 +927,7 @@ class Api extends Rest
             $image_name = '';
             if (strlen($image) > 0) {
                 $image_name = round(microtime(true) * 1000) . ".jpg";
-                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/image/' . $image_name;
+                $image_upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/image/' . $image_name;
                 $flag = file_put_contents($image_upload_dir, base64_decode($image));
                 if ($flag) {
                     //Write insert db code here like given below
@@ -966,8 +967,8 @@ class Api extends Rest
                         $extension = pathinfo($original_name, PATHINFO_EXTENSION);
                         $new_name = $timestamp . '.' . $extension;
 
-                        $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/' . $new_name;
-                        $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/PAYAKI/storage/products/thumb/' . $new_name;
+                        $newMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/products/' . $new_name;
+                        $newThumbnailFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/products/thumb/' . $new_name;
                         if (move_uploaded_file($tmpFilePath, $newMainFilePath)) {
                             chmod($newMainFilePath, 0777);
                             copy($newMainFilePath, $newThumbnailFilePath);
