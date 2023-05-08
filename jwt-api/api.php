@@ -707,13 +707,97 @@ class Api extends Rest
     public function getAllUserPostDetails()
     {
         try {
-            $userId = $this->validateParameter('userId', $this->param['userId'], INTEGER);
-            if (!empty($userId)) {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if(!empty($payload->userId)){
+                    $responseArr = array();
+                    $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId";
+                    $postData = $this->dbConn->prepare($getpost);
+                    $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    $postData->execute();
+                    $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($postData) > 0) {
+                        foreach ($postData as $key => $post) {
+                            $responseArr[$key] = $post;
+                            if (!empty($post['screen_shot'])) {
+                                $screenShotArr = explode(",", $post['screen_shot']);
+                                if (count($screenShotArr) > 0) {
+                                    for ($i = 0; $i < count($screenShotArr); $i++) {
+                                        $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                                    }
+                                }
+                            }
+                        }
+                        $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $responseArr];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "No post found for this user."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Token should not empty."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getAllPost()
+    {
+        try {
                 $responseArr = array();
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE 1=1";
+                if(!empty($this->param['category'])){
+                    $getpost .= " AND ap.category=:categoryId";
+                }
+                if(!empty($this->param['sub_category'])){
+                    $getpost .= " AND ap.sub_category=:subCategoryId";
+                }
+                if(!empty($this->param['location'])){
+                    $getpost .= " AND ap.location LIKE CONCAT( '%', :location, '%')";
+                }
+                if(!empty($this->param['city'])){
+                    $getpost .= " AND ap.city=:cityId";
+                }
+                if(!empty($this->param['state'])){
+                    $getpost .= " AND ap.state LIKE CONCAT( '%', :stateId, '%')";
+                }
+                if(!empty($this->param['country'])){
+                    $getpost .= " AND ap.country LIKE CONCAT( '%', :countryId, '%')";
+                }
+                
                 $postData = $this->dbConn->prepare($getpost);
-                $postData->bindValue(':userId', $userId, PDO::PARAM_STR);
+                if(!empty($this->param['category'])){
+                    $postData->bindValue(':categoryId', $this->param['category'], PDO::PARAM_STR);
+                }
+                if(!empty($this->param['sub_category'])){
+                    $postData->bindValue(':subCategoryId', $this->param['sub_category'], PDO::PARAM_STR);
+                }
+                if(!empty($this->param['location'])){
+                    $postData->bindValue(':location', $this->param['location'], PDO::PARAM_STR);
+                }
+                if(!empty($this->param['city'])){
+                    $postData->bindValue(':cityId', $this->param['city'], PDO::PARAM_STR);
+                }
+                if(!empty($this->param['state'])){
+                    $postData->bindValue(':stateId', $this->param['state'], PDO::PARAM_STR);
+                }
+                if(!empty($this->param['country'])){
+                    $postData->bindValue(':countryId', $this->param['country'], PDO::PARAM_STR);
+                }
+                
                 $postData->execute();
+                // echo "Last executed query: " . $postData->queryString;
+                // exit;
                 $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
                 if (count($postData) > 0) {
                     foreach ($postData as $key => $post) {
@@ -727,16 +811,13 @@ class Api extends Rest
                             }
                         }
                     }
-                    $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $responseArr];
+                    $response = ["status" => true, "code" => 200, "Message" => "All Advertisement successfully fetched.", "data" => $responseArr];
                     $this->returnResponse($response);
                 } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
                     $this->returnResponse($response);
                 }
-            } else {
-                $response = ["status" => false, "code" => 400, "Message" => "postId required."];
-                $this->returnResponse($response);
-            }
+            
 
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
