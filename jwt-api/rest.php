@@ -29,7 +29,7 @@
 			$this->dbConn = $db->connect();
 
 			
-			if ('login' != strtolower($this->serviceName) && 'loginwithphone' != strtolower($this->serviceName) && 'verifyloginotp' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendtestemail' != strtolower($this->serviceName) && 'forgetpassword' != strtolower($this->serviceName) && 'verifyforgetpassword' != strtolower($this->serviceName) && 'generatenewpassword' != strtolower($this->serviceName) && 'uploadfile' != strtolower($this->serviceName) && 'getcategories' != strtolower($this->serviceName) && 'getsubcategories' != strtolower($this->serviceName) && 'getcountries' != strtolower($this->serviceName) && 'getstates' != strtolower($this->serviceName) && 'getcities' != strtolower($this->serviceName) && 'addpost' != strtolower($this->serviceName) && 'multiplefileupload' != strtolower($this->serviceName)) {
+			if ('login' != strtolower($this->serviceName) && 'loginwithphone' != strtolower($this->serviceName) && 'verifyloginotp' != strtolower($this->serviceName) && 'register' != strtolower($this->serviceName) && 'social_login' != strtolower($this->serviceName) && 'sendtestemail' != strtolower($this->serviceName) && 'forgetpassword' != strtolower($this->serviceName) && 'verifyforgetpassword' != strtolower($this->serviceName) && 'generatenewpassword' != strtolower($this->serviceName) && 'uploadfile' != strtolower($this->serviceName) && 'getcategories' != strtolower($this->serviceName) && 'getsubcategories' != strtolower($this->serviceName) && 'getcountries' != strtolower($this->serviceName) && 'getstates' != strtolower($this->serviceName) && 'getcities' != strtolower($this->serviceName) && 'addpost' != strtolower($this->serviceName) && 'multiplefileupload' != strtolower($this->serviceName) && 'getallpost' != strtolower($this->serviceName)) {
 				$this->validateToken();
 			}
 		}
@@ -90,18 +90,14 @@
 		public function validateToken() {
 			try {
 				$token = $this->getBearerToken();
-
 				$payload = JWT::decode($token, SECRETE_KEY, ['HS256']);
-				
 				$stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id = :userId");
 				$stmt->bindParam(":userId", $payload->userId);
 				$stmt->execute();
 				$user = $stmt->fetch(PDO::FETCH_ASSOC);
-				
 				if(!is_array($user)) {
 					$this->returnResponse(INVALID_USER_PASS, "This user is not found in our database.");
 				}
-
 				if( $user['status'] == 2 ) {
 					$this->returnResponse(USER_NOT_ACTIVE, "This user may be decactived. Please contact to admin.");
 				}
