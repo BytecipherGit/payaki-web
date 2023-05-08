@@ -123,15 +123,10 @@
 
 		public function throwError($code, $message) {
 			header("content-type: application/json");
-			$errorMsg = json_encode(['error' => ['status'=>$code, 'message'=>$message]]);
+			// $errorMsg = json_encode(['error' => ['status'=>$code, 'message'=>$message]]);
+			$errorMsg = ["status" => false, "code" => 400, "Message" => $message];
 			echo $errorMsg; exit;
 		}
-
-		/*public function returnResponse($code, $data) {
-			header("content-type: application/json");
-			$response = json_encode(['resonse' => ['status' => $code, "result" => $data]]);
-			echo $response; exit;
-		}*/
 
 		public function returnResponse($data) {
 			header("content-type: application/json");
