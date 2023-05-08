@@ -756,6 +756,9 @@ class Api extends Rest
         try {
                 $responseArr = array();
                 $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE 1=1";
+                if(!empty($this->param['title'])){
+                    $getpost .= " AND ap.product_name LIKE CONCAT( '%', :title, '%')";
+                }
                 if(!empty($this->param['category'])){
                     $getpost .= " AND ap.category=:categoryId";
                 }
@@ -774,8 +777,24 @@ class Api extends Rest
                 if(!empty($this->param['country'])){
                     $getpost .= " AND ap.country LIKE CONCAT( '%', :countryId, '%')";
                 }
+                if(!empty($this->param['priceto']) && !empty($this->param['pricefrom'])){
+                    $getpost .= " AND ap.price BETWEEN ".$this->param['priceto']." AND ".$this->param['pricefrom']."";
+                }
+
+                if(!empty($this->param['yearto']) && !empty($this->param['yearfrom'])){
+                    $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
+                }
+
+                if(!empty($this->param['sortbyfieldname']) && !empty($this->param['sortbytypename'])){
+                    $getpost .= " ORDER BY ".$this->param['sortbyfieldname']." ".$this->param['sortbytypename'];
+                }
                 
                 $postData = $this->dbConn->prepare($getpost);
+
+                if(!empty($this->param['title'])){
+                    $postData->bindValue(':title', $this->param['title'], PDO::PARAM_STR);
+                }
+
                 if(!empty($this->param['category'])){
                     $postData->bindValue(':categoryId', $this->param['category'], PDO::PARAM_STR);
                 }
