@@ -496,9 +496,9 @@ class Api extends Rest
             $userId = $_POST['user_id'];
             if (!empty($userId)) {
 
-                $featured = $_POST['featured'];
-                $urgent = $_POST['urgent'];
-                $highlight = $_POST['highlight'];
+                $featured = isset($_POST['featured']) ? $_POST['featured'] : 0;
+                $urgent = isset($_POST['urgent']) ? $_POST['urgent'] : 0;
+                $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
                 $productName = $_POST['product_name'];
                 if (!empty($productName)) {
                     $slug = $this->createSlug($productName);
@@ -510,22 +510,22 @@ class Api extends Rest
                 $subCategory = $_POST['sub_category'];
                 $price = $_POST['price'];
                 $negotiable = $_POST['negotiable'];
-                $phone = $_POST['phone'];
-                $hidePhone = $_POST['hide_phone'];
+                $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
+                $hidePhone = isset($_POST['hide_phone']) ? $_POST['hide_phone'] : 0;
                 $location = $_POST['location'];
                 $city = $_POST['city'];
                 $country = $_POST['country'];
                 $latlong = $_POST['latlong'];
                 $state = $_POST['state'];
-                $tag = $_POST['tag'];
-                $view = $_POST['view'];
+                $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
+                $view = isset($_POST['view']) ? $_POST['view'] : 0;
                 // $expire_date = $_POST['expire_date'];
                 // $featured_exp_date = $_POST['featured_exp_date'];
                 // $urgent_exp_date = $_POST['urgent_exp_date'];
                 // $highlight_exp_date = $_POST['highlight_exp_date'];
-                $adminSeen = $_POST['admin_seen'];
-                $emailed = $_POST['emailed'];
-                $hide = $_POST['hide'];
+                $adminSeen = isset($_POST['admin_seen']) ? $_POST['admin_seen'] : 0;
+                $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
+                $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
 
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
