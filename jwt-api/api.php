@@ -882,10 +882,26 @@ class Api extends Rest
         }
     }
 
+    // Get state by ad_subadmin1
     public function getStates()
     {
         try {
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_subadmin1 ORDER BY id ASC");
+            $stmt->execute();
+            $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $response = ["status" => true, "code" => 200, "Message" => "States list successfully fetched.", "data" => $countries];
+            $this->returnResponse($response);
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    // Get state by ad_subadmin2
+    public function getStatesBySubAdmin2()
+    {
+        try {
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_subadmin2 ORDER BY id ASC");
             $stmt->execute();
             $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $response = ["status" => true, "code" => 200, "Message" => "States list successfully fetched.", "data" => $countries];
