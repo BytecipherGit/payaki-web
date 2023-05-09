@@ -138,7 +138,7 @@ if(isset($_POST['username']))
                                 </div>
                                 <!-- .card-block -->
                             </div>
-                            <div class="text-center pad-top-20">Version : <?php echo $config['version']; ?></div>
+                            <!-- <div class="text-center pad-top-20">Version : <?php echo $config['version']; ?></div> -->
                             <!-- .card -->
                         </div>
                         <!-- .col-md-6 -->
