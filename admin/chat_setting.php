@@ -247,7 +247,7 @@ if(isset($_POST['submit']))
 
                                                     <div class="tab-pane active" id="quickchat_websocket">
                                                         <div class="form-group">
-                                                            <h4>Quickchat WebSocket</h4>
+                                                            <h4>Chat WebSocket</h4>
                                                             <p class="help-block">For more information on how to start websocket see this <a href="https://bylancer.ticksy.com/article/15905/" target="_blank">article</a>.</p>
                                                         </div>
                                                         <form action="#quickchat_websocket" name="form2" class="form form-horizontal" method="post">
@@ -256,7 +256,7 @@ if(isset($_POST['submit']))
                                                             if(isset($config['quickchat_socket_purchase_code']) && $config['quickchat_socket_purchase_code'] != ""){
                                                                 ?>
                                                                 <div class="form-group bt-switch">
-                                                                    <label class="col-sm-4 control-label">Quickchat WebSocket on/off:</label>
+                                                                    <label class="col-sm-4 control-label">Chat WebSocket on/off:</label>
                                                                     <div class="col-sm-6">
                                                                         <label class="css-input switch switch-success">
                                                                             <input  name="quickchat_socket_on_off" type="checkbox" <?php if (get_option("quickchat_socket_on_off") == 'on') { echo "checked"; } ?> /><span></span>
