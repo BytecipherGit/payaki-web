@@ -1045,6 +1045,76 @@ class Api extends Rest
         }
     }
 
+    public function replyByEmail()
+    {
+        $name = $this->validateParameter('name', $this->param['name'], STRING);
+        $email = $this->validateParameter('email', $this->param['email'], STRING);
+        $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
+        $message = $this->validateParameter('message', $this->param['message'], STRING);
+        $toEmail = $this->validateParameter('toEmail', $this->param['toEmail'], STRING);
+        if (!empty($name) && !empty($email) && !empty($phone) && !empty($message) && !empty($toEmail)) {
+            $mail = new PHPMailer(true);
+            $mail->Host = $this->Host;
+            $mail->SMTPAuth = $this->SMTPAuth;
+            $mail->Username = $this->Username;
+            $mail->Password = $this->Password;
+            $mail->SMTPSecure = $this->SMTPSecure;
+            $mail->Port = $this->Port;
+            $mail->setFrom('jharshita259@gmail.com');
+            $mail->addAddress($toEmail);
+            $mail->isHTML(true);
+            $mail->Subject = "Mail Received from Payaki";
+            $mail->Body = $message;
+            if ($mail->send()) {
+                $response = ["status" => true, "code" => 200, "Message" => "Email successfully sent."];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function reportViolation()
+    {
+        $name = $this->validateParameter('name', $this->param['name'], STRING);
+        $email = $this->validateParameter('email', $this->param['email'], STRING);
+        $username = $this->validateParameter('username', $this->param['username'], STRING);
+        $violation_type = $this->validateParameter('violation_type', $this->param['violation_type'], STRING);
+        $other_person_name = $this->validateParameter('other_person_name', $this->param['other_person_name'], STRING);
+        $violation_url = $this->validateParameter('violation_url', $this->param['violation_url'], STRING);
+        $violation_details = $this->validateParameter('violation_details', $this->param['violation_details'], STRING);
+        if (!empty($name) && !empty($email) && !empty($username) && !empty($violation_type) && !empty($other_person_name) && !empty($violation_url) && !empty($violation_details)) {
+            $mail = new PHPMailer(true);
+            $mail->Host = $this->Host;
+            $mail->SMTPAuth = $this->SMTPAuth;
+            $mail->Username = $this->Username;
+            $mail->Password = $this->Password;
+            $mail->SMTPSecure = $this->SMTPSecure;
+            $mail->Port = $this->Port;
+            // Set the email details
+            $mail->setFrom('jharshita259@gmail.com', 'Payaki');
+            $mail->addAddress($email, $name);
+            $mail->isHTML(true);
+            $mail->Subject = 'Report violation mail from payaki';
+            $mail->Body = '<html><body>';
+            $mail->Body .= '<p>Name : ' . $name . '</p>';
+            $mail->Body .= '<p>User Name : ' . $username . '</p>';
+            $mail->Body .= '<p>Email : ' . $email . '</p>';
+            $mail->Body .= '<p>Violation : ' . $violation_type . '</p>';
+            $mail->Body .= '<p>Violator : ' . $other_person_name . '</p>';
+            $mail->Body .= '<p>Violation URl : ' . $violation_url . '</p>';
+            $mail->Body .= '<p>' . $violation_details . '</p>';
+            $mail->Body .= '</body></html>';
+            if ($mail->send()) {
+                $response = ["status" => true, "code" => 200, "Message" => "Email successfully sent."];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                $this->returnResponse($response);
+            }
+        }
+    }
     public function sendMail($toEmail, $subject, $body)
     {
         $mail = new PHPMailer(true);
