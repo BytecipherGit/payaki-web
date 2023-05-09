@@ -1086,7 +1086,6 @@ class Api extends Rest
             }
         }
     }
-
     public function reportViolation()
     {
         $name = $this->validateParameter('name', $this->param['name'], STRING);
