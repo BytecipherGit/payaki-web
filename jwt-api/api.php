@@ -102,7 +102,7 @@ class Api extends Rest
                 $stmt->execute();
                 // Check for errors and return a response
                 if ($stmt->rowCount() > 0) {
-                    $response = ["status" => false, "code" => 200, "Message" => 'User details successfully fetched. Please verity otp for sign in', "data" => ["country_code" => $countryCode, "phone" => $phone, "otp" => (string) $otp]];
+                    $response = ["status" => false, "code" => 200, "Message" => 'OTP successfully sent on your registered mobile.', "data" => ["country_code" => $countryCode, "phone" => $phone, "otp" => (string) $otp]];
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => 'Record not found'];
@@ -740,7 +740,7 @@ class Api extends Rest
                     $this->returnResponse($response);
                 }
             } else {
-                $response = ["status" => false, "code" => 400, "Message" => "Token should not empty."];
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
                 $this->returnResponse($response);
             }
 
@@ -1065,6 +1065,59 @@ class Api extends Rest
 
     }
 
+    public function likeDislikePost()
+    {
+        global $config;
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $product_id = $this->validateParameter('product_id', $this->param['product_id'], STRING);
+                $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+                if (!empty($user_id) && !empty($product_id)) {
+                    $stmt = $this->dbConn->prepare("SELECT * FROM ad_favads WHERE user_id =:user_id AND product_id =:product_id");
+                    $stmt->bindParam(":user_id", $user_id);
+                    $stmt->bindParam(":product_id", $product_id);
+                    $stmt->execute();
+                    // Check if there are any rows returned
+                    if ($stmt->rowCount() > 0) {
+                        // Write delete code
+                        $stmt = $this->dbConn->prepare('DELETE FROM ad_favads WHERE user_id =:user_id AND product_id =:product_id');
+                        $stmt->bindParam(":user_id", $user_id);
+                        $stmt->bindParam(":product_id", $product_id);
+                        if($stmt->execute()) {
+                            $response = ["status" => true, "code" => 200, "Message" => "You successfully disliked this products."];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                            $this->returnResponse($response);
+                        }
+                    } else {
+                        // Write insert code
+                        $sql = 'INSERT INTO ad_favads (id, user_id, product_id) VALUES(null, :user_id, :product_id)';
+                        $stmt = $this->dbConn->prepare($sql);
+                        $stmt->bindParam(':user_id', $user_id);
+                        $stmt->bindParam(':product_id', $product_id);
+                        if ($stmt->execute()) {
+                            $response = ["status" => true, "code" => 200, "Message" => "You successfully liked this products."];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                            $this->returnResponse($response);
+                        }
+                    }
+                }
+
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
     public function setFavAd()
     {
         global $config;
