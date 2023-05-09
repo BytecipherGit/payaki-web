@@ -57,6 +57,13 @@ class Api extends Rest
                 $response = ["status" => false, "code" => 400, "Message" => "User account is de-activated. Please contact to admin."];
                 $this->returnResponse($response);
             }
+            
+            if(!empty($user['id_proof'])){
+                $user['id_proof'] = $this->display_image_url . 'storage/user_documents/id_proof/' . $user['id_proof'];
+            }
+            if(!empty($user['address_proof'])){
+                $user['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['address_proof'];
+            }
 
             $paylod = [
                 'iat' => time(),
@@ -677,6 +684,19 @@ class Api extends Rest
                 $postData->execute();
                 $postData = $postData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($postData)) {
+                    //Fetch Post user details
+                    if (!empty($postData['user_id'])) {
+                        $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id =:id");
+                        $stmt->bindParam(":id", $postData['user_id']);
+                        $stmt->execute();
+                        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if (!empty($user)) {
+                            $postData['post_user_details'] = $user;
+                            $postData['post_user_details']['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+                            $postData['post_user_details']['id_proof'] = $this->display_image_url . 'storage/user_documents/id_proof/' . $user['image'];
+                            $postData['post_user_details']['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['image'];
+                        }
+                    }
                     if (!empty($postData['screen_shot'])) {
                         $screenShotArr = explode(",", $postData['screen_shot']);
                         if (count($screenShotArr) > 0) {
@@ -1084,7 +1104,7 @@ class Api extends Rest
                         $stmt = $this->dbConn->prepare('DELETE FROM ad_favads WHERE user_id =:user_id AND product_id =:product_id');
                         $stmt->bindParam(":user_id", $user_id);
                         $stmt->bindParam(":product_id", $product_id);
-                        if($stmt->execute()) {
+                        if ($stmt->execute()) {
                             $response = ["status" => true, "code" => 200, "Message" => "You successfully disliked this products."];
                             $this->returnResponse($response);
                         } else {
