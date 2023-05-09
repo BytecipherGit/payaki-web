@@ -123,9 +123,9 @@
 
 		public function throwError($code, $message) {
 			header("content-type: application/json");
-			// $errorMsg = json_encode(['error' => ['status'=>$code, 'message'=>$message]]);
 			$errorMsg = ["status" => false, "code" => 400, "Message" => $message];
-			echo $errorMsg; exit;
+			$response = json_encode($errorMsg);
+			echo $response; exit;
 		}
 
 		public function returnResponse($data) {
