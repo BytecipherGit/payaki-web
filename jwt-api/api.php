@@ -57,11 +57,11 @@ class Api extends Rest
                 $response = ["status" => false, "code" => 400, "Message" => "User account is de-activated. Please contact to admin."];
                 $this->returnResponse($response);
             }
-            
-            if(!empty($user['id_proof'])){
+
+            if (!empty($user['id_proof'])) {
                 $user['id_proof'] = $this->display_image_url . 'storage/user_documents/id_proof/' . $user['id_proof'];
             }
-            if(!empty($user['address_proof'])){
+            if (!empty($user['address_proof'])) {
                 $user['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['address_proof'];
             }
 
@@ -1087,7 +1087,6 @@ class Api extends Rest
 
     public function likeDislikePost()
     {
-        global $config;
         try {
             $token = $this->getBearerToken();
             if (!empty($token)) {
@@ -1138,43 +1137,58 @@ class Api extends Rest
         }
 
     }
-    public function setFavAd()
+
+    public function reviewAndRating()
     {
-        global $config;
-        $num_rows = ORM::for_table($config['db']['pre'] . 'favads')
-            ->where(array(
-                'user_id' => $_POST['userId'],
-                'product_id' => $_POST['id'],
-            ))
-            ->count();
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $product_id = $this->validateParameter('product_id', $this->param['product_id'], STRING);
+                $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+                $rating = $this->validateParameter('rating', $this->param['rating'], STRING);
+                $comment = $this->validateParameter('comment', $this->param['comment'], STRING);
+                if (!empty($user_id) && !empty($product_id) && !empty($rating) && !empty($comment)) {
+                    $stmt = $this->dbConn->prepare("SELECT * FROM ad_reviews WHERE user_id =:user_id AND productID =:productID");
+                    $stmt->bindParam(":productID", $product_id);
+                    $stmt->bindParam(":user_id", $user_id);
+                    $stmt->execute();
+                    // Check if there are any rows returned
+                    if ($stmt->rowCount() > 0) {
+                        // Write delete code
+                        $response = ["status" => true, "code" => 200, "Message" => "You have already submit rating and review."];
+                        $this->returnResponse($response);
+                    } else {
+                        $timenow = date('Y-m-d H:i:s');
+                        $publish = 0;
+                        // Write insert code
+                        $sql = 'INSERT INTO ad_reviews (reviewID, productID, user_id, rating, comments, date, publish) VALUES(null, :productID, :user_id, :rating, :comments, :date, :publish)';
+                        $stmt = $this->dbConn->prepare($sql);
+                        $stmt->bindParam(':productID', $product_id);
+                        $stmt->bindParam(':user_id', $user_id);
+                        $stmt->bindParam(':rating', $rating);
+                        $stmt->bindParam(':comments', $comment);
+                        $stmt->bindParam(':date', $timenow);
+                        $stmt->bindParam(':publish', $publish);
+                        if ($stmt->execute()) {
+                            $response = ["status" => true, "code" => 200, "Message" => "Review and rating successfully submitted."];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                            $this->returnResponse($response);
+                        }
+                    }
+                }
 
-        if ($num_rows == 0) {
-            $insert_favads = ORM::for_table($config['db']['pre'] . 'favads')->create();
-            $insert_favads->user_id = $_POST['userId'];
-            $insert_favads->product_id = $_POST['id'];
-            $insert_favads->save();
-
-            if ($insert_favads->id()) {
-                echo 1;
             } else {
-                echo 0;
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+                $this->returnResponse($response);
             }
 
-        } else {
-            $result = ORM::for_table($config['db']['pre'] . 'favads')
-                ->where(array(
-                    'user_id' => $_POST['userId'],
-                    'product_id' => $_POST['id'],
-                ))
-                ->delete_many();
-            if ($result) {
-                echo 2;
-            } else {
-                echo 0;
-            }
-
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
         }
-        die();
+
     }
 
     public function uploadFile()
