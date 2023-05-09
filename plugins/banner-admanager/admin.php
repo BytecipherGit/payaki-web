@@ -581,7 +581,7 @@ if ($is_logged) {
         <!-- Partial Table -->
         <div class="card">
             <div class="card-header">
-                <h4><?php echo (array_key_exists($page, $pages) ? $pages[$page]['title'] : '').' - '; ?> Banner Manager</h4>
+                <h4><?php echo (array_key_exists($page, $pages) ? $pages[$page]['title'] : '').' - '; ?></h4>
             </div>
             <div class="card-block">
                 <?php

@@ -391,7 +391,7 @@ CTR: '.number_format($row["clicks"]*100/$row["shows_displayed"], 2, ".", "").'%'
 							</div>
 						</div>';
                 }
-            } else $form = '<div class="ubm_container"><div name="ubm" class="ubm_box"><div class="ubm_confirmation_info" style="text-align: center;"><strong>Quickad Banner Manager.</strong> Please check settings!</div></div></div>';
+            } else $form = '<div class="ubm_container"><div name="ubm" class="ubm_box"><div class="ubm_confirmation_info" style="text-align: center;"><strong>Banner Manager.</strong> Please check settings!</div></div></div>';
             $html = $form;
 
             if ($jsonp_enabled) {
