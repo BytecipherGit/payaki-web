@@ -568,9 +568,9 @@ if ($is_logged) {
                 <div class="container">
                     <ul id="main-menu" class="nav navbar-nav navbar-left">
                         <ul id="main-menu" class="nav navbar-nav navbar-left">
-                            <li><a href="advertising.php">Embedding in theme</a></li>
+                            <!-- <li><a href="advertising.php">Embedding in theme</a></li>
                             <li><a href="banner-ad-manage.php?page=types">Banner Types</a></li>
-                            <li><a href="banner-ad-manage.php?page=banners">Banners</a></li>
+                            <li><a href="banner-ad-manage.php?page=banners">Banners</a></li> -->
                             <li><a href="banner-ad-manage.php?page=transactions">Transactions</a></li>
                             <li><a href="banner-ad-manage.php?page=settings">Settings</a></li>
                         </ul>
