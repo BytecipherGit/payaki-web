@@ -234,8 +234,8 @@ if(isset($_POST['submit']))
                                 <div class="row">
                                     <div id="quickad-sidebar" class="col-sm-4">
                                         <ul class="quickad-nav" role="tablist">
-                                            <li class="quickad-nav-item active" data-target="#quickchat_websocket" data-toggle="tab">Quickchat WebSocket</li>
-                                            <li class="quickad-nav-item" data-target="#quickchat_ajax" data-toggle="tab">Quickchat Php Ajax</li>
+                                            <li class="quickad-nav-item active" data-target="#quickchat_websocket" data-toggle="tab">WebSocket Chat</li>
+                                            <li class="quickad-nav-item" data-target="#quickchat_ajax" data-toggle="tab">Php Ajax Chat</li>
                                             <li class="quickad-nav-item" data-target="#wchat" data-toggle="tab">Wchat</li>
                                             <li class="quickad-nav-item" data-target="#zechat" data-toggle="tab">Zechat</li>
                                         </ul>
@@ -287,18 +287,18 @@ if(isset($_POST['submit']))
 
 
                                                             <div class="form-group">
-                                                                <label class="col-sm-4 control-label">Quickchat WebSocket Purchase Code:</label>
+                                                                <label class="col-sm-4 control-label">WebSocket Purchase Code:</label>
                                                                 <div class="col-sm-6">
                                                                     <?php
                                                                     if(isset($config['quickchat_socket_purchase_code']) && $config['quickchat_socket_purchase_code'] != ""){
                                                                         ?>
                                                                         <div class="alert alert-success">
-                                                                            <strong>Success!</strong> Quickchat Purchase code verified, you can on/off</div>
+                                                                            <strong>Success!</strong> Purchase code verified, you can on/off</div>
                                                                         <?php
                                                                     }
                                                                     ?>
                                                                     <input name="quickchat_socket_purchase_code" type="password" class="form-control" value="" autocomplete="false">
-                                                                    <span class="font-14"><code style="color: green">Get Purchase code From Here.</code><a href="https://codecanyon.net/user/bylancer/portfolio" target="_blank">Buy Quickchat WebSocket</a></span>
+                                                                    <span class="font-14"><code style="color: green">Get Purchase code From Here.</code><a href="https://codecanyon.net/user/bylancer/portfolio" target="_blank">Buy WebSocket Chat</a></span>
                                                                 </div>
                                                             </div>
 
