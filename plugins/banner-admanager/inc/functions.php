@@ -145,7 +145,7 @@ function send_thanksgiving_email($tags, $vals, $payer_email) {
 		$mail_headers .= "X-Mailer: PHP/".phpversion()."\r\n";
 		mail($payer_email, $options['success_email_subject'], $body, $mail_headers);
 	}
-	$body = str_replace($tags, $vals, 'Dear Administrator!'.PHP_EOL.PHP_EOL.'We would like to inform you that {payer_name} ({payer_email}) paid {amount} {currency} for banner "{banner_title}" via {gateway} on {transaction_date}.'.($options['enable_approval'] == 'on' ? PHP_EOL.'Please review banner and approve/reject it.' : '').PHP_EOL.PHP_EOL.'Thanks,'.PHP_EOL.'Quick Banner Manager');
+	$body = str_replace($tags, $vals, 'Dear Administrator!'.PHP_EOL.PHP_EOL.'We would like to inform you that {payer_name} ({payer_email}) paid {amount} {currency} for banner "{banner_title}" via {gateway} on {transaction_date}.'.($options['enable_approval'] == 'on' ? PHP_EOL.'Please review banner and approve/reject it.' : '').PHP_EOL.PHP_EOL.'Thanks,'.PHP_EOL.'Banner Manager');
 	$mail_headers = "Content-Type: text/plain; charset=utf-8\r\n";
 	$mail_headers .= "From: ".$options['from_name']." <".$options['from_email'].">\r\n";
 	$mail_headers .= "X-Mailer: PHP/".phpversion()."\r\n";
@@ -161,7 +161,7 @@ function send_failed_email($tags, $vals, $payer_email) {
 		$mail_headers .= "X-Mailer: PHP/".phpversion()."\r\n";
 		mail($payer_email, $options['failed_email_subject'], $body, $mail_headers);
 	}
-	$body = str_replace($tags, $vals, 'Dear Administrator!'.PHP_EOL.PHP_EOL.'We would like to inform you that {payer_name} ({payer_email}) paid {amount} {currency} for banner "{banner_title}" via {gateway} on {transaction_date}. This is non-completed payment.'.PHP_EOL.'Payment status: {payment_status}'.PHP_EOL.PHP_EOL.'Thanks,'.PHP_EOL.'Quickad Banner Manager');
+	$body = str_replace($tags, $vals, 'Dear Administrator!'.PHP_EOL.PHP_EOL.'We would like to inform you that {payer_name} ({payer_email}) paid {amount} {currency} for banner "{banner_title}" via {gateway} on {transaction_date}. This is non-completed payment.'.PHP_EOL.'Payment status: {payment_status}'.PHP_EOL.PHP_EOL.'Thanks,'.PHP_EOL.'Banner Manager');
 	$mail_headers = "Content-Type: text/plain; charset=utf-8\r\n";
 	$mail_headers .= "From: ".$options['from_name']." <".$options['from_email'].">\r\n";
 	$mail_headers .= "X-Mailer: PHP/".phpversion()."\r\n";
