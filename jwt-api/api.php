@@ -15,7 +15,7 @@ class Api extends Rest
     protected $Username = 'jharshita259@gmail.com';
     protected $Password = 'bfhagppogpishvbq';
     protected $SMTPSecure = 'tls';
-    protected $Port = 465;
+    protected $Port = 587;
 
     protected $protocol;
     protected $host_url;
@@ -1052,7 +1052,10 @@ class Api extends Rest
         $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
         $message = $this->validateParameter('message', $this->param['message'], STRING);
         $toEmail = $this->validateParameter('toEmail', $this->param['toEmail'], STRING);
-        if (!empty($name) && !empty($email) && !empty($phone) && !empty($message) && !empty($toEmail)) {
+        $receiverName = $this->validateParameter('receiverName', $this->param['receiverName'], STRING);
+        $productId = $this->validateParameter('productId', $this->param['productId'], STRING);
+        $productName = $this->validateParameter('productName', $this->param['productName'], STRING);
+        if (!empty($name) && !empty($email) && !empty($phone) && !empty($message) && !empty($toEmail) && !empty($receiverName) && !empty($productId) && !empty($productName)) {
             $mail = new PHPMailer(true);
             $mail->Host = $this->Host;
             $mail->SMTPAuth = $this->SMTPAuth;
@@ -1060,11 +1063,20 @@ class Api extends Rest
             $mail->Password = $this->Password;
             $mail->SMTPSecure = $this->SMTPSecure;
             $mail->Port = $this->Port;
-            $mail->setFrom('jharshita259@gmail.com');
-            $mail->addAddress($toEmail);
+            //Set Details for Sending mail
+            $mail->setFrom('jharshita259@gmail.com', 'Payaki');
+            $mail->addAddress($toEmail, $receiverName);
             $mail->isHTML(true);
-            $mail->Subject = "Mail Received from Payaki";
-            $mail->Body = $message;
+            $mail->Subject = 'Payaki classified ad';
+            $mail->Body = '<html><body>';
+            $mail->Body .= '<p>' . $name . ' wants to connect with you.</p>';
+            $mail->Body .= '<p>Ad Id# : ' . $productId . '</p>';
+            $mail->Body .= '<p>Ad Name : ' . $productName . '</p>';
+            $mail->Body .= '<p>Name : ' . $name . '</p>';
+            $mail->Body .= '<p>Email : ' . $email . '</p>';
+            $mail->Body .= '<p>Phone : ' . $phone . '</p>';
+            $mail->Body .= '<p>Message : ' . $message . '</p>';
+            $mail->Body .= '</body></html>';
             if ($mail->send()) {
                 $response = ["status" => true, "code" => 200, "Message" => "Email successfully sent."];
                 $this->returnResponse($response);
@@ -1074,7 +1086,6 @@ class Api extends Rest
             }
         }
     }
-
     public function reportViolation()
     {
         $name = $this->validateParameter('name', $this->param['name'], STRING);

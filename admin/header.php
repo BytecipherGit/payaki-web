@@ -183,9 +183,9 @@ if(isset($_SESSION['admin']['id'])){
                         <li class="nav-item nav-item-has-subnav">
                             <a href="#"><i class="ion-ios-monitor-outline"></i> Advertising <span class="label label-success">New</span></a>
                             <ul class="nav nav-subnav">
-                                <li><a href="advertising.php">Ad Slots For Themes</a></li>
-                                <li><a href="banner-ad-manage.php?page=types">Banner Types</a></li>
-                                <li><a href="banner-ad-manage.php?page=banners">Banners</a></li>
+                                <!-- <li><a href="advertising.php">Ad Slots For Themes</a></li> -->
+                                <!-- <li><a href="banner-ad-manage.php?page=types">Banner Types</a></li> -->
+                                <!-- <li><a href="banner-ad-manage.php?page=banners">Banners</a></li> -->
                                 <li><a href="banner-ad-manage.php?page=transactions">Transactions</a></li>
                                 <li><a href="banner-ad-manage.php?page=settings">Setting</a></li>
                             </ul>
