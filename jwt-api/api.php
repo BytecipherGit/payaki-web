@@ -57,6 +57,9 @@ class Api extends Rest
                 $response = ["status" => false, "code" => 400, "Message" => "User account is de-activated. Please contact to admin."];
                 $this->returnResponse($response);
             }
+            if (!empty($user['image'])) {
+                $user['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+            }
 
             if (!empty($user['id_proof'])) {
                 $user['id_proof'] = $this->display_image_url . 'storage/user_documents/id_proof/' . $user['id_proof'];
@@ -426,6 +429,102 @@ class Api extends Rest
         }
     }
 
+    public function viewProfile()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if ($payload) {
+                $getuser = "SELECT * FROM `ad_user` WHERE `id`=:id";
+                $userData = $this->dbConn->prepare($getuser);
+                $userData->bindValue(':id', $payload->userId, PDO::PARAM_STR);
+                $userData->execute();
+                $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($userData['id'])) {
+                    $userData['image'] = $this->display_image_url . 'storage/profile/' . $userData['image'];
+                    $response = [
+                        "status" => true,
+                        "code" => 200,
+                        "Message" => "User profile successfully fetched.",
+                        "data" => $userData,
+                    ];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function updateProfile()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if ($payload) {
+                $getuser = "SELECT * FROM `ad_user` WHERE `id`=:id";
+                $userData = $this->dbConn->prepare($getuser);
+                $userData->bindValue(':id', $payload->userId, PDO::PARAM_STR);
+                $userData->execute();
+                $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($userData['id'])) {
+                    $name = $this->validateParameter('name', $this->param['name'], STRING);
+                    $address = $this->validateParameter('address', $this->param['address'], STRING);
+                    $country = $this->validateParameter('country', $this->param['country'], STRING);
+                    $facebook = $this->validateParameter('facebook', $this->param['facebook'], STRING);
+                    $twitter = $this->validateParameter('twitter', $this->param['twitter'], STRING);
+                    $googleplus = $this->validateParameter('googleplus', $this->param['googleplus'], STRING);
+                    $instagram = $this->validateParameter('instagram', $this->param['instagram'], STRING);
+                    $linkedin = $this->validateParameter('linkedin', $this->param['linkedin'], STRING);
+                    $youtube = $this->validateParameter('youtube', $this->param['youtube'], STRING);
+
+                    $name = !empty($name) ? $name : $userData['name'];
+                    $address = !empty($address) ? $address : $userData['address'];
+                    $country = !empty($country) ? $country : $userData['country'];
+                    $facebook = !empty($facebook) ? $facebook : $userData['facebook'];
+                    $twitter = !empty($twitter) ? $twitter : $userData['twitter'];
+                    $googleplus = !empty($googleplus) ? $googleplus : $userData['googleplus'];
+                    $instagram = !empty($instagram) ? $instagram : $userData['instagram'];
+                    $linkedin = !empty($linkedin) ? $linkedin : $userData['linkedin'];
+                    $youtube = !empty($youtube) ? $youtube : $userData['youtube'];
+
+                    //Update
+                    // Prepare the SQL UPDATE statement
+                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name, address = :address, country = :country, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
+
+                    // Bind the parameters and execute the statement
+                    $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
+                    $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+                    $stmt->bindValue(':address', $address, PDO::PARAM_STR);
+                    $stmt->bindValue(':country', $country, PDO::PARAM_STR);
+                    $stmt->bindValue(':facebook', $facebook, PDO::PARAM_STR);
+                    $stmt->bindValue(':twitter', $twitter, PDO::PARAM_STR);
+                    $stmt->bindValue(':googleplus', $googleplus, PDO::PARAM_STR);
+                    $stmt->bindValue(':instagram', $instagram, PDO::PARAM_STR);
+                    $stmt->bindValue(':linkedin', $linkedin, PDO::PARAM_STR);
+                    $stmt->bindValue(':youtube', $youtube, PDO::PARAM_STR);
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => "User profile successfully updated.", "data" => $userData];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                return false;
+            }
+        }
+    }
+
     public function social_login()
     {
         $oauthProvider = $this->validateParameter('oauth_provider', $this->param['oauth_provider'], STRING);
@@ -502,7 +601,6 @@ class Api extends Rest
         try {
             $userId = $_POST['user_id'];
             if (!empty($userId)) {
-
                 $featured = isset($_POST['featured']) ? $_POST['featured'] : 0;
                 $urgent = isset($_POST['urgent']) ? $_POST['urgent'] : 0;
                 $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
