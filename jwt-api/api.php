@@ -167,13 +167,6 @@ class Api extends Rest
     {
 
         try {
-            // $fName = $this->validateParameter('full_name', $this->param['full_name'], STRING);
-            // $uName = $this->validateParameter('user_name', $this->param['user_name'], STRING);
-            // $email = $this->validateParameter('email', $this->param['email'], STRING);
-            // $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
-            // $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
-            // $password = $this->validateParameter('pass', $this->param['pass'], STRING);
-
             $fName = $_POST['full_name'];
             $uName = $_POST['user_name'];
             $email = $_POST['email'];
@@ -512,6 +505,57 @@ class Api extends Rest
                         $this->returnResponse($response);
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function changePassword()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if ($payload) {
+                $getuser = "SELECT * FROM `ad_user` WHERE `id`=:id";
+                $userData = $this->dbConn->prepare($getuser);
+                $userData->bindValue(':id', $payload->userId, PDO::PARAM_STR);
+                $userData->execute();
+                $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($userData['id'])) {
+                    $current_password = $this->validateParameter('current_password', $this->param['current_password'], STRING);
+                    $new_password = $this->validateParameter('new_password', $this->param['new_password'], STRING);
+                    $confirm_password = $this->validateParameter('confirm_password', $this->param['confirm_password'], STRING);
+                    //Check current password is valid or not
+                    if (password_verify($current_password, $userData['password_hash'])) {
+                        if ($new_password == $confirm_password) {
+                            //Update New password
+                            // Prepare the SQL UPDATE statement
+                            $stmt = $this->dbConn->prepare('UPDATE ad_user SET password_hash = :password_hash WHERE id = :id');
+                            // Bind the parameters and execute the statement
+                            $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
+                            $stmt->bindValue(':password_hash', password_hash($new_password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+                            if ($stmt->execute()) {
+                                $response = ["status" => true, "code" => 200, "Message" => "Password successfully updated."];
+                                $this->returnResponse($response);
+                            } else {
+                                $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
+                                $this->returnResponse($response);
+                            }
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "New password & confirm password does not match."];
+                            $this->returnResponse($response);
+                        }
+
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Current password does not matched."];
                         $this->returnResponse($response);
                     }
                 } else {
