@@ -1215,31 +1215,31 @@ require_once('includes.php');
                                                     <div class="tab-pane" id="quickad_social_login_setting">
                                                         <form method="post" action="ajax_sidepanel.php?action=SaveSettings" id="#quickad_social_login_setting">
                                                             <!--Default Horizontal Form-->
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label>Facebook app id:</label>
                                                                 <div>
                                                                     <input name="facebook_app_id" type="text" class="form-control" value="<?php echo get_option("facebook_app_id"); ?>">
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                             <!--Default Horizontal Form-->
 
                                                             <!--Default Horizontal Form-->
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label>Facebook app secret:</label>
                                                                 <div>
                                                                     <input name="facebook_app_secret" type="text" class="form-control" value="<?php echo get_option("facebook_app_secret"); ?>">
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                             <!--Default Horizontal Form-->
 
                                                             <!--Default Horizontal Form-->
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label>Facebook callback url:</label>
                                                                 <p class="help-block">Use this redirect url in facebook app.</p>
                                                                 <div>
                                                                     <input type="text" class="form-control" disabled value="<?php echo $config['site_url']; ?>includes/social_login/facebook/index.php">
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                             <!--Default Horizontal Form-->
 
                                                             <!--Default Horizontal Form-->

@@ -1790,7 +1790,7 @@ img.mfp-img{width:auto;max-width:100%;height:auto;display:block;line-height:0;-w
 .social-login-separator:before{width:100%;content:"";height:1px;display:block;background-color:#e0e0e0;position:absolute;top:0}
 .social-login-separator span{background-color:#fff;top:0;position:absolute;line-height:10px;top:-5px;margin-left:-15px;padding:0 10px;color:gray}
 .social-login-buttons{display:flex;width:calc(100% + 20px)}
-.social-login-buttons button{flex:1;text-align:center;border:1px solid #333;color:#333;border-radius:4px;margin-bottom:15px;margin-right:20px;font-size:14px;padding:9px 5px;max-width:50%;transition:.3s}
+.social-login-buttons button{flex:1;text-align:center;border:1px solid #333;color:#333;border-radius:4px;margin-bottom:15px;margin-right:20px;font-size:14px;padding:9px 5px;max-width:100%;transition:.3s}
 .social-login-buttons button:hover{background-color:#333;color:#fff}
 .social-login-buttons button i{position:relative;top:1px;margin-right:7px;font-size:15px}
 .social-login-buttons .facebook-login{border-color:#3b5998;color:#3b5998}
