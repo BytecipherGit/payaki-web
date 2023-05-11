@@ -1223,7 +1223,7 @@ class Api extends Rest
     public function getCities()
     {
         try {
-            $stmt = $this->dbConn->prepare("SELECT * FROM ad_cities ORDER BY id ASC");
+            $stmt = $this->dbConn->prepare("SELECT ac.*,st.name as state_name FROM ad_cities AS ac LEFT JOIN ad_subadmin1 AS st ON st.code = ac.subadmin1_code ORDER BY ac.id ASC");
             $stmt->execute();
             $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $response = ["status" => true, "code" => 200, "Message" => "City list successfully fetched.", "data" => $countries];
