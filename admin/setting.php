@@ -145,13 +145,13 @@ require_once('includes.php');
                                                                     <option value="0" <?php if(get_option("non_login_phone_show") == '0'){ echo "selected"; } ?>>Disallow</option>
                                                                 </select>
                                                             </div>
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label for="inputPassword4">Allow User Language Selection</label>
                                                                 <select name="userlangsel" class="form-control" id="userlangsel">
-                                                                    <option value="1" <?php if($config['userlangsel'] == 1){ echo "selected"; } ?>>Yes</option>
-                                                                    <option value="0" <?php if($config['userlangsel'] == 0){ echo "selected"; } ?>>No</option>
+                                                                    <option value="1" <?php // if($config['userlangsel'] == 1){ echo "selected"; } ?>>Yes</option>
+                                                                    <option value="0" <?php // if($config['userlangsel'] == 0){ echo "selected"; } ?>>No</option>
                                                                 </select>
-                                                            </div>
+                                                            </div> -->
 
                                                             <div class="form-group">
                                                                 <label for="inputPassword4">Allow User Theme Selection</label>
@@ -178,13 +178,13 @@ require_once('includes.php');
                                                                 </select>
                                                             </div>
 
-                                                            <div class="form-group">
+                                                            <!-- <div class="form-group">
                                                                 <label for="temp_php">Enable PHP in Template (Must be on always)</label>
                                                                 <select name="temp_php" id="temp_php" class="form-control">
-                                                                    <option value="1" <?php if($config['temp_php'] == 1){ echo "selected"; } ?>>Yes</option>
-                                                                    <option value="0" <?php if($config['temp_php'] == 0){ echo "selected"; } ?>>No</option>
+                                                                    <option value="1" <?php // if($config['temp_php'] == 1){ echo "selected"; } ?>>Yes</option>
+                                                                    <option value="0" <?php // if($config['temp_php'] == 0){ echo "selected"; } ?>>No</option>
                                                                 </select>
-                                                            </div>
+                                                            </div> -->
 
 
                                                             <div class="form-group">

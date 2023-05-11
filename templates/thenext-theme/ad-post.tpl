@@ -290,7 +290,7 @@ IF("{POST_WATERMARK}"=="0"){
                                             <div class="col-xl-6 col-md-12 margin-top-12">
                                                 <div class="checkbox">
                                                     <input type="checkbox" id="negotiable" name="negotiable" value="1">
-                                                    <label for="negotiable"><span class="checkbox-icon"></span> {LANG_NEGOTIATE}</label>
+                                                    <label for="negotiable"><span class="checkbox-icon"></span> Negotiate</label>
                                                 </div>
                                             </div>
                                         </div>
