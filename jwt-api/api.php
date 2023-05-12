@@ -165,7 +165,6 @@ class Api extends Rest
 
     public function register()
     {
-
         try {
             $fName = $_POST['full_name'];
             $uName = $_POST['user_name'];
@@ -173,7 +172,12 @@ class Api extends Rest
             $countryCode = $_POST['country_code'];
             $phone = $_POST['phone'];
             $password = $_POST['pass'];
+            $id_proof_type = $_POST['id_proof_type'];
+            $id_proof_number = $_POST['id_proof_number'];
             $id_proof_new_file_name = '';
+
+            $address_proof_type = $_POST['address_proof_type'];
+            $address_proof_number = $_POST['address_proof_number'];
             $address_proof_new_file_name = '';
             if (isset($_FILES['id_proof'])) {
                 $id_proof_file_name = $_FILES['id_proof']['name'];
@@ -208,7 +212,7 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof`,`address_proof`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp,:id_proof,:address_proof)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`,`address_proof_type`,`address_proof_number`,`address_proof`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof,:address_proof_type,:address_proof_number,:address_proof)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
@@ -219,7 +223,11 @@ class Api extends Rest
                 $insert_stmt->bindValue(':status', 0, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':otp', $otp, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':id_proof_type', $id_proof_type, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':id_proof_number', $id_proof_number, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':id_proof', $id_proof_new_file_name, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':address_proof_type', $address_proof_type, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':address_proof_number', $address_proof_number, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':address_proof', $address_proof_new_file_name, PDO::PARAM_STR);
                 $insert_stmt->execute();
                 $subject = 'Plese verify OTP';
