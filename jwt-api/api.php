@@ -995,7 +995,7 @@ class Api extends Rest
                 $getpost .= " AND ap.country LIKE CONCAT( '%', :countryId, '%')";
             }
             if (!empty($this->param['priceto']) && !empty($this->param['pricefrom'])) {
-                $getpost .= " AND ap.price BETWEEN " . $this->param['priceto'] . " AND " . $this->param['pricefrom'] . "";
+                $getpost .= " AND ap.price BETWEEN " . $this->param['pricefrom'] . " AND " . $this->param['priceto'] . "";
             }
 
             /*if(!empty($this->param['yearto']) && !empty($this->param['yearfrom'])){
