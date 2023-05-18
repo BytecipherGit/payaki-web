@@ -1003,9 +1003,20 @@ class Api extends Rest
             $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
             }*/
 
-            if (!empty($this->param['sortbyfieldname']) && !empty($this->param['sortbytypename'])) {
-                $getpost .= " ORDER BY " . $this->param['sortbyfieldname'] . " " . $this->param['sortbytypename'];
+            if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
+                $getpost .= " ORDER BY ap.product_name ASC";
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc'){
+                $getpost .= " ORDER BY ap.product_name DESC";
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_asc'){
+                $getpost .= " ORDER BY ap.price ASC";
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_desc'){
+                $getpost .= " ORDER BY ap.price DESC";
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc'){
+                $getpost .= " ORDER BY ap.created_at ASC";
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc'){
+                $getpost .= " ORDER BY ap.created_at DESC";
             }
+            
 
             $postData = $this->dbConn->prepare($getpost);
 
