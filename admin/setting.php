@@ -1422,7 +1422,7 @@ require_once('includes.php');
                                                             }
                                                             ?>
                                                             <div class="form-group">
-                                                                <label>Quickad Classified Purchase Code:</label>
+                                                                <label>Payaki Classified Purchase Code:</label>
                                                                 <div>
                                                                     <input name="purchase_key" type="text" class="form-control" value="">
                                                                 </div>

@@ -69,7 +69,7 @@ if(isset($_POST['username']))
     <!-- Document title -->
     <title><?php echo $config['site_title']?> - Admin Login</title>
 
-    <meta name="description" content="Quickad Classified Admin Template Login" />
+    <meta name="description" content="Payaki Classified Admin Template Login" />
     <meta name="robots" content="noindex, nofollow" />
 
     <!-- Favicons -->
