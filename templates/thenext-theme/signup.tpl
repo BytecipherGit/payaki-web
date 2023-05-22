@@ -39,7 +39,7 @@
                 </div>
                 <div class="social-login-separator"><span>{LANG_OR}</span></div>
                 {:IF}
-                <form method="post" name="register-form" id="register-form" action="#" accept-charset="UTF-8">
+                <form method="post" name="register-form" id="register-form" action="#" accept-charset="UTF-8" enctype="multipart/form-data">
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <i class="la la-user"></i>
@@ -54,6 +54,32 @@
                         </div>
                         <span id="user-availability-status">IF("{USERNAME_ERROR}"!=""){ {USERNAME_ERROR} {:IF}</span>
                     </div>
+                    
+
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <i class="la la-envelope"></i>
+                            <input type="text" class="input-text with-border" placeholder="{LANG_EMAIL}" value="{EMAIL_FIELD}" name="email" id="email" onBlur="checkAvailabilityEmail()" required/>
+                        </div>
+                        <span id="email-availability-status">IF("{EMAIL_ERROR}"!=""){ {EMAIL_ERROR} {:IF}</span>
+                    </div>
+                    
+                    IF("{SMS_VERIFY_MODE}"=="1"){
+                    <div class="form-group">
+                        <div>
+                            <input type="phone" class="input-text with-border" placeholder="{LANG_PHONE_NO}" value="{PHONE_FIELD}" id="verify-mobile" name="phone" onBlur="checkAvailabilityPhone()" required/>
+                        </div>
+                        <span id="phone-availability-status">IF("{PHONE_ERROR}"!=""){ {PHONE_ERROR} {:IF}</span>
+                    </div>
+                    {:IF}
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <i class="la la-unlock"></i>
+                            <input type="password" class="input-text with-border" placeholder="{LANG_PASSWORD}" id="Rpassword" name="password" onBlur="checkAvailabilityPassword()" required/>
+                        </div>
+                        <span id="password-availability-status">IF("{PASSWORD_ERROR}"!=""){ {PASSWORD_ERROR} {:IF}</span>
+                    </div>
+
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <select name="id_proof_type" id="idprooftype" class="form-control with-border">
@@ -95,33 +121,9 @@
                         <span id="addproofnumber-availability-status">IF("{ADDRESSPROOFNUMBER_ERROR}"!=""){ {ADDRESSPROOFNUMBER_ERROR} {:IF}</span>
                     </div>
                     <div class="form-group">
-                    <label>Upload Address Proof Document</label>
+                        <label>Upload Address Proof Document</label>
                         <input type="file" class="form-control" id="addressproof" name="address_proof" style="padding: 0px 0px !important; height: auto !important;" required/>
                         <span id="addressproof-availability-status">IF("{ADDRESSPROOF_ERROR}"!=""){ {ADDRESSPROOF_ERROR} {:IF}</span>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon-left">
-                            <i class="la la-envelope"></i>
-                            <input type="text" class="input-text with-border" placeholder="{LANG_EMAIL}" value="{EMAIL_FIELD}" name="email" id="email" onBlur="checkAvailabilityEmail()" required/>
-                        </div>
-                        <span id="email-availability-status">IF("{EMAIL_ERROR}"!=""){ {EMAIL_ERROR} {:IF}</span>
-                    </div>
-                    
-                    IF("{SMS_VERIFY_MODE}"=="1"){
-                    <div class="form-group">
-                        <div>
-                            <input type="phone" class="input-text with-border" placeholder="{LANG_PHONE_NO}" value="{PHONE_FIELD}" id="verify-mobile" name="phone" onBlur="checkAvailabilityPhone()" required/>
-                        </div>
-                        <span id="phone-availability-status">IF("{PHONE_ERROR}"!=""){ {PHONE_ERROR} {:IF}</span>
-                    </div>
-                    {:IF}
-                    <div class="form-group">
-                        <div class="input-with-icon-left">
-                            <i class="la la-unlock"></i>
-                            <input type="password" class="input-text with-border" placeholder="{LANG_PASSWORD}" id="Rpassword" name="password" onBlur="checkAvailabilityPassword()" required/>
-                        </div>
-                        <span id="password-availability-status">IF("{PASSWORD_ERROR}"!=""){ {PASSWORD_ERROR} {:IF}</span>
                     </div>
                     <div class="form-group">
                         <div class="text-center">
