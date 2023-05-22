@@ -1,6 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 /**
- * Payaki Classified Ads CMS PHP Script
+ * Quickad Classified Ads CMS PHP Script
  * @author Bylancer
  * @version 10.3
  * @Date: 28/Oct/2022
