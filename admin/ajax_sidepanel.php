@@ -2185,11 +2185,11 @@ function SaveSettings(){
         update_option("highlight_fee",$_POST['highlight_fee']);
         update_option("cron_exec_time",validate_input($_POST['cron_exec_time']));
         update_option("delete_expired",validate_input($_POST['delete_expired']));
-        update_option("userlangsel",$_POST['userlangsel']);
+        // update_option("userlangsel",$_POST['userlangsel']);
         update_option("userthemesel",$_POST['userthemesel']);
         update_option("color_switcher",$_POST['color_switcher']);
         update_option("transfer_filter",$_POST['transfer_filter']);
-        update_option("temp_php",$_POST['temp_php']);
+        // update_option("temp_php",$_POST['temp_php']);
         update_option("quickad_debug",$_POST['quickad_debug']);
         update_option("termcondition_link",validate_input($_POST['termcondition_link']));
         update_option("privacy_link",validate_input($_POST['privacy_link']));
