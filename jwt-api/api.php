@@ -309,7 +309,7 @@ class Api extends Rest
 		                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
-                $response = ["status" => true, "code" => 200, "Message" => "You have successfully registered.", "token" => $token, "data" => $user, "otp" => $otp];
+                $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
 
                 $this->returnResponse($response);
             endif;
