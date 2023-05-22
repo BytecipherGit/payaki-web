@@ -1,6 +1,6 @@
 <?php
 /**
- * Quickad Classified Ads CMS PHP Script
+ * Payaki Classified Ads CMS PHP Script
  * @author Bylancer
  * @version 10.3
  * @Date: 28/Oct/2022

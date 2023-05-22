@@ -1,6 +1,6 @@
 <?php
 /**
- * Quickad Classified Image Watermark - plugin
+ * Payaki Classified Image Watermark - plugin
  * @author Bylancer
  * @version 1.0
  */

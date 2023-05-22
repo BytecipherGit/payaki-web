@@ -7,7 +7,7 @@ Description: Write your custom code here
 // Below is an example of function and its initialization
 var AppCustom = function() {
 	var showAppName = function() {
-		//console.log( 'Quickad Classified - Admin & Frontend template' );
+		//console.log( 'Payaki Classified - Admin & Frontend template' );
 	};
     var addAppCredit = function() {
     	var admin_login_card = jQuery('#admin_login_card'),
