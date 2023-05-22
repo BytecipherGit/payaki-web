@@ -39,7 +39,7 @@
                 </div>
                 <div class="social-login-separator"><span>{LANG_OR}</span></div>
                 {:IF}
-                <form method="post" name="register-form" id="register-form" action="#" accept-charset="UTF-8">
+                <form method="post" name="register-form" id="register-form" action="#" accept-charset="UTF-8" enctype="multipart/form-data">
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <i class="la la-user"></i>
@@ -54,6 +54,8 @@
                         </div>
                         <span id="user-availability-status">IF("{USERNAME_ERROR}"!=""){ {USERNAME_ERROR} {:IF}</span>
                     </div>
+                    
+
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <i class="la la-envelope"></i>
@@ -61,6 +63,7 @@
                         </div>
                         <span id="email-availability-status">IF("{EMAIL_ERROR}"!=""){ {EMAIL_ERROR} {:IF}</span>
                     </div>
+                    
                     IF("{SMS_VERIFY_MODE}"=="1"){
                     <div class="form-group">
                         <div>
@@ -75,6 +78,52 @@
                             <input type="password" class="input-text with-border" placeholder="{LANG_PASSWORD}" id="Rpassword" name="password" onBlur="checkAvailabilityPassword()" required/>
                         </div>
                         <span id="password-availability-status">IF("{PASSWORD_ERROR}"!=""){ {PASSWORD_ERROR} {:IF}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <select name="id_proof_type" id="idprooftype" class="form-control with-border">
+                            <option value="">Select ID Proof Type</option>
+                            <option value="Driving licence" IF("{IDPROOFTYPE_FIELD}"=="Driving licence"){ "selected" {:IF}>Driving licence</option>
+                            <option value="Pancard" IF("{IDPROOFTYPE_FIELD}"=="Pancard"){ "selected" {:IF}>Pancard</option>
+                            <option value="Passport" IF("{IDPROOFTYPE_FIELD}"=="Passport"){ "selected" {:IF}>Passport</option>
+                            </select>
+                        </div>
+                        <span id="idprooftype-availability-status">IF("{IDPROOFTYPE_ERROR}"!=""){ {IDPROOFTYPE_ERROR} {:IF}</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <input type="text" class="input-text with-border" style="padding-left: 25px !important;" placeholder="ID Proof Number" id="idproofnumber" value="{IDPROOFNUMBER_FIELD}" name="id_proof_number" required/>
+                        </div>
+                        <span id="idproofnumber-availability-status">IF("{IDPROOFNUMBER_ERROR}"!=""){ {IDPROOFNUMBER_ERROR} {:IF}</span>
+                    </div>
+                    <div class="form-group">
+                    <label>Upload ID Proof Document</label>
+                        <input type="file" class="form-control" id="idproof" name="id_proof" style="padding: 0px 0px !important; height: auto !important;" required/>
+                        <span id="idproof-availability-status">IF("{IDPROOF}"!=""){ {IDPROOF} {:IF}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <select name="address_proof_type" id="addressprooftype" class="form-control with-border">
+                            <option value="">Select Address Proof Type</option>
+                            <option value="Driving licence" IF("{ADDRESSPROOFTYPE_FIELD}"=="Driving licence"){ "selected" {:IF}>Driving licence</option>
+                            <option value="Pancard" IF("{ADDRESSPROOFTYPE_FIELD}"=="Pancard"){ "selected" {:IF}>Pancard</option>
+                            <option value="Passport" IF("{ADDRESSPROOFTYPE_FIELD}"=="Passport"){ "selected" {:IF}>Passport</option>
+                            </select>
+                        </div>
+                        <span id="addressprooftype-availability-status">IF("{ADDRESSPROOFTYPE_ERROR}"!=""){ {ADDRESSPROOFTYPE_ERROR} {:IF}</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-with-icon-left">
+                            <input type="text" class="input-text with-border" style="padding-left: 25px !important;" placeholder="Address Proof Number" id="addproofnumber" value="{ADDRESSPROOFNUMBER_FIELD}" name="address_proof_number" required/>
+                        </div>
+                        <span id="addproofnumber-availability-status">IF("{ADDRESSPROOFNUMBER_ERROR}"!=""){ {ADDRESSPROOFNUMBER_ERROR} {:IF}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Address Proof Document</label>
+                        <input type="file" class="form-control" id="addressproof" name="address_proof" style="padding: 0px 0px !important; height: auto !important;" required/>
+                        <span id="addressproof-availability-status">IF("{ADDRESSPROOF_ERROR}"!=""){ {ADDRESSPROOF_ERROR} {:IF}</span>
                     </div>
                     <div class="form-group">
                         <div class="text-center">
