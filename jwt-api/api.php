@@ -163,9 +163,58 @@ class Api extends Rest
         }
     }
 
+    public function getLocationInfoByIp()
+    {
+        $client = @$_SERVER['HTTP_CLIENT_IP'];
+        $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $remote = @$_SERVER['REMOTE_ADDR'];
+        $result = array('country' => '', 'city' => '');
+        if (filter_var($client, FILTER_VALIDATE_IP)) {
+            $ip = $client;
+        } elseif (filter_var($forward, FILTER_VALIDATE_IP)) {
+            $ip = $forward;
+        } else {
+            $ip = $remote;
+        }
+        if ($ip != "::1") {
+            require_once ROOTPATH . '/includes/database/geoip/autoload.php';
+            // Country DB
+            $reader = new \MaxMind\Db\Reader (ROOTPATH . '/includes/database/geoip/geo_city.mmdb');
+            $data = $reader->get($ip);
+            $result['countryCode'] = @strtoupper(trim($data['country']['iso_code']));
+            $result['country'] = trim($data['country']['names']['en']);
+            $result['city'] = trim($data['city']['names']['en']);
+            $result['latitude'] = trim($data['location']['latitude']);
+            $result['longitude'] = trim($data['location']['longitude']);
+            //echo "<pre>". print_r($data)."</pre>";
+        } else {
+            $result['countryCode'] = "IN";
+            $result['country'] = "India";
+            $result['city'] = "Jodhpur";
+            $result['latitude'] = "26.23894689999999";
+            $result['longitude'] = "73.02430939999999";
+        }
+
+        return $result;
+    }
+    public function get_random_id()
+    {
+        $random = '';
+        for ($i = 1; $i <= 8; $i++) {
+            $random .= mt_rand(0, 9);
+        }
+        return $random;
+    }
+
     public function register()
     {
         try {
+            $siteUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $siteUrl = str_replace('/jwt-api/', '', $siteUrl);
+            $confirm_id = $this->get_random_id();
+            $location = $this->getLocationInfoByIp();
+            $now = date("Y-m-d H:i:s");
+
             $fName = $_POST['full_name'];
             $uName = $_POST['user_name'];
             $email = $_POST['email'];
@@ -212,12 +261,15 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`,`address_proof_type`,`address_proof_number`,`address_proof`) VALUES(:username,:name,:email,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof,:address_proof_type,:address_proof_number,:address_proof)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`confirm`,`created_at`,`updated_at`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`,`address_proof_type`,`address_proof_number`,`address_proof`) VALUES(:username,:name,:email,:confirm,:created_at,:updated_at,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof,:address_proof_type,:address_proof_number,:address_proof)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':name', htmlspecialchars(strip_tags($fName)), PDO::PARAM_STR);
                 $insert_stmt->bindValue(':email', $email, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':confirm', $confirm_id, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':created_at', $now, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':updated_at', $now, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':status', 0, PDO::PARAM_STR);
@@ -235,15 +287,28 @@ class Api extends Rest
                 $this->sendMail($email, $subject, $body);
 
                 // Get the last insert ID
-                $last_id = $this->dbConn->lastInsertId();
+                $user_id = $this->dbConn->lastInsertId();
                 // Select the last insert row
                 $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id=:id");
-                $stmt->bindParam(':id', $last_id);
+                $stmt->bindParam(':id', $user_id);
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (144000), 'userId' => $last_id];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (144000), 'userId' => $user_id];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+
+                /*SEND CONFIRMATION EMAIL*/
+
+                $subject = 'Payaki - Email Confirmation';
+                $body = '<p>Greetings from Payaki Team!</p>
+		                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+		                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+		                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+		                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+		                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+		                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+                $this->sendMail($email, $subject, $body);
+
                 $response = ["status" => true, "code" => 200, "Message" => "You have successfully registered.", "token" => $token, "data" => $user, "otp" => $otp];
 
                 $this->returnResponse($response);
@@ -251,6 +316,42 @@ class Api extends Rest
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
+        }
+    }
+
+    public function resendConfirmationEmail()
+    {
+        $email = $this->validateParameter('email', $this->param['email'], STRING);
+        try {
+            $siteUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $siteUrl = str_replace('/jwt-api/', '', $siteUrl);
+            // Select the last insert row
+            $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email=:email");
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            // Fetch the row
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!empty($user['confirm']) && !empty($user['id'])) {
+                /* Re SEND CONFIRMATION EMAIL*/
+                $subject = 'Payaki - Email Confirmation';
+                $body = '<p>Greetings from Payaki Team!</p>
+                    <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+                    hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+                    <p><a href="' . $siteUrl . '/signup?confirm=' . $user['confirm'] . '&amp;user=' . $user['id'] . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $user['confirm'] . '&amp;user=' . $user['id'] . '</a
+                    ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+                    <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+                    <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+                $this->sendMail($email, $subject, $body);
+                $response = ["status" => true, "code" => 200, "Message" => "Confirmation email successfully resend."];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $this->throwError(JWT_PROCESSING_ERROR, $e->getMessage());
         }
     }
 
@@ -1005,18 +1106,17 @@ class Api extends Rest
 
             if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
                 $getpost .= " ORDER BY ap.product_name ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc'){
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc') {
                 $getpost .= " ORDER BY ap.product_name DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_asc'){
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_asc') {
                 $getpost .= " ORDER BY ap.price ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_desc'){
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_desc') {
                 $getpost .= " ORDER BY ap.price DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc'){
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc') {
                 $getpost .= " ORDER BY ap.created_at ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc'){
+            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
                 $getpost .= " ORDER BY ap.created_at DESC";
             }
-            
 
             $postData = $this->dbConn->prepare($getpost);
 
