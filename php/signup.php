@@ -41,9 +41,20 @@ if(checkloggedin())
 // Check if this is an Name availability check from signup page using ajax
 
 if(isset($_POST["submit"])) {
+    // echo '<pre>';
+    // print_r($_POST);
+    // exit;
     $errors = 0;
     $name_error = '';
     $username_error = '';
+
+    $idprooftype_error = '';
+    $idproofnumber_error = '';
+    $idproof_error = '';
+    $addressprooftype_error = '';
+    $addressproofnumber_error = '';
+    $addressproof_error = '';
+
     $email_error = '';
     $phone_error = '';
     $password_error = '';
@@ -100,6 +111,48 @@ if(isset($_POST["submit"])) {
             $username_error = $lang['USERUAV'];
             $username_error = "<span class='status-available'>".$username_error."</span>";
         }
+    }
+
+    if(empty($_POST["id_proof_type"]))
+    {
+        $errors++;
+        $idprooftype_error = 'ID Proof Type';
+        $idprooftype_error = "<span class='status-not-available'> ".$idprooftype_error."</span>";
+    }
+
+    if(empty($_POST["id_proof_number"]))
+    {
+        $errors++;
+        $idproofnumber_error = 'ID Proof Number';
+        $idproofnumber_error = "<span class='status-not-available'> ".$idproofnumber_error."</span>";
+    }
+
+    if(empty($_POST["id_proof"]))
+    {
+        $errors++;
+        $idproof_error = 'ID Proof Document';
+        $idproof_error = "<span class='status-not-available'> ".$idproof_error."</span>";
+    }
+
+    if(empty($_POST["address_proof_type"]))
+    {
+        $errors++;
+        $addressprooftype_error = 'Address Proof Type';
+        $addressprooftype_error = "<span class='status-not-available'> ".$addressprooftype_error."</span>";
+    }
+
+    if(empty($_POST["address_proof_number"]))
+    {
+        $errors++;
+        $addressproofnumber_error = 'Address Proof Number';
+        $addressproofnumber_error = "<span class='status-not-available'> ".$addressproofnumber_error."</span>";
+    }
+
+    if(empty($_POST["address_proof"]))
+    {
+        $errors++;
+        $addressproof_error = 'Address Proof Document';
+        $addressproof_error = "<span class='status-not-available'> ".$addressproof_error."</span>";
     }
 
 
@@ -188,6 +241,14 @@ if(isset($_POST["submit"])) {
         $insert_user->updated_at = $now;
         $insert_user->country = $location['country'];
         $insert_user->city = $location['city'];
+
+        $insert_user->id_proof_type = $_POST["id_proof_type"];
+        $insert_user->id_proof_number = $_POST["id_proof_number"];
+        $insert_user->id_proof = $_POST["id_proof"];
+        $insert_user->address_proof_type = $_POST["address_proof_type"];
+        $insert_user->address_proof_number = $_POST["address_proof_number"];
+        $insert_user->address_proof = $_POST["address_proof"];
+
         $insert_user->save();
 
         $user_id = $insert_user->id();
@@ -223,10 +284,27 @@ if(isset($_POST['submit']))
 {
     $page->SetParameter ('NAME_FIELD', $_POST['name']);
     $page->SetParameter ('USERNAME_FIELD', $_POST['username']);
+
+    $page->SetParameter ('IDPROOFTYPE_FIELD', $_POST['id_proof_type']);
+    $page->SetParameter ('IDPROOFNUMBER_FIELD', $_POST['id_proof_number']);
+    $page->SetParameter ('ADDRESSPROOFTYPE__FIELD', $_POST['address_proof_type']);
+    $page->SetParameter ('ADDRESSPROOFNUMBER_FIELD', $_POST['address_proof_number']);
+    
+
+
     $page->SetParameter ('EMAIL_FIELD', $_POST['email']);
     $page->SetParameter ('PHONE_FIELD', '');
     $page->SetParameter ('NAME_ERROR', $name_error);
     $page->SetParameter ('USERNAME_ERROR', $username_error);
+
+    $page->SetParameter ('IDPROOFTYPE_ERROR', $idprooftype_error);
+    $page->SetParameter ('IDPROOFNUMBER_ERROR', $idproofnumber_error);
+    $page->SetParameter ('IDPROOF', $idproof_error);
+    $page->SetParameter ('ADDRESSPROOFTYPE_ERROR', $addressprooftype_error);
+    $page->SetParameter ('ADDRESSPROOFNUMBER_ERROR', $addressproofnumber_error);
+    $page->SetParameter ('ADDRESSPROOF_ERROR', $addressproof_error);
+
+
     $page->SetParameter ('EMAIL_ERROR', $email_error);
     $page->SetParameter ('PHONE_ERROR', $phone_error);
     $page->SetParameter ('PASSWORD_ERROR', $password_error);
@@ -236,10 +314,24 @@ else
 {
     $page->SetParameter ('NAME_FIELD', '');
     $page->SetParameter ('USERNAME_FIELD', '');
+
+    $page->SetParameter ('IDPROOFTYPE_FIELD', '');
+    $page->SetParameter ('IDPROOFNUMBER_FIELD', '');
+    $page->SetParameter ('ADDRESSPROOFTYPE__FIELD', '');
+    $page->SetParameter ('ADDRESSPROOFNUMBER_FIELD', '');
+
     $page->SetParameter ('EMAIL_FIELD', '');
     $page->SetParameter ('PHONE_FIELD', '');
     $page->SetParameter ('NAME_ERROR', '');
     $page->SetParameter ('USERNAME_ERROR', '');
+
+    $page->SetParameter ('IDPROOFTYPE_ERROR', $idprooftype_error);
+    $page->SetParameter ('IDPROOFNUMBER_ERROR', $idproofnumber_error);
+    $page->SetParameter ('IDPROOF', $idproof_error);
+    $page->SetParameter ('ADDRESSPROOFTYPE_ERROR', $addressprooftype_error);
+    $page->SetParameter ('ADDRESSPROOFNUMBER_ERROR', $addressproofnumber_error);
+    $page->SetParameter ('ADDRESSPROOF_ERROR', $addressproof_error);
+
     $page->SetParameter ('EMAIL_ERROR', '');
     $page->SetParameter ('PHONE_ERROR', '');
     $page->SetParameter ('PASSWORD_ERROR', '');
