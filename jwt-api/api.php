@@ -163,40 +163,6 @@ class Api extends Rest
         }
     }
 
-    public function getLocationInfoByIp()
-    {
-        $client = @$_SERVER['HTTP_CLIENT_IP'];
-        $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
-        $remote = @$_SERVER['REMOTE_ADDR'];
-        $result = array('country' => '', 'city' => '');
-        if (filter_var($client, FILTER_VALIDATE_IP)) {
-            $ip = $client;
-        } elseif (filter_var($forward, FILTER_VALIDATE_IP)) {
-            $ip = $forward;
-        } else {
-            $ip = $remote;
-        }
-        if ($ip != "::1") {
-            require_once ROOTPATH . '/includes/database/geoip/autoload.php';
-            // Country DB
-            $reader = new \MaxMind\Db\Reader (ROOTPATH . '/includes/database/geoip/geo_city.mmdb');
-            $data = $reader->get($ip);
-            $result['countryCode'] = @strtoupper(trim($data['country']['iso_code']));
-            $result['country'] = trim($data['country']['names']['en']);
-            $result['city'] = trim($data['city']['names']['en']);
-            $result['latitude'] = trim($data['location']['latitude']);
-            $result['longitude'] = trim($data['location']['longitude']);
-            //echo "<pre>". print_r($data)."</pre>";
-        } else {
-            $result['countryCode'] = "IN";
-            $result['country'] = "India";
-            $result['city'] = "Jodhpur";
-            $result['latitude'] = "26.23894689999999";
-            $result['longitude'] = "73.02430939999999";
-        }
-
-        return $result;
-    }
     public function get_random_id()
     {
         $random = '';
@@ -212,7 +178,6 @@ class Api extends Rest
             $siteUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             $siteUrl = str_replace('/jwt-api/', '', $siteUrl);
             $confirm_id = $this->get_random_id();
-            $location = $this->getLocationInfoByIp();
             $now = date("Y-m-d H:i:s");
 
             $fName = $_POST['full_name'];
