@@ -2435,7 +2435,7 @@ function SaveSettings(){
     }
 
     if (isset($_POST['frontend_submission'])) {
-        update_option("post_without_login",validate_input($_POST['post_without_login']));
+        // update_option("post_without_login",validate_input($_POST['post_without_login']));
         update_option("post_auto_approve",validate_input($_POST['post_auto_approve']));
         update_option("post_desc_editor",validate_input($_POST['post_desc_editor']));
         update_option("post_address_mode",validate_input($_POST['post_address_mode']));
