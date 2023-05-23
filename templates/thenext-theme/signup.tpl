@@ -83,10 +83,17 @@
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <select name="id_proof_type" id="idprooftype" class="form-control with-border">
-                            <option value="">Select ID Proof Type</option>
-                            <option value="Driving licence" IF("{IDPROOFTYPE_FIELD}"=="Driving licence"){ "selected" {:IF}>Driving licence</option>
-                            <option value="Pancard" IF("{IDPROOFTYPE_FIELD}"=="Pancard"){ "selected" {:IF}>Pancard</option>
-                            <option value="Passport" IF("{IDPROOFTYPE_FIELD}"=="Passport"){ "selected" {:IF}>Passport</option>
+                            <option value="">Select Identification Type</option>
+                            <option value="State identification (ID) card" IF("{IDPROOFTYPE_FIELD}"=="State identification (ID) card"){ "selected" {:IF}>State identification (ID) card</option>
+                            <option value="Driver license" IF("{IDPROOFTYPE_FIELD}"=="Driver license"){ "selected" {:IF}>Driver license</option>
+                            <option value="US passport or passport card" IF("{IDPROOFTYPE_FIELD}"=="US passport or passport card"){ "selected" {:IF}>US passport or passport card</option>
+                            <option value="US military card" IF("{IDPROOFTYPE_FIELD}"=="US military card"){ "selected" {:IF}>US military card</option>
+                            <option value="Military dependents ID card" IF("{IDPROOFTYPE_FIELD}"=="Military dependents ID card"){ "selected" {:IF}>Military dependents ID card</option>
+                            <option value="Permanent Resident Card" IF("{IDPROOFTYPE_FIELD}"=="Permanent Resident Card"){ "selected" {:IF}>Permanent Resident Card</option>
+                            <option value="Certificate of Citizenship" IF("{IDPROOFTYPE_FIELD}"=="Certificate of Citizenship"){ "selected" {:IF}>Certificate of Citizenship</option>
+                            <option value="Certificate of Naturalization" IF("{IDPROOFTYPE_FIELD}"=="Certificate of Naturalization"){ "selected" {:IF}>Certificate of Naturalization</option>
+                            <option value="Employment Authorization Document" IF("{IDPROOFTYPE_FIELD}"=="Employment Authorization Document"){ "selected" {:IF}>Employment Authorization Document</option>
+                            <option value="Foreign passport" IF("{IDPROOFTYPE_FIELD}"=="Foreign passport"){ "selected" {:IF}>Foreign passport</option>
                             </select>
                         </div>
                         <span id="idprooftype-availability-status">IF("{IDPROOFTYPE_ERROR}"!=""){ {IDPROOFTYPE_ERROR} {:IF}</span>
@@ -106,10 +113,13 @@
                     <div class="form-group">
                         <div class="input-with-icon-left">
                             <select name="address_proof_type" id="addressprooftype" class="form-control with-border">
-                            <option value="">Select Address Proof Type</option>
-                            <option value="Driving licence" IF("{ADDRESSPROOFTYPE_FIELD}"=="Driving licence"){ "selected" {:IF}>Driving licence</option>
-                            <option value="Pancard" IF("{ADDRESSPROOFTYPE_FIELD}"=="Pancard"){ "selected" {:IF}>Pancard</option>
-                            <option value="Passport" IF("{ADDRESSPROOFTYPE_FIELD}"=="Passport"){ "selected" {:IF}>Passport</option>
+                            <option value="">Select Address Verification Type</option>
+                            <option value="Utility bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Utility bill"){ "selected" {:IF}>Utility bill</option>
+                            <option value="Cable TV or internet bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Cable TV or internet bill"){ "selected" {:IF}>Cable TV or internet bill</option>
+                            <option value="Telephone bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Telephone bill"){ "selected" {:IF}>Telephone bill</option>
+                            <option value="Bank statement" IF("{ADDRESSPROOFTYPE_FIELD}"=="Bank statement"){ "selected" {:IF}>Bank statement</option>
+                            <option value="Property tax bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Property tax bill"){ "selected" {:IF}>Property tax bill</option>
+                            <option value="Mortgage statement" IF("{ADDRESSPROOFTYPE_FIELD}"=="Mortgage statement"){ "selected" {:IF}>Mortgage statement</option>
                             </select>
                         </div>
                         <span id="addressprooftype-availability-status">IF("{ADDRESSPROOFTYPE_ERROR}"!=""){ {ADDRESSPROOFTYPE_ERROR} {:IF}</span>
