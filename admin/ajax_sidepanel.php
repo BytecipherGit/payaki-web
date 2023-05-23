@@ -2449,8 +2449,8 @@ function SaveSettings(){
     }
 
     if (isset($_POST['social_login_setting'])) {
-        update_option("facebook_app_id",validate_input($_POST['facebook_app_id']));
-        update_option("facebook_app_secret",validate_input($_POST['facebook_app_secret']));
+        // update_option("facebook_app_id",validate_input($_POST['facebook_app_id']));
+        // update_option("facebook_app_secret",validate_input($_POST['facebook_app_secret']));
         update_option("google_app_id",validate_input($_POST['google_app_id']));
         update_option("google_app_secret",validate_input($_POST['google_app_secret']));
         $status = "success";
