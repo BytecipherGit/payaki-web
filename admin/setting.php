@@ -38,7 +38,7 @@ require_once('includes.php');
 
                                             <li class="quickad-nav-item" data-target="#quickad_theme_setting" data-toggle="tab">Theme Setting</li>
                                             <li class="quickad-nav-item" data-target="#quickad_frontend_submission" data-toggle="tab">Ad Post Setting</li>
-                                            <li class="quickad-nav-item" data-target="#quickad_social_login_setting" data-toggle="tab">Social Login Setting</li>
+                                            <!-- <li class="quickad-nav-item" data-target="#quickad_social_login_setting" data-toggle="tab">Social Login Setting</li> -->
                                             <li class="quickad-nav-item" data-target="#quickad_recaptcha" data-toggle="tab">Google reCAPTCHA</li>
                                             <li class="quickad-nav-item" data-target="#quickad_sms_setting" data-toggle="tab">SMS API Setting</li>
                                             <!-- <li class="quickad-nav-item" data-target="#quickad_purchase_code" data-toggle="tab">Purchase Code</li> -->

@@ -127,13 +127,13 @@ IF(!{LOGGED_IN}){
                 <h3>{LANG_WELCOME_BACK}</h3>
                 <span>{LANG_DONT_HAVE_ACCOUNT} <a href="{LINK_SIGNUP}">{LANG_SIGNUP_NOW}</a></span>
             </div>
-            IF('{FACEBOOK_APP_ID}'!='facebook' || '{GOOGLE_APP_ID}'!=''){
+            IF('{FACEBOOK_APP_ID}'!='facebook' || '{GOOGLE_APP_ID}'!='google'){
             <div class="social-login-buttons">
                 IF('{FACEBOOK_APP_ID}'!='facebook'){
                 <button class="facebook-login ripple-effect" onclick="fblogin()"><i class="fa fa-facebook"></i> {LANG_LOGIN_VIA_FACEBOOK}</button>
                 {:IF}
 
-                IF('{GOOGLE_APP_ID}'!=''){
+                IF('{GOOGLE_APP_ID}'!='google'){
                 <button class="google-login ripple-effect" onclick="gmlogin()"><i class="fa fa-google"></i> {LANG_LOGIN_VIA_GOOGLE}</button>
                 {:IF}
             </div>
