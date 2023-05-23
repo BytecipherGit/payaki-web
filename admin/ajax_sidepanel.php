@@ -2352,7 +2352,7 @@ function SaveSettings(){
             $currency_code = $info['code'];
             $currency_pos = $info['in_left'];
         }
-        update_option("country_type",$_POST['country_type']);
+        // update_option("country_type",$_POST['country_type']);
         update_option("specific_country",$_POST['specific_country']);
         update_option("lang",$_POST['lang']);
         update_option("timezone",$_POST['timezone']);
