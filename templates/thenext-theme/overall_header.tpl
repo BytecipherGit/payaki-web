@@ -163,7 +163,7 @@
                     </div>
                     <nav class="navigation">
                         <ul>
-                            IF('{COUNTRY_TYPE}'=="multi$"){
+                            IF('{COUNTRY_TYPE}'=="multi"){
                             <li>
                                 <a href="#countryModal" class="country-flag popup-with-zoom-anim"
                                    title="{LANG_CHANGE_COUNTRY}"
