@@ -80,7 +80,7 @@ if(isset($_SESSION['admin']['id'])){
                 <!-- Drawer logo -->
                 <div id="logo" class="drawer-header">
                     <a href="index.php">
-                        <img class="img-responsive" src="../storage/logo/<?php echo $config['site_admin_logo']?>" title="admin" alt="admin" /></a>
+                        <img class="img-responsive  admin-logo" src="../storage/logo/<?php echo $config['site_admin_logo']?>" title="admin" alt="admin" /></a>
                 </div>
 
                 <!-- Drawer navigation -->
