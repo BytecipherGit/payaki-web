@@ -900,6 +900,18 @@ class Api extends Rest
                 $postData->execute();
                 $postData = $postData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($postData)) {
+                    //Get Category & Sub Category to show simillar ads
+                    $categoryId = $postData['category'];
+                    $subCategoryId = $postData['sub_category'];
+                    if (!empty($postData['screen_shot'])) {
+                        $screenShotArr = explode(",", $postData['screen_shot']);
+                        if (count($screenShotArr) > 0) {
+                            for ($i = 0; $i < count($screenShotArr); $i++) {
+                                // echo $screenShotArr[$i].'<br>';
+                                $postData['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                            }
+                        }
+                    }
                     //Fetch Post user details
                     if (!empty($postData['user_id'])) {
                         $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id =:id");
@@ -913,12 +925,45 @@ class Api extends Rest
                             $postData['post_user_details']['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['image'];
                         }
                     }
-                    if (!empty($postData['screen_shot'])) {
-                        $screenShotArr = explode(",", $postData['screen_shot']);
-                        if (count($screenShotArr) > 0) {
-                            for ($i = 0; $i < count($screenShotArr); $i++) {
-                                // echo $screenShotArr[$i].'<br>';
-                                $postData['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                    
+                    $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID";
+                    $getReviewAndRatings = $this->dbConn->prepare($getReviewAndRatings);
+                    $getReviewAndRatings->bindValue(':productID', $postId, PDO::PARAM_STR);
+                    $getReviewAndRatings->execute();
+                    $getReviewAndRatings = $getReviewAndRatings->fetchAll(PDO::FETCH_ASSOC);
+                    if(count($getReviewAndRatings) > 0){
+                        for ($i = 0; $i < count($getReviewAndRatings); $i++) {
+                            $postData['review_rating'][$i]['rating'] = $getReviewAndRatings[$i]['rating'];
+                            $postData['review_rating'][$i]['review'] = $getReviewAndRatings[$i]['comments'];
+                            $postData['review_rating'][$i]['reviewer_name'] = $getReviewAndRatings[$i]['username'];
+                            $postData['review_rating'][$i]['review_date'] = $getReviewAndRatings[$i]['date'];
+                        }
+                    }
+
+                    if(!empty($categoryId) && !empty($subCategoryId)){
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
+                        $similarPostData = $this->dbConn->prepare($getSimilarPost);
+                        $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
+                        $similarPostData->bindValue(':sub_category', $subCategoryId, PDO::PARAM_STR);
+                    } else if(!empty($categoryId)){
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
+                        $similarPostData = $this->dbConn->prepare($getSimilarPost);
+                        $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
+                    }
+                    
+                    $similarPostData->execute();
+                    $similarPostData = $similarPostData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($similarPostData) > 0) {
+                        // $postData['similar_post'] = $similarPostData;
+                        for ($i = 0; $i < count($similarPostData); $i++) {
+                            $postData['similar_post'][$i] = $similarPostData[$i];
+                            if (!empty($similarPostData[$i]['screen_shot'])) {
+                                $screenShotArr = explode(",", $similarPostData[$i]['screen_shot']);
+                                if (count($screenShotArr) > 0) {
+                                    for ($j = 0; $j < count($screenShotArr); $j++) {
+                                        $postData['similar_post'][$i]['image'][$j] = $this->display_image_url . 'storage/products/' . $screenShotArr[$j];
+                                    }
+                                }
                             }
                         }
                     }
