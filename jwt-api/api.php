@@ -922,6 +922,20 @@ class Api extends Rest
                             }
                         }
                     }
+                    $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID";
+                    $getReviewAndRatings = $this->dbConn->prepare($getReviewAndRatings);
+                    $getReviewAndRatings->bindValue(':productID', $postId, PDO::PARAM_STR);
+                    $getReviewAndRatings->execute();
+                    $getReviewAndRatings = $getReviewAndRatings->fetchAll(PDO::FETCH_ASSOC);
+                    if(count($getReviewAndRatings) > 0){
+                        for ($i = 0; $i < count($getReviewAndRatings); $i++) {
+                            $postData['review_rating'][$i]['rating'] = $getReviewAndRatings[$i]['rating'];
+                            $postData['review_rating'][$i]['review'] = $getReviewAndRatings[$i]['comments'];
+                            $postData['review_rating'][$i]['reviewer_name'] = $getReviewAndRatings[$i]['username'];
+                            $postData['review_rating'][$i]['review_date'] = $getReviewAndRatings[$i]['date'];
+                        }
+                    }
+
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement details fetched.", "data" => $postData];
                     $this->returnResponse($response);
                 } else {
