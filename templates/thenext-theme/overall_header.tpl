@@ -49,6 +49,7 @@
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/slick.css">
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/color.css">
     <script src="{SITE_URL}templates/{TPL_NAME}/js/jquery-3.4.1.min.js"></script>
+    <script src="{SITE_URL}templates/{TPL_NAME}/js/cart.js"></script>
     <script src='{SITE_URL}includes/assets/plugins/styleswitcher/jquery.style-switcher.js'></script>
     IF("{LANGUAGE_DIRECTION}"=="rtl"){
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/rtl.css">
@@ -82,6 +83,7 @@
     <!-- ===External Code=== -->
     {EXTERNAL_CODE}
     <!-- ===/External Code=== -->
+    <script async>var ajaxurl = "{APP_URL}user-ajax.php";</script>
 </head>
 <body data-role="page" class="{LANGUAGE_DIRECTION}" id="page" data-ipapi="{LIVE_LOCATION_API}" data-showlocationicon="{LOCATION_TRACK_ICON}">
 <!--[if lt IE 8]>
@@ -240,6 +242,16 @@
                                 <li><a href="{LINK_SIGNUP}">{LANG_REGISTER}</a></li>
                                 {:IF}
                                 <li><a href="{LINK_POST-AD}" class="button ripple-effect post-job">{LANG_POST_FREE_AD}</a>
+                                </li>
+                                <li><a href="view_cart.php" class="button ripple-effect post-job cart-counter cart-item" id="cart-container">
+                                    <?php
+                                    if(isset($_SESSION["products"])){
+                                        echo count($_SESSION["products"]); 
+                                    } else {
+                                        echo 0; 
+                                    }
+                                    ?>
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
