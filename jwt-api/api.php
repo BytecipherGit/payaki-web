@@ -894,12 +894,27 @@ class Api extends Rest
         try {
             $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
             if (!empty($postId)) {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id=:id";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code  WHERE ap.id=:id";
                 $postData = $this->dbConn->prepare($getpost);
                 $postData->bindValue(':id', $postId, PDO::PARAM_STR);
                 $postData->execute();
                 $postData = $postData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($postData)) {
+                    // Get location,City, State, Country
+                    $fullAddress = '';
+                    if(!empty($postData['location'])){
+                        $fullAddress .= $postData['location'];
+                    }
+                    if(!empty($postData['city_name'])){
+                        $fullAddress .= " ".$postData['city_name'];
+                    }
+                    if(!empty($postData['state_name'])){
+                        $fullAddress .= " ".$postData['state_name'];
+                    }
+                    if(!empty($postData['country_name'])){
+                        $fullAddress .= " ".$postData['country_name'];
+                    }
+                    $postData['full_address'] = trim($fullAddress);
                     //Get Category & Sub Category to show simillar ads
                     $categoryId = $postData['category'];
                     $subCategoryId = $postData['sub_category'];
