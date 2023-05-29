@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	// add item to cart
 	$(".product-form").submit(function(e){
+        alert(cartURL);
 		var form_data = $(this).serialize();
 		var button_content = $(this).find('button[type=submit]');
 		button_content.html('Adding...'); 

@@ -49,6 +49,7 @@
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/slick.css">
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/color.css">
     <script src="{SITE_URL}templates/{TPL_NAME}/js/jquery-3.4.1.min.js"></script>
+    <script async>var cartURL = "{APP_URL}manage_cart.php";</script>
     <script src="{SITE_URL}templates/{TPL_NAME}/js/cart.js"></script>
     <script src='{SITE_URL}includes/assets/plugins/styleswitcher/jquery.style-switcher.js'></script>
     IF("{LANGUAGE_DIRECTION}"=="rtl"){
