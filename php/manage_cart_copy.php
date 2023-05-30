@@ -1,4 +1,7 @@
 <?php
+echo 'Php';
+exit;
+
 session_start();
 include_once("db_connect.php");
 include_once("inc/config.inc.php");
@@ -8,9 +11,9 @@ if(isset($_POST["product_code"])) {
 	foreach($_POST as $key => $value){
 		$product[$key] = filter_var($value, FILTER_SANITIZE_STRING);
 	}
-	echo '<pre>';
-	print_r($product);
-	exit;	
+	// echo '<pre>';
+	// print_r($product);
+	// exit;	
 	$statement = $conn->prepare("SELECT product_name, product_price FROM shop_products WHERE product_code=? LIMIT 1");
 	$statement->bind_param('s', $product['product_code']);
 	$statement->execute();

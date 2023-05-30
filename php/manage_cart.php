@@ -1,50 +1,39 @@
 <?php
+require_once('DbConnect.php');
+$db = new DbConnect;
+$dbConn = $db->connect();
+global $config;
+// $_SESSION["products"] = array();
 session_start();
-include_once("db_connect.php");
-include_once("inc/config.inc.php");
-setlocale(LC_MONETARY,"en_US");
-# add products in cart 
-if(isset($_POST["product_code"])) {
-	foreach($_POST as $key => $value){
-		$product[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+// session_destroy();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $productId = $_POST["product_id"];
+	if(!empty($productId)){
+		$stmt = $dbConn->prepare("SELECT ap.* FROM ad_product as ap WHERE ap.id =:id");
+		$stmt->bindParam(":id", $productId);
+		$stmt->execute();
+		$productDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+		if(!empty($productDetails)){
+			$_SESSION["user"]["cart"]["id"]  = $productDetails['id'];
+			// if(!isset($_SESSION["user"]["cart"])){
+			// 	$_SESSION["user"]["cart"] = [];
+			// }
+			// $cart = $_SESSION["user"]["cart"];
+			// if (isset($cart[$productId])) {
+			// 	$cart[$productId]['quantity']++;
+			// } else {
+			// 	$cart[$productId] = [
+			// 		"product_id" => $productDetails['id'],
+			// 		"product_name" => $productDetails['product_name'],
+			// 		"price" => $productDetails['price'],
+			// 		"quantity" => 1,
+			// 	];
+			// }
+			// $_SESSION["user"]["cart"] = $cart;
+		}
+		echo '<pre>';
+		print_r($_SESSION["user"]["cart"]);
+		die();
+		die(json_encode(array('status'=>true,'message'=>'product successfully added into cart')));
 	}
-	// echo '<pre>';
-	// print_r($product);
-	// exit;	
-	$statement = $conn->prepare("SELECT product_name, product_price FROM shop_products WHERE product_code=? LIMIT 1");
-	$statement->bind_param('s', $product['product_code']);
-	$statement->execute();
-	$statement->bind_result($product_name, $product_price);
-	while($statement->fetch()){ 
-		$product["product_name"] = $product_name;
-		$product["product_price"] = $product_price;		
-		if(isset($_SESSION["products"])){ 
-			if(isset($_SESSION["products"][$product['product_code']])) {				
-				$_SESSION["products"][$product['product_code']]["product_qty"] = $_SESSION["products"][$product['product_code']]["product_qty"] + $_POST["product_qty"];				
-			} else {
-				$_SESSION["products"][$product['product_code']] = $product;
-			}			
-		} else {
-			$_SESSION["products"][$product['product_code']] = $product;
-		}	
-	}	
- 	$total_product = count($_SESSION["products"]);
-	die(json_encode(array('products'=>$total_product)));
 }
-# Remove products from cart
-if(isset($_GET["remove_code"]) && isset($_SESSION["products"])) {
-	$product_code  = filter_var($_GET["remove_code"], FILTER_SANITIZE_STRING);
-	if(isset($_SESSION["products"][$product_code]))	{
-		unset($_SESSION["products"][$product_code]);
-	}	
- 	$total_product = count($_SESSION["products"]);
-	die(json_encode(array('products'=>$total_product)));
-}
-# Update cart product quantity
-if(isset($_GET["update_quantity"]) && isset($_SESSION["products"])) {	
-	if(isset($_GET["quantity"]) && $_GET["quantity"]>0) {		
-		$_SESSION["products"][$_GET["update_quantity"]]["product_qty"] = $_GET["quantity"];	
-	}
-	$total_product = count($_SESSION["products"]);
-	die(json_encode(array('products'=>$total_product)));
-}	

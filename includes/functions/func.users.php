@@ -3,7 +3,6 @@ ob_start();
 $config['lang'] = check_user_lang();
 $config['lang_code'] = get_current_lang_code();
 $config['tpl_name'] = check_user_theme();
-
 function get_random_id(){
 
     $random = '';

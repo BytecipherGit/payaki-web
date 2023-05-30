@@ -173,10 +173,7 @@
                                 {:IF}
                                 <li><i class="la la-clock-o"></i> {ITEM.created_at}</li>
                                 <li>
-                                    <form class="product-form">
-                                    <input name="product_id" type="hidden" value="{ITEM.id}">
-						            <button type="submit" class="button">Add to Cart</button>
-                                    </form>
+                                    <button type="button" data-id="{ITEM.id}" data-qty="1" class="button add_2_cart">Add to Cart</button>
                                 </li>
                             </ul>
                             <span class="fav-icon set-item-fav IF('{ITEM.favorite}'){ added {:IF}" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd"></span>
