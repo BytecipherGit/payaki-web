@@ -244,7 +244,7 @@
                                 {:IF}
                                 <li><a href="{LINK_POST-AD}" class="button ripple-effect post-job">{LANG_POST_FREE_AD}</a>
                                 </li>
-                                <li><a href="view_cart.php" class="button ripple-effect post-job cart-counter cart-item" id="cart-container">
+                                <li><a href="{LINK_VIEWCART}" class="button ripple-effect post-job cart-counter cart-item" id="cart-container">
                                     {TOTAL_CART_ITEMS}
                                     </a>
                                 </li>

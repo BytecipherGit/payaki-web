@@ -40,6 +40,7 @@ if(isset($_POST['action'])){
     if ($_POST['action'] == "ajaxlogin") {ajaxlogin();}
     if ($_POST['action'] == "email_verify") {email_verify();}
     if ($_POST['action'] == "quickad_ajax_home_search") {quickad_ajax_home_search();}
+    if ($_POST['action'] == "ajaxaddtocart") {ajaxaddtocart();}
 
 }
 
@@ -594,6 +595,60 @@ function otp_verify(){
         }
     }
     die();
+}
+
+function ajaxaddtocart(){
+    global $config,$lang;
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $productId = $_POST["product_id"];
+	if(!empty($productId)){
+		$productDetails = get_product_details_through_id($productId);
+        if(!empty($productDetails)){
+			if(!isset($_SESSION["cart"])){
+				$_SESSION["cart"] = [];
+			}
+			$cart = $_SESSION["cart"];
+			if (isset($cart[$productId])) {
+				$cart[$productId]['quantity']++;
+			} else {
+				$cart[$productId] = [
+					"product_id" => $productDetails['id'],
+					"product_name" => $productDetails['product_name'],
+					"price" => $productDetails['price'],
+					"quantity" => 1,
+				];
+			}
+			$_SESSION["cart"] = $cart;
+		}
+        // return json_encode(array('status'=>true,'message'=>'product successfully added into cart'));
+        die(json_encode(array('status'=>true,'message'=>'product successfully added into cart')));
+	}
+}
+    /*$loggedin = userlogin($_POST['username'], $_POST['password']);
+
+    if(!is_array($loggedin))
+    {
+        echo $lang['USERNOTFOUND'];
+    }
+    elseif($loggedin['status'] == 2)
+    {
+        echo $lang['ACCOUNTBAN'];
+    }
+    else
+    {
+        create_user_session($loggedin['id'],$loggedin['username'],$loggedin['password']);
+        if(isset($_POST["remember"]) && $_POST["remember"] == 1) {
+            setcookie('quickad_remember_me', $loggedin['id'] , time() +3600*24*30,'/', null, null, true);
+        } else {
+            if(isset($_COOKIE["quickad_remember_me"])) {
+                setcookie ("quickad_remember_me","");
+            }
+        }
+        update_lastactive();
+
+        echo "success";
+    }
+    die();*/
 }
 
 function dashboard_mobile_verify(){

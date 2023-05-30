@@ -241,6 +241,23 @@ function get_user_id($username){
     }
 }
 
+function get_product_details_through_id($productId){
+
+    global $config;
+
+    $info = ORM::for_table($config['db']['pre'].'product')
+        ->select('*')
+        ->where('id', $productId)
+        ->find_one();
+
+    if(!empty($info)){
+        return $info;
+    }
+    else{
+        return FALSE;
+    }
+}
+
 function get_user_id_by_email($email){
 
     global $config;

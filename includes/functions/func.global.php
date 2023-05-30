@@ -85,20 +85,13 @@ function create_header($page_title='',$meta_desc = '',$meta_image = '',$meta_art
     $page->SetParameter('PAGE_META_KEYWORDS', $config['meta_keywords']);
     $page->SetParameter('PAGE_META_DESCRIPTION', ($meta_desc == '')?$config['meta_description']:$meta_desc);
     $page->SetParameter('GMAP_KEY', $config['gmap_api_key']);
-    $page->SetParameter('TOTAL_CART_ITEMS', 2);
+    $page->SetParameter('PAGE_CART', 'viewcart');
     
-    // echo '<pre>';
-    // print_r($_SESSION);
-    // exit;
-    // print_r($_SESSION["cart"]['id']);
-    // exit;
-    // if(isset($_SESSION["products"])){
-    //     $page->SetParameter('TOTAL_CART_ITEMS', count($_SESSION["products"]));
-    // } else {
-    //     echo 'Not set session';
-    //     exit;
-    //     $page->SetParameter('TOTAL_CART_ITEMS', 0);
-    // }
+    if(isset($_SESSION["cart"])){
+        $page->SetParameter('TOTAL_CART_ITEMS', count($_SESSION["cart"]));
+    } else {
+        $page->SetParameter('TOTAL_CART_ITEMS', 0);
+    }
 
     if($meta_article){
         $page->SetParameter('META_CONTENT', 'article');
