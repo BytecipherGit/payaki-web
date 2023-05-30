@@ -611,9 +611,26 @@ function ajaxaddtocart(){
 			if (isset($cart[$productId])) {
 				$cart[$productId]['quantity']++;
 			} else {
+                if (!empty($productDetails['screen_shot'])) {
+                    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+                    $host_url = $_SERVER['HTTP_HOST'];
+                    $current_url = $protocol . "://" . $host_url . $_SERVER['REQUEST_URI'];
+                    $display_image_url = str_replace("jwt-api/", "", $current_url);
+
+                    $screenShotArr = explode(",", $productDetails['screen_shot']);
+                    if (count($screenShotArr) >= 0) {
+                        for ($i = 0; $i < count($screenShotArr); $i++) {
+                            $productImage = $display_image_url . 'storage/products/' . $screenShotArr[0];
+                        }
+                    } else {
+                        $productImage = 'No Product Image Available';
+                    }
+                }
+
 				$cart[$productId] = [
 					"product_id" => $productDetails['id'],
 					"product_name" => $productDetails['product_name'],
+                    "product_image" => $productImage,
 					"price" => $productDetails['price'],
 					"quantity" => 1,
 				];
