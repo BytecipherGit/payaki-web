@@ -894,7 +894,7 @@ class Api extends Rest
         try {
             $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
             if (!empty($postId)) {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code  WHERE ap.id=:id";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id=:id";
                 $postData = $this->dbConn->prepare($getpost);
                 $postData->bindValue(':id', $postId, PDO::PARAM_STR);
                 $postData->execute();
@@ -958,12 +958,12 @@ class Api extends Rest
                     }
 
                     if(!empty($categoryId) && !empty($subCategoryId)){
-                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                         $similarPostData->bindValue(':sub_category', $subCategoryId, PDO::PARAM_STR);
                     } else if(!empty($categoryId)){
-                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                     }
@@ -974,6 +974,21 @@ class Api extends Rest
                         // $postData['similar_post'] = $similarPostData;
                         for ($i = 0; $i < count($similarPostData); $i++) {
                             $postData['similar_post'][$i] = $similarPostData[$i];
+                            // Get location,City, State, Country
+                            $fullAddress = '';
+                            if(!empty($similarPostData[$i]['location'])){
+                                $fullAddress .= $similarPostData[$i]['location'];
+                            }
+                            if(!empty($similarPostData[$i]['city_name'])){
+                                $fullAddress .= " ".$similarPostData[$i]['city_name'];
+                            }
+                            if(!empty($similarPostData[$i]['state_name'])){
+                                $fullAddress .= " ".$similarPostData[$i]['state_name'];
+                            }
+                            if(!empty($similarPostData[$i]['country_name'])){
+                                $fullAddress .= " ".$similarPostData[$i]['country_name'];
+                            }
+                            $postData['similar_post'][$i]['full_address'] = trim($fullAddress);
                             if (!empty($similarPostData[$i]['screen_shot'])) {
                                 $screenShotArr = explode(",", $similarPostData[$i]['screen_shot']);
                                 if (count($screenShotArr) > 0) {
@@ -1103,7 +1118,7 @@ class Api extends Rest
         try {
             $responseArr = array();
             // $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE status='active'";
-            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE 1=1";
+            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE 1=1";
             if (!empty($this->param['title'])) {
                 $getpost .= " AND ap.product_name LIKE CONCAT( '%', :title, '%')";
             }
@@ -1179,6 +1194,21 @@ class Api extends Rest
             if (count($postData) > 0) {
                 foreach ($postData as $key => $post) {
                     $responseArr[$key] = $post;
+                    // Get location,City, State, Country
+                    $fullAddress = '';
+                    if(!empty($post['location'])){
+                        $fullAddress .= $post['location'];
+                    }
+                    if(!empty($post['city_name'])){
+                        $fullAddress .= " ".$post['city_name'];
+                    }
+                    if(!empty($post['state_name'])){
+                        $fullAddress .= " ".$post['state_name'];
+                    }
+                    if(!empty($post['country_name'])){
+                        $fullAddress .= " ".$post['country_name'];
+                    }
+                    $responseArr[$key]['full_address'] = trim($fullAddress);
                     if (!empty($post['screen_shot'])) {
                         $screenShotArr = explode(",", $post['screen_shot']);
                         if (count($screenShotArr) > 0) {
@@ -1186,6 +1216,8 @@ class Api extends Rest
                                 $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
                             }
                         }
+                    } else {
+                        $responseArr[$key]['image']=[];
                     }
                 }
                 $response = ["status" => true, "code" => 200, "Message" => "All Advertisement successfully fetched.", "data" => $responseArr];
