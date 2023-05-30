@@ -926,6 +926,8 @@ class Api extends Rest
                                 $postData['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
                             }
                         }
+                    } else {
+                        $postData['image']=[];
                     }
                     //Fetch Post user details
                     if (!empty($postData['user_id'])) {
@@ -979,6 +981,8 @@ class Api extends Rest
                                         $postData['similar_post'][$i]['image'][$j] = $this->display_image_url . 'storage/products/' . $screenShotArr[$j];
                                     }
                                 }
+                            } else {
+                                $postData['similar_post'][$i]['image']=[];
                             }
                         }
                     }
