@@ -342,6 +342,19 @@ IF("{POST_WATERMARK}"=="0"){
                                         <small>{LANG_TAGS_DETAIL}</small>
                                     </div>
                                     {:IF}
+
+                                    <div class="submit-field form-group">
+                                        <h5>Available Days</h5>
+                                        <select class="with-border" style="padding: 10px 18px !important;" type="text" name="available_days">
+                                        <option value="1">1 Day</option>
+                                        <option value="2">2 Days</option>
+                                        <option value="5">5 Days</option>
+                                        <option value="10">10 Days</option>
+                                        <option value="20">20 Days</option>
+                                        <option value="30" selected>30 Days</option>
+                                        <option value="60">60 Days</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
