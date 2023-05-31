@@ -1,90 +1,95 @@
 <?php
+$now = date("Y-m-d H:i:s");
+// echo $now;
+// die; 
+
 $pdo = ORM::get_db();
 $_GET = validate_input($_GET);
-if(!isset($_GET['page']))
+if (!isset($_GET['page'])) {
     $page_number = 1;
-else{
+} else {
     $page_number = $_GET['page'];
 }
 
-if(!isset($_GET['order']))
+if (!isset($_GET['order'])) {
     $order = "DESC";
-else{
-    if($_GET['order'] == ""){
+} else {
+    if ($_GET['order'] == "") {
         $order = "DESC";
-    }else{
+    } else {
         $order = $_GET['order'];
     }
 }
 
-if(!isset($_GET['sort']))
+if (!isset($_GET['sort'])) {
     $sort = "id";
-elseif($_GET['sort'] == "title")
+} elseif ($_GET['sort'] == "title") {
     $sort = "product_name";
-elseif($_GET['sort'] == "price")
+} elseif ($_GET['sort'] == "price") {
     $sort = "price";
-elseif($_GET['sort'] == "date")
+} elseif ($_GET['sort'] == "date") {
     $sort = "created_at";
-else
+} else {
     $sort = "id";
+}
 
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 12;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
 $sorting = isset($_GET['sort']) ? $_GET['sort'] : $lang['NEWEST'];
 $budget = isset($_GET['budget']) ? $_GET['budget'] : "";
-$keywords = isset($_GET['keywords']) ? str_replace("-"," ",$_GET['keywords']) : "";
+$keywords = isset($_GET['keywords']) ? str_replace("-", " ", $_GET['keywords']) : "";
 
 $category = "";
 $subcat = "";
 $SubCatList = "";
 
-if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
+if (isset($_GET['subcat']) && !empty($_GET['subcat'])) {
 
-    if(is_numeric($_GET['subcat'])){
-        if(check_sub_category_exists($_GET['subcat'])){
+    if (is_numeric($_GET['subcat'])) {
+        if (check_sub_category_exists($_GET['subcat'])) {
             $subcat = $_GET['subcat'];
         }
-    }else{
+    } else {
         $subcat = get_subcategory_id_by_slug($_GET['subcat']);
     }
 }
 
-if(isset($_GET['cat']) && !empty($_GET['cat'])){
-    if(is_numeric($_GET['cat'])){
-        if(check_category_exists($_GET['cat'])){
+if (isset($_GET['cat']) && !empty($_GET['cat'])) {
+    if (is_numeric($_GET['cat'])) {
+        if (check_category_exists($_GET['cat'])) {
             $category = $_GET['cat'];
         }
-    }else{
+    } else {
         $category = get_category_id_by_slug($_GET['cat']);
     }
 }
 
-if(isset($_GET['cat']) && !empty($_GET['cat'])) {
-    if(isset($_GET['subcat']) && !empty($_GET['subcat'])) {
-        $SubCatList = get_subcat_of_maincat( $category, true, $subcat,"checked");
-    }else{
-        $SubCatList = get_subcat_of_maincat( $category, true);
+if (isset($_GET['cat']) && !empty($_GET['cat'])) {
+    if (isset($_GET['subcat']) && !empty($_GET['subcat'])) {
+        $SubCatList = get_subcat_of_maincat($category, true, $subcat, "checked");
+    } else {
+        $SubCatList = get_subcat_of_maincat($category, true);
     }
-}else{
-    $SubCatList = get_maincategory('','',true);
+} else {
+    $SubCatList = get_maincategory('', '', true);
 }
 
-if($subcat != ''){
-    $custom_fields = get_customFields_by_catid('',$subcat,false);
-}else if($category != ''){
-    $custom_fields = get_customFields_by_catid($category,'',false);
-}else{
-    $custom_fields = get_customFields_by_catid('','',false);
+if ($subcat != '') {
+    $custom_fields = get_customFields_by_catid('', $subcat, false);
+} else if ($category != '') {
+    $custom_fields = get_customFields_by_catid($category, '', false);
+} else {
+    $custom_fields = get_customFields_by_catid('', '', false);
 }
 
 $custom = array();
-if(isset($_GET['custom']) && !empty($_GET['custom'])){
+if (isset($_GET['custom']) && !empty($_GET['custom'])) {
     $custom = $_GET['custom'];
 }
 
-if(isset($_GET['city']) && !empty($_GET['city'])){
+if (isset($_GET['city']) && !empty($_GET['city'])) {
     $city = $_GET['city'];
-}else{
+} else {
     $city = "";
 }
 
@@ -96,20 +101,20 @@ $order_by_keyword = '';
 $top_search_result = '';
 $listing_search_array = array();
 $plans = ORM::for_table($config['db']['pre'] . 'plans')
-    ->select_many('id','settings')
+    ->select_many('id', 'settings')
     ->find_many();
-foreach($plans as $plan){
-    if(!isset($plan['settings'])){
+foreach ($plans as $plan) {
+    if (!isset($plan['settings'])) {
         $plan = json_decode(get_option('free_membership_plan'), true);
         $settings = $plan['settings'];
         $top_search_result = $settings['top_search_result'];
-        if($top_search_result == 'yes'){
+        if ($top_search_result == 'yes') {
             $listing_search_array[] = 'free';
         }
-    }else{
-        $settings = json_decode($plan['settings'],true);
+    } else {
+        $settings = json_decode($plan['settings'], true);
         $top_search_result = $settings['top_search_result'];
-        if($top_search_result == 'yes'){
+        if ($top_search_result == 'yes') {
             $listing_search_array[] = $plan['id'];
         }
     }
@@ -118,20 +123,19 @@ foreach($plans as $plan){
 $plan = json_decode(get_option('free_membership_plan'), true);
 $settings = $plan['settings'];
 $top_search_result = $settings['top_search_result'];
-if($top_search_result == 'yes'){
+if ($top_search_result == 'yes') {
     $listing_search_array[] = 'free';
 }
 
 $plan = json_decode(get_option('trial_membership_plan'), true);
 $settings = $plan['settings'];
 $top_search_result = $settings['top_search_result'];
-if($top_search_result == 'yes'){
+if ($top_search_result == 'yes') {
     $listing_search_array[] = 'trial';
 }
 
-
-if(isset($_GET['keywords']) && !empty($_GET['keywords'])){
-    $where.= "AND (p.product_name LIKE '%$keywords%' or p.tag LIKE '%$keywords%') ";
+if (isset($_GET['keywords']) && !empty($_GET['keywords'])) {
+    $where .= "AND (p.product_name LIKE '%$keywords%' or p.tag LIKE '%$keywords%') ";
     $order_by_keyword = "(CASE
     WHEN p.product_name = '$keywords' THEN 1
     WHEN p.product_name LIKE '$keywords%' THEN 2
@@ -143,47 +147,42 @@ if(isset($_GET['keywords']) && !empty($_GET['keywords'])){
   END),";
 }
 
-if(isset($category) && !empty($category)){
-    $where.= "AND (p.category = '$category') ";
+if (isset($category) && !empty($category)) {
+    $where .= "AND (p.category = '$category') ";
 }
 
-if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
-    $where.= "AND (p.sub_category = '$subcat') ";
+if (isset($_GET['subcat']) && !empty($_GET['subcat'])) {
+    $where .= "AND (p.sub_category = '$subcat') ";
 }
-
 
 if (isset($_GET['range1']) && $_GET['range1'] != '') {
     $range1 = str_replace('.', '', $_GET['range1']);
     $range2 = str_replace('.', '', $_GET['range2']);
-    $where.= ' AND (p.price BETWEEN '.$range1.' AND '.$range2.')';
+    $where .= ' AND (p.price BETWEEN ' . $range1 . ' AND ' . $range2 . ')';
 } else {
     $range1 = "";
     $range2 = "";
 }
 
-if(isset($_GET['city']) && !empty($_GET['city']))
-{
-    $where.= "AND (p.city = '".$_GET['city']."') ";
-}
-elseif(isset($_GET['location']) && !empty($_GET['location']))
-{
+if (isset($_GET['city']) && !empty($_GET['city'])) {
+    $where .= "AND (p.city = '" . $_GET['city'] . "') ";
+} elseif (isset($_GET['location']) && !empty($_GET['location'])) {
     $placetype = $_GET['placetype'];
     $placeid = $_GET['placeid'];
 
-    if($placetype == "country"){
-        $where.= "AND (p.country = '$placeid') ";
-    }elseif($placetype == "state"){
-        $where.= "AND (p.state = '$placeid') ";
-    }else{
-        $where.= "AND (p.city = '$placeid') ";
+    if ($placetype == "country") {
+        $where .= "AND (p.country = '$placeid') ";
+    } elseif ($placetype == "state") {
+        $where .= "AND (p.state = '$placeid') ";
+    } else {
+        $where .= "AND (p.city = '$placeid') ";
     }
-}
-else{
+} else {
     $country_code = check_user_country();
-    $where.= "AND (p.country = '$country_code') ";
+    $where .= "AND (p.country = '$country_code') ";
 }
 
-if(isset($_GET['custom'])) {
+if (isset($_GET['custom'])) {
     $whr_count = 1;
     $custom_where = "";
     $custom_join = "";
@@ -195,9 +194,9 @@ if(isset($_GET['custom'])) {
             // custom value is not empty.
 
             if ($key != "" && $value != "") {
-                $c_as = "c".$whr_count;
-                $custom_join .= " 
-                JOIN `".$config['db']['pre']."custom_data` AS $c_as ON $c_as.product_id = p.id AND `$c_as`.`field_id` = '$key' ";
+                $c_as = "c" . $whr_count;
+                $custom_join .= "
+                JOIN `" . $config['db']['pre'] . "custom_data` AS $c_as ON $c_as.product_id = p.id AND `$c_as`.`field_id` = '$key' ";
 
                 if (is_array($value)) {
                     $custom_where .= " AND ( ";
@@ -211,7 +210,7 @@ if(isset($_GET['custom'])) {
                         $cond_count++;
                     }
                     $custom_where .= " )";
-                }else{
+                } else {
                     $custom_where .= " AND `$c_as`.`field_data` = '$value' ";
                 }
 
@@ -219,50 +218,41 @@ if(isset($_GET['custom'])) {
             }
         }
     }
-    if($custom_where != "")
+    if ($custom_where != "") {
         $where .= $custom_where;
+    }
 
     if (!empty($_GET['custom'])) {
         $sql = "SELECT DISTINCT p.*
-FROM `".$config['db']['pre']."product` AS p
+FROM `" . $config['db']['pre'] . "product` AS p
 $custom_join
  WHERE status = 'active' AND hide = '0' ";
-    }else{
+    } else {
         $sql = "SELECT DISTINCT p.*
-FROM `".$config['db']['pre']."product` AS p
+FROM `" . $config['db']['pre'] . "product` AS p
  WHERE status = 'active' AND hide = '0' ";
     }
     $q = "$sql $where";
     $totalWithoutFilter = mysqli_num_rows(mysqli_query($mysqli, $q));
-}
-else{
-    $totalWithoutFilter = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM ".$config['db']['pre']."product as p where status = 'active' $where"));
+} else {
+    $totalWithoutFilter = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM " . $config['db']['pre'] . "product as p where status = 'active' $where"));
 }
 
-if(isset($_GET['filter'])){
-    if($_GET['filter'] == 'free')
-    {
-        $where.= "AND (p.urgent='0' AND p.featured='0' AND p.highlight='0') ";
-    }
-    elseif($_GET['filter'] == 'featured')
-    {
-        $where.= "AND (p.featured='1') ";
-    }
-    elseif($_GET['filter'] == 'urgent')
-    {
-        $where.= "AND (p.urgent='1') ";
-    }
-    elseif($_GET['filter'] == 'highlight')
-    {
-        $where.= "AND (p.highlight='1') ";
-    }
-    elseif($_GET['filter'] == 'premium')
-    {
-        $where.= "AND (p.featured='1' or p.urgent='1' or p.highlight='1') ";
+if (isset($_GET['filter'])) {
+    if ($_GET['filter'] == 'free') {
+        $where .= "AND (p.urgent='0' AND p.featured='0' AND p.highlight='0') ";
+    } elseif ($_GET['filter'] == 'featured') {
+        $where .= "AND (p.featured='1') ";
+    } elseif ($_GET['filter'] == 'urgent') {
+        $where .= "AND (p.urgent='1') ";
+    } elseif ($_GET['filter'] == 'highlight') {
+        $where .= "AND (p.highlight='1') ";
+    } elseif ($_GET['filter'] == 'premium') {
+        $where .= "AND (p.featured='1' or p.urgent='1' or p.highlight='1') ";
     }
 }
 
-$grqry = "u.group_id in ('".implode("','",$listing_search_array)."')";
+$grqry = "u.group_id in ('" . implode("','", $listing_search_array) . "')";
 
 $order_by = "
       (CASE
@@ -282,39 +272,36 @@ $order_by = "
         WHEN p.featured = '1' THEN 14
         WHEN p.highlight = '1' THEN 15
         ELSE 16
-      END),".$order_by_keyword." $sort $order";
+      END)," . $order_by_keyword . " $sort $order";
 
-if(isset($_GET['custom']))
-{
+if (isset($_GET['custom'])) {
 
     if (!empty($_GET['custom'])) {
         $sql = "SELECT DISTINCT p.*
-FROM `".$config['db']['pre']."product` AS p
+FROM `" . $config['db']['pre'] . "product` AS p
 $custom_join
- WHERE p.status = 'active' AND p.hide = '0' ";
-    }else{
+ WHERE p.status = 'active' AND p.hide = '0' AND p.expired_date >= '$now'";
+    } else {
         $sql = "SELECT DISTINCT p.*
-FROM `".$config['db']['pre']."product` AS p
- WHERE p.status = 'active' AND p.hide = '0' ";
+FROM `" . $config['db']['pre'] . "product` AS p
+ WHERE p.status = 'active' AND p.hide = '0' AND p.expired_date >= '$now'";
     }
 
-    $query =  $sql . " $where ORDER BY $sort $order LIMIT ".($page_number-1)*$limit.",$limit";
+    $query = $sql . " $where ORDER BY $sort $order LIMIT " . ($page_number - 1) * $limit . ",$limit";
 
     $total = mysqli_num_rows(mysqli_query($mysqli, "$sql $where"));
     $featuredAds = mysqli_num_rows(mysqli_query($mysqli, "$sql and (p.featured='1') $where"));
     $urgentAds = mysqli_num_rows(mysqli_query($mysqli, "$sql and (p.urgent='1') $where"));
 
-}
-else{
-    $total = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM ".$config['db']['pre']."product as p where status = 'active' AND hide = '0' $where"));
-    $featuredAds = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM ".$config['db']['pre']."product as p where status = 'active' AND hide = '0' and featured='1' $where"));
-    $urgentAds = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM ".$config['db']['pre']."product as p where status = 'active' AND hide = '0' and urgent='1' $where"));
+} else {
+    $total = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM " . $config['db']['pre'] . "product as p where status = 'active' AND hide = '0' $where"));
+    $featuredAds = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM " . $config['db']['pre'] . "product as p where status = 'active' AND hide = '0' and featured='1' $where"));
+    $urgentAds = mysqli_num_rows(mysqli_query($mysqli, "SELECT 1 FROM " . $config['db']['pre'] . "product as p where status = 'active' AND hide = '0' and urgent='1' $where"));
 
-
-    $query = "SELECT p.*,u.group_id FROM `".$config['db']['pre']."product` as p
-    INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
-     where p.status = 'active' AND p.hide = '0' $where ORDER BY $order_by LIMIT ".($page_number-1)*$limit.",$limit";
-
+    $query = "SELECT p.*,u.group_id FROM `" . $config['db']['pre'] . "product` as p
+    INNER JOIN `" . $config['db']['pre'] . "user` as u ON u.id = p.user_id
+     where p.status = 'active' AND p.hide = '0' AND p.expired_date >= '$now' $where ORDER BY $order_by LIMIT " . ($page_number - 1) * $limit . ",$limit";
+     
 }
 
 $count = 0;
@@ -324,7 +311,7 @@ $item = array();
 $result = $mysqli->query($query);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
-    while($info = mysqli_fetch_assoc($result)) {
+    while ($info = mysqli_fetch_assoc($result)) {
         $item[$info['id']]['id'] = $info['id'];
         $item[$info['id']]['featured'] = $info['featured'];
         $item[$info['id']]['urgent'] = $info['urgent'];
@@ -333,7 +320,7 @@ if (mysqli_num_rows($result) > 0) {
         $item[$info['id']]['category'] = $info['category'];
         $item[$info['id']]['price'] = $info['price'];
         $item[$info['id']]['phone'] = $info['phone'];
-        $item[$info['id']]['address'] = strlimiter($info['location'],20);
+        $item[$info['id']]['address'] = strlimiter($info['location'], 20);
         $cityname = get_cityName_by_id($info['city']);
         $item[$info['id']]['location'] = $cityname;
         $item[$info['id']]['city'] = $cityname;
@@ -351,8 +338,8 @@ if (mysqli_num_rows($result) > 0) {
             $endPoint = strrpos($stringCut, ' ');
 
             //if the string doesn't contain any space then it will cut without word basis.
-            $description = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
-            $description .= '... <a href="'.$link['POST-DETAIL'].'/'.$info['id'].'">'.$lang['READ_MORE'].'</a>';
+            $description = $endPoint ? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
+            $description .= '... <a href="' . $link['POST-DETAIL'] . '/' . $info['id'] . '">' . $lang['READ_MORE'] . '</a>';
         }
         $item[$info['id']]['desc'] = $description;
 
@@ -370,84 +357,82 @@ if (mysqli_num_rows($result) > 0) {
 
         $item[$info['id']]['favorite'] = check_product_favorite($info['id']);
 
-        $picture     =   explode(',' ,$info['screen_shot']);
+        $picture = explode(',', $info['screen_shot']);
         $item[$info['id']]['pic_count'] = count($picture);
-        if($picture[0] != ""){
+        if ($picture[0] != "") {
             $item[$info['id']]['picture'] = $picture[0];
-        }else{
+        } else {
             $item[$info['id']]['picture'] = "default.png";
         }
         $currency_code = get_countryCurrecny_by_code($info['country']);
-        $price = price_format($info['price'],$currency_code);
+        $price = price_format($info['price'], $currency_code);
         $item[$info['id']]['price'] = $price;
 
-        if($info['tag'] != ''){
+        if ($info['tag'] != '') {
             $item[$info['id']]['showtag'] = "1";
             $tag = explode(',', $info['tag']);
             $tag2 = array();
-            foreach ($tag as $val)
-            {
+            foreach ($tag as $val) {
                 //REMOVE SPACE FROM $VALUE ----
-                $val = preg_replace("/[\s_]/","-", trim($val));
-                $tag2[] = '<li><a href="'.$link['LISTING'].'?keywords='.$val.'">'.$val.'</a> </li>';
+                $val = preg_replace("/[\s_]/", "-", trim($val));
+                $tag2[] = '<li><a href="' . $link['LISTING'] . '?keywords=' . $val . '">' . $val . '</a> </li>';
             }
             $item[$info['id']]['tag'] = implode('  ', $tag2);
-        }else{
+        } else {
             $item[$info['id']]['tag'] = "";
             $item[$info['id']]['showtag'] = "0";
         }
 
-        $user = "SELECT username FROM ".$config['db']['pre']."user where id='".$info['user_id']."'";
+        $user = "SELECT username FROM " . $config['db']['pre'] . "user where id='" . $info['user_id'] . "'";
         $userresult = mysqli_query($mysqli, $user);
         $userinfo = mysqli_fetch_assoc($userresult);
 
         $item[$info['id']]['username'] = $userinfo['username'];
 
-
-        if(check_user_upgrades($info['user_id'])) {
+        if (check_user_upgrades($info['user_id'])) {
             $sub_info = get_user_membership_detail($info['user_id']);
             $item[$info['id']]['sub_title'] = $sub_info['name'];
             $item[$info['id']]['sub_image'] = $sub_info['badge'];
-        }else{
+        } else {
             $item[$info['id']]['sub_title'] = '';
             $item[$info['id']]['sub_image'] = '';
         }
 
-        $item[$info['id']]['highlight_bg'] = ($info['highlight'] == 1)? "highlight-premium-ad" : "";
+        $item[$info['id']]['highlight_bg'] = ($info['highlight'] == 1) ? "highlight-premium-ad" : "";
 
         $author_url = create_slug($userinfo['username']);
 
-        $item[$info['id']]['author_link'] = $link['PROFILE'].'/'.$author_url;
+        $item[$info['id']]['author_link'] = $link['PROFILE'] . '/' . $author_url;
 
         $pro_url = create_slug($info['product_name']);
 
-        $item[$info['id']]['link'] = $link['POST-DETAIL'].'/' . $info['id'] . '/'.$pro_url;
+        $item[$info['id']]['link'] = $link['POST-DETAIL'] . '/' . $info['id'] . '/' . $pro_url;
 
-        $item[$info['id']]['catlink'] = $link['SEARCH_CAT'].'/'.$get_main['slug'];
-        $item[$info['id']]['subcatlink'] = $link['SEARCH_CAT'].'/'.$get_main['slug'].'/'.$get_sub['slug'];
+        $item[$info['id']]['catlink'] = $link['SEARCH_CAT'] . '/' . $get_main['slug'];
+        $item[$info['id']]['subcatlink'] = $link['SEARCH_CAT'] . '/' . $get_main['slug'] . '/' . $get_sub['slug'];
 
         $city = create_slug($item[$info['id']]['city']);
-        $item[$info['id']]['citylink'] = $config['site_url'].'city/'.$info['city'].'/'.$city;
+        $item[$info['id']]['citylink'] = $config['site_url'] . 'city/' . $info['city'] . '/' . $city;
 
-        if ( $count == 4 ) {
+        if ($count == 4) {
             $item[$info['id']]['banner-ad-list-view'] = '{AD_SEARCH_PAGE_BETWEEN_LIST_VIEW}';
             $item[$info['id']]['banner-ad-grid-view'] = '{AD_SEARCH_PAGE_BETWEEN_GRID_VIEW}';
-        }else{
+        } else {
             $item[$info['id']]['banner-ad-list-view'] = '';
             $item[$info['id']]['banner-ad-grid-view'] = '';
         }
 
         $cf_tpl = '';
-        $cf_specific_fields = isset($config['cf_specific_fields'])? $config['cf_specific_fields']: '';
+        $cf_specific_fields = isset($config['cf_specific_fields']) ? $config['cf_specific_fields'] : '';
 
-        if($cf_specific_fields != ''){
-            $cf_specific_fields = explode(',',$cf_specific_fields);
-            $q_result = ORM::for_table($config['db']['pre'].'custom_data')
+        if ($cf_specific_fields != '') {
+            $cf_specific_fields = explode(',', $cf_specific_fields);
+            $q_result = ORM::for_table($config['db']['pre'] . 'custom_data')
                 ->where('product_id', $info['id'])
                 ->where_in('field_id', $cf_specific_fields)
                 ->find_many();
             $item_custom_field = count($q_result);
-            foreach($q_result as $customdata){
+            foreach ($q_result as $customdata) {
                 $field_id = $customdata['field_id'];
                 $field_type = $customdata['field_type'];
                 $field_data = $customdata['field_data'];
@@ -455,32 +440,30 @@ if (mysqli_num_rows($result) > 0) {
                 $custom_fields_title = $cf_array['title'];
                 $custom_fields_icon = $cf_array['icon'];
                 $custom_fields_data = '';
-                if($field_type == 'textarea') {
+                if ($field_type == 'textarea') {
                     $custom_fields_data = stripslashes($field_data);
                 }
 
-                if($field_type == 'radio-buttons' or  $field_type == 'drop-down') {
+                if ($field_type == 'radio-buttons' or $field_type == 'drop-down') {
                     $custom_fields_data = get_customOption_by_id($field_data);
                 }
 
-                if($field_type == 'text-field') {
+                if ($field_type == 'text-field') {
                     $custom_fields_data = stripslashes($field_data);
                 }
 
-                $cf_tpl .= '<li class="list-inline-item"><img src="'.$custom_fields_icon.'" width="14"/> '.$custom_fields_title.': '.$custom_fields_data.'</li>';
+                $cf_tpl .= '<li class="list-inline-item"><img src="' . $custom_fields_icon . '" width="14"/> ' . $custom_fields_title . ': ' . $custom_fields_data . '</li>';
             }
         }
 
-        if($cf_tpl == ""){
-            $item[$info['id']]['desc'] = '<li class="list-inline-item">'.$item[$info['id']]['desc'].'</li>';
+        if ($cf_tpl == "") {
+            $item[$info['id']]['desc'] = '<li class="list-inline-item">' . $item[$info['id']]['desc'] . '</li>';
         }
-        $item[$info['id']]['cf_tpl'] = ($cf_tpl != "")? $cf_tpl : $item[$info['id']]['desc'];
+        $item[$info['id']]['cf_tpl'] = ($cf_tpl != "") ? $cf_tpl : $item[$info['id']]['desc'];
 
         $count++;
     }
-}
-else
-{
+} else {
     //echo "0 results";
 }
 
@@ -489,117 +472,108 @@ $item2 = array();
 $item2 = $item;
 
 $selected = "";
-if(isset($_GET['cat']) && !empty($_GET['cat'])){
+if (isset($_GET['cat']) && !empty($_GET['cat'])) {
     $selected = $_GET['cat'];
 }
 // Check Settings For quotes
 $GetCategory = get_maincategory($selected);
 $cat_dropdown = get_categories_dropdown($lang);
 
-if(isset($_GET['cat']) && !empty($category)){
+if (isset($_GET['cat']) && !empty($category)) {
     $maincatname = get_maincat_by_id($category);
-    $maincatname = isset($maincatname['cat_name'])? $maincatname['cat_name'] : "";
+    $maincatname = isset($maincatname['cat_name']) ? $maincatname['cat_name'] : "";
     $mainCategory = $maincatname;
-}else{
+} else {
     $maincatname = "";
     $mainCategory = "";
 }
-if(isset($_GET['subcat'])){
+if (isset($_GET['subcat'])) {
     $subcatname = get_subcat_by_id($subcat);
-    $subcatname = isset($subcatname['sub_cat_name'])? $subcatname['sub_cat_name'] : "";
+    $subcatname = isset($subcatname['sub_cat_name']) ? $subcatname['sub_cat_name'] : "";
     $subCategory = $subcatname;
-}else{
+} else {
     $subcatname = "";
     $subCategory = "";
 }
 
-if(isset($category) && !empty($category)){
+if (isset($category) && !empty($category)) {
     $Pagetitle = $mainCategory;
-}
-elseif(isset($subcat) && !empty($subcat)){
+} elseif (isset($subcat) && !empty($subcat)) {
     $Pagetitle = $subCategory;
-}
-elseif(!empty($keywords)){
+} elseif (!empty($keywords)) {
     $Pagetitle = ucfirst($keywords);
-}
-else{
+} else {
     $Pagetitle = $lang['ADS_LISTINGS'];
 }
 
-if(!empty($_GET['location'])){
-    $locTitle  =   explode(',' ,$_GET['location']);
-    $locTitle  =   $locTitle[0];
-    $Pagetitle .= " ".$locTitle;
-}
-else{
+if (!empty($_GET['location'])) {
+    $locTitle = explode(',', $_GET['location']);
+    $locTitle = $locTitle[0];
+    $Pagetitle .= " " . $locTitle;
+} else {
     $sortname = check_user_country();
     $countryName = get_countryName_by_sortname($sortname);
-    $Pagetitle .= " ".$countryName;
+    $Pagetitle .= " " . $countryName;
 }
 
-if(isset($_GET['city']) && !empty($_GET['city']))
-{
+if (isset($_GET['city']) && !empty($_GET['city'])) {
     $cityid = $_GET['city'];
     $cityName = get_cityName_by_id($_GET['city']);
-    $Pagetitle = $lang['ADS_LISTINGS']." ".$lang['IN']." ".$cityName;
-}else{
+    $Pagetitle = $lang['ADS_LISTINGS'] . " " . $lang['IN'] . " " . $cityName;
+} else {
     $cityid = "";
     $cityName = "";
 }
 
 // Output to template
-$page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-listing.tpl');
-$page->SetParameter ('OVERALL_HEADER', create_header($Pagetitle));
-$page->SetParameter ('PAGETITLE', $Pagetitle);
-$page->SetLoop ('ITEM', $item);
-$page->SetLoop ('ITEM2', $item2);
-$page->SetLoop ('CATEGORY',$GetCategory);
-$page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
-$page->SetParameter ('SERKEY', $keywords);
-$page->SetParameter ('MAINCAT', $category);
-$page->SetParameter ('SUBCAT', $subcat);
-$page->SetParameter ('MAINCATEGORY', $mainCategory);
-$page->SetParameter ('SUBCATEGORY', $subCategory);
-$page->SetParameter ('BUDGET', $budget);
-$page->SetParameter ('KEYWORDS', $keywords);
-$page->SetParameter ('CITY', $cityid);
-$page->SetParameter ('CITYNAME', $cityName);
-$page->SetParameter ('RANGE1', $range1);
-$page->SetParameter ('RANGE2', $range2);
-$page->SetParameter ('ADSFOUND', $total);
-$page->SetParameter ('TOTALADSFOUND', $totalWithoutFilter);
-$page->SetParameter ('FEATUREDFOUND', $featuredAds);
-$page->SetParameter ('URGENTFOUND', $urgentAds);
-$page->SetParameter ('LIMIT', $limit);
-$page->SetParameter ('FILTER', $filter);
-$page->SetParameter ('SORT', $sorting);
-$page->SetParameter ('ORDER', $order);
-$page->SetParameter ('NO_RESULT_ID', $noresult_id);
-if(isset($_SESSION['user']['id']))
-{
-    $page->SetParameter('USER_ID',$_SESSION['user']['id']);
+$page = new HtmlTemplate('templates/' . $config['tpl_name'] . '/ad-listing.tpl');
+$page->SetParameter('OVERALL_HEADER', create_header($Pagetitle));
+$page->SetParameter('PAGETITLE', $Pagetitle);
+$page->SetLoop('ITEM', $item);
+$page->SetLoop('ITEM2', $item2);
+$page->SetLoop('CATEGORY', $GetCategory);
+$page->SetParameter('CAT_DROPDOWN', $cat_dropdown);
+$page->SetParameter('SERKEY', $keywords);
+$page->SetParameter('MAINCAT', $category);
+$page->SetParameter('SUBCAT', $subcat);
+$page->SetParameter('MAINCATEGORY', $mainCategory);
+$page->SetParameter('SUBCATEGORY', $subCategory);
+$page->SetParameter('BUDGET', $budget);
+$page->SetParameter('KEYWORDS', $keywords);
+$page->SetParameter('CITY', $cityid);
+$page->SetParameter('CITYNAME', $cityName);
+$page->SetParameter('RANGE1', $range1);
+$page->SetParameter('RANGE2', $range2);
+$page->SetParameter('ADSFOUND', $total);
+$page->SetParameter('TOTALADSFOUND', $totalWithoutFilter);
+$page->SetParameter('FEATUREDFOUND', $featuredAds);
+$page->SetParameter('URGENTFOUND', $urgentAds);
+$page->SetParameter('LIMIT', $limit);
+$page->SetParameter('FILTER', $filter);
+$page->SetParameter('SORT', $sorting);
+$page->SetParameter('ORDER', $order);
+$page->SetParameter('NO_RESULT_ID', $noresult_id);
+if (isset($_SESSION['user']['id'])) {
+    $page->SetParameter('USER_ID', $_SESSION['user']['id']);
     $page->SetParameter('LOGGED_IN', 1);
-}
-else
-{
-    $page->SetParameter('USER_ID','');
+} else {
+    $page->SetParameter('USER_ID', '');
     $page->SetParameter('LOGGED_IN', 0);
 }
 
-$page->SetLoop ('SUBCATLIST',$SubCatList);
+$page->SetLoop('SUBCATLIST', $SubCatList);
 
 $Pagelink = "";
-if(count($_GET) >= 1){
+if (count($_GET) >= 1) {
     $get = http_build_query($_GET);
-    $Pagelink .= "?".$get;
+    $Pagelink .= "?" . $get;
 
-    $page->SetLoop ('PAGES', pagenav($total,$page_number,$limit,$link['LISTING'].$Pagelink,1));
-}else{
-    $page->SetLoop ('PAGES', pagenav($total,$page_number,$limit,$link['LISTING']));
+    $page->SetLoop('PAGES', pagenav($total, $page_number, $limit, $link['LISTING'] . $Pagelink, 1));
+} else {
+    $page->SetLoop('PAGES', pagenav($total, $page_number, $limit, $link['LISTING']));
 }
-$page->SetLoop ('CUSTOMFIELDS',$custom_fields);
-$page->SetParameter ('SHOWCUSTOMFIELD', (count($custom_fields) > 0) ? 1 : 0);
-$page->SetParameter ('CATEGORY', "Ads Listing");
-$page->SetParameter ('OVERALL_FOOTER', create_footer());
+$page->SetLoop('CUSTOMFIELDS', $custom_fields);
+$page->SetParameter('SHOWCUSTOMFIELD', (count($custom_fields) > 0) ? 1 : 0);
+$page->SetParameter('CATEGORY', "Ads Listing");
+$page->SetParameter('OVERALL_FOOTER', create_footer());
 $page->CreatePageEcho();
-?>
