@@ -52,7 +52,7 @@ if( !empty($params['search']['value']) ){
 
 
 // getting total number records without any search
-$sql = "SELECT p.id,p.user_id,p.product_name,p.created_at,p.status,p.screen_shot,p.featured,p.urgent,p.highlight, c.name as cityname, cat.cat_name as catname, u.username as username
+$sql = "SELECT p.id,p.user_id,p.product_name,p.created_at,p.status,p.is_verified,p.screen_shot,p.featured,p.urgent,p.highlight, c.name as cityname, cat.cat_name as catname, u.username as username
 FROM `".$config['db']['pre']."product` as p
 INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
 INNER JOIN `".$config['db']['pre']."cities` as c ON c.id = p.city
@@ -82,6 +82,8 @@ $queryTot = $pdo->query($sqlTot);
 $totalRecords = $queryTot->rowCount();
 $queryRecords = $pdo->query($sqlRec);
 
+
+
 //iterate on results row and create new index array of data
 foreach ($queryRecords as $row) {
     $id = $row['id'];
@@ -95,6 +97,7 @@ foreach ($queryRecords as $row) {
     $featured = $row['featured'];
     $urgent = $row['urgent'];
     $highlight = $row['highlight'];
+    $is_verified = $row['is_verified'];
 
     if($picture[0] != ""){
         $image = $picture[0];
@@ -141,6 +144,15 @@ foreach ($queryRecords as $row) {
     else{
         $approved_button = "";
     }
+    
+    if($ad_status == "active"){
+        if($is_verified == false){
+            $verified_button = '<a href="#" title="Verified" class="btn btn-xs btn-success item-verified" data-ajax-action="verifieditem"><i class="ion-android-done"></i></a>';
+        }else {
+            $verified_button = '<a href="#" title="Unverified" class="btn btn-xs btn-warning item-verified" data-ajax-action="unverifieditem">X</a>';
+        }
+
+    }
 
     $row0 = '<td class="text-center">
                 <div class="select_checkbox">
@@ -166,6 +178,7 @@ foreach ($queryRecords as $row) {
                     <a href="post_detail.php?id='.$id.'" title="View Ad" class="btn btn-xs btn-default"><i class="ion-eye"></i></a>
                     <a href="#" data-url="panel/post_edit.php?id='.$id.'" data-toggle="slidePanel"  title="Edit" class="btn btn-xs btn-default"> <i class="ion-edit"></i> </a>
                     <a href="#" title="Delete" class="btn btn-xs btn-default item-js-delete" data-ajax-action="deleteads"><i class="ion-android-delete"></i></a>
+                    '.$verified_button.'
                 </div>
             </td>';
     $value = array(
