@@ -749,7 +749,8 @@ class Api extends Rest
                 $adminSeen = isset($_POST['admin_seen']) ? $_POST['admin_seen'] : 0;
                 $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
-
+                $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
+                
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
                 if ($total_count > 0) {
@@ -826,7 +827,9 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
 
-                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+                $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$expire_days.' day'));
+
+                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
                 $createdDate = date('Y-m-d H:i:s');
                 $featuredExpDate = null;
@@ -856,6 +859,8 @@ class Api extends Rest
                 $stmt->bindParam(':view', $view);
                 $stmt->bindParam(':created_at', $createdDate);
                 $stmt->bindParam(':updated_at', $createdDate);
+                $stmt->bindParam(':expire_days', $expire_days);
+                $stmt->bindParam(':expired_date', $expired_date);
                 $stmt->bindParam(':expire_date', $expire_timestamp);
                 $stmt->bindParam(':featured_exp_date', $featuredExpDate);
                 $stmt->bindParam(':urgent_exp_date', $featuredExpDate);
