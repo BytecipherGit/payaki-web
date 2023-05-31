@@ -899,10 +899,14 @@ class Api extends Rest
         try {
             $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
             if (!empty($postId)) {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id=:id";
+                $now = date("Y-m-d H:i:s");
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id=:id AND ap.status='active' AND ap.expired_date >= :expired_date";
                 $postData = $this->dbConn->prepare($getpost);
                 $postData->bindValue(':id', $postId, PDO::PARAM_STR);
+                $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
                 $postData->execute();
+                // echo "Last executed query: " . $postData->queryString;
+                // exit;
                 $postData = $postData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($postData)) {
                     // Get location,City, State, Country
@@ -1009,7 +1013,7 @@ class Api extends Rest
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement details fetched.", "data" => $postData];
                     $this->returnResponse($response);
                 } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $response = ["status" => false, "code" => 400, "Message" => "Post not found."];
                     $this->returnResponse($response);
                 }
             } else {
@@ -1031,10 +1035,12 @@ class Api extends Rest
             if (!empty($token)) {
                 $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
                 if (!empty($payload->userId)) {
+                    $now = date("Y-m-d H:i:s");
                     $responseArr = array();
-                    $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId";
+                    $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId AND ap.status='active' AND ap.expired_date >= :expired_date";
                     $postData = $this->dbConn->prepare($getpost);
                     $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
                     $postData->execute();
                     $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
                     if (count($postData) > 0) {
@@ -1078,10 +1084,12 @@ class Api extends Rest
             if (!empty($token)) {
                 $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
                 if (!empty($payload->userId)) {
+                    $now = date("Y-m-d H:i:s");
                     $responseArr = array();
-                    $getpost = "SELECT af.*,ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_favads AS af LEFT JOIN ad_product AS ap ON ap.id = af.product_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE af.user_id=:userId ORDER BY af.product_id ASC";
+                    $getpost = "SELECT af.*,ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_favads AS af LEFT JOIN ad_product AS ap ON ap.id = af.product_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE af.user_id=:userId AND ap.status='active' AND ap.expired_date >= :expired_date ORDER BY af.product_id ASC";
                     $postData = $this->dbConn->prepare($getpost);
                     $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
                     $postData->execute();
                     $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
                     if (count($postData) > 0) {
@@ -1121,9 +1129,11 @@ class Api extends Rest
     public function getAllPost()
     {
         try {
+            $now = date("Y-m-d H:i:s");
             $responseArr = array();
-            // $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE status='active'";
-            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE 1=1";
+            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE status='active' AND ap.expired_date >= :expired_date";
+            // $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE 1=1";
+
             if (!empty($this->param['title'])) {
                 $getpost .= " AND ap.product_name LIKE CONCAT( '%', :title, '%')";
             }
@@ -1166,8 +1176,9 @@ class Api extends Rest
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
                 $getpost .= " ORDER BY ap.created_at DESC";
             }
-
             $postData = $this->dbConn->prepare($getpost);
+            
+            $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
 
             if (!empty($this->param['title'])) {
                 $postData->bindValue(':title', $this->param['title'], PDO::PARAM_STR);
