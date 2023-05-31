@@ -309,6 +309,19 @@ IF("{POST_WATERMARK}"=="0"){
                                     <small>{LANG_TAGS_DETAIL}</small>
                                 </div>
                                 {:IF}
+
+                                <div class="submit-field form-group">
+                                        <h5>Available Days</h5>
+                                        <select class="with-border" style="padding: 10px 18px !important;" type="text" name="available_days">
+                                        <option value="1" IF("{EXPIRE_DAYS}"=="1"){ selected {:IF}>1 Day</option>
+                                        <option value="2" IF("{EXPIRE_DAYS}"=="2"){ selected {:IF}>2 Days</option>
+                                        <option value="5" IF("{EXPIRE_DAYS}"=="5"){ selected {:IF}>5 Days</option>
+                                        <option value="10" IF("{EXPIRE_DAYS}"=="10"){ selected {:IF}>10 Days</option>
+                                        <option value="20" IF("{EXPIRE_DAYS}"=="20"){ selected {:IF}>20 Days</option>
+                                        <option value="30" IF("{EXPIRE_DAYS}"=="30"){ selected {:IF}>30 Days</option>
+                                        <option value="60" IF("{EXPIRE_DAYS}"=="60"){ selected {:IF}>60 Days</option>
+                                        </select>
+                                    </div>
                             </div>
                         </div>
                     </div>
