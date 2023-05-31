@@ -2727,8 +2727,10 @@ function cancel_recurring_payment($user_id = false) {
 function get_items_count($userid=false,$status=null,$premium=false,$getbysubcat=null,$getbymaincat=null,$location=false){
 
     global $config;
+    $now = date("Y-m-d H:i:s");
     $where = '';
     $where_array = array();
+    $where .= "where expired_date >= '$now'";
     if($userid){
         $where_array['user_id'] = $userid;
         if($where == '')
@@ -2790,6 +2792,7 @@ function get_items_count($userid=false,$status=null,$premium=false,$getbysubcat=
         else
             $where .= " AND country = '".$country_code."'";
     }
+
 
     $pdo = ORM::get_db();
     $query = "SELECT id FROM `".$config['db']['pre']."product` $where ";
