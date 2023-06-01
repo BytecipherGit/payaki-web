@@ -1739,7 +1739,7 @@ function get_items($userid=null,$status=null,$premium=false,$page=null,$limit=nu
         $pagelimit = "LIMIT  ".($page-1)*$limit.",".$limit;
     }
 
-    $query = "SELECT p.id,p.product_name,p.description,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_date,p.view,
+    $query = "SELECT p.id,p.product_name,p.description,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_days,p.expired_date,p.is_verified,p.expire_date,p.view,
 u.group_id
 FROM `".$config['db']['pre']."product` as p
 INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
@@ -1750,6 +1750,39 @@ $where ORDER BY $order_by $pagelimit";
     if ($result) {
         foreach ($result as $info)
         {
+            $currentDateTime = new DateTime(); // Current date and time
+            $expirationDate = new DateTime($info['expired_date']); // Expiration date and time
+
+            // Calculate the difference between the current date/time and the expiration date/time
+            $interval = $currentDateTime->diff($expirationDate);
+
+            $daysLeft = $interval->d;
+            $hoursLeft = $interval->h;
+            $minutesLeft = $interval->i;
+            $secondsLeft = $interval->s;
+            $expiretime = "";
+            if(!empty($daysLeft)){
+                $expiretime .= "".$daysLeft." Days left";
+            } elseif(!empty($hoursLeft)){
+                $expiretime .= "".$hoursLeft." Hours left";
+            } elseif(!empty($minutesLeft)){
+                $expiretime .= "".$minutesLeft." Minutes left";
+            } elseif(!empty($secondsLeft)){
+                $expiretime .= "".$secondsLeft." Seconds left";
+            }
+
+            // $expiretime = "".$daysLeft." Days ".$hoursLeft." Hours ".$minutesLeft." Minutes ".$secondsLeft." Seconds Left";
+            // echo "Days left: " . $daysLeft . "\n";
+            // echo "Hours left: " . $hoursLeft . "\n";
+            // echo "Minutes left: " . $minutesLeft . "\n";
+            // echo "Seconds left: " . $secondsLeft . "\n";
+            if($info['is_verified'] == 1){
+                $verified = '<p style="color: green;"><i class="la la-check-square-o"></i>Verified</p>';
+            } else {
+                $verified = '<p></p>';
+            }
+            
+
             $item[$info['id']]['id'] = $info['id'];
             $item[$info['id']]['user_id'] = $info['user_id'];
             $item[$info['id']]['product_name'] = $info['product_name'];
@@ -1773,7 +1806,8 @@ $where ORDER BY $order_by $pagelimit";
             $expire_date_timestamp = $info['expire_date'];
             $expire_date = date('d-M-y', $expire_date_timestamp);
             $item[$info['id']]['expire_date'] = $expire_date;
-
+            $item[$info['id']]['verified'] = $verified;
+            $item[$info['id']]['expiretime'] = $expiretime;
             $item[$info['id']]['cat_id'] = $info['category'];
             $item[$info['id']]['sub_cat_id'] = $info['sub_category'];
             $get_main = get_maincat_by_id($info['category']);

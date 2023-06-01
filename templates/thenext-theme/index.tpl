@@ -136,6 +136,8 @@
                                             <ul class="prop_details mb0">
                                                 {ITEM.cf_tpl}
                                             </ul>
+                                            <p><i class="la la la-clock-o"></i>{ITEM.expiretime}</p>
+                                            {ITEM.verified}
                                         </div>
                                         <div class="listing-footer">
                                             <a class="author-link" href="{LINK_PROFILE}/{ITEM.username}"><i class="fa fa-user" aria-hidden="true"></i> {ITEM.username}</a>
@@ -188,6 +190,8 @@
                                             <li><i class="la la-credit-card"></i> {ITEM2.price}</li>
                                             {:IF}
                                             <li><i class="la la-clock-o"></i> {ITEM2.created_at}</li>
+                                            <li><i class="la la-clock-o"></i> {ITEM2.expiretime}</li>
+                                            <li>{ITEM2.verified}</li>
                                         </ul>
                                     </div>
                                 </div>
