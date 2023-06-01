@@ -172,6 +172,8 @@
                                 <li><i class="la la-credit-card"></i> {ITEM.price}</li>
                                 {:IF}
                                 <li><i class="la la-clock-o"></i> {ITEM.created_at}</li>
+                                <li><i class="la la-clock-o"></i> {ITEM.expiretime}</li>
+                                <li>{ITEM.verified}</li>
                             </ul>
                             <span class="fav-icon set-item-fav IF('{ITEM.favorite}'){ added {:IF}" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd"></span>
                         </div>

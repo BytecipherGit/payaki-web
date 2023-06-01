@@ -312,6 +312,34 @@ $result = $mysqli->query($query);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
     while ($info = mysqli_fetch_assoc($result)) {
+       
+        $currentDateTime = new DateTime(); // Current date and time
+        $expirationDate = new DateTime($info['expired_date']); // Expiration date and time
+
+        // Calculate the difference between the current date/time and the expiration date/time
+        $interval = $currentDateTime->diff($expirationDate);
+
+        $daysLeft = $interval->d;
+        $hoursLeft = $interval->h;
+        $minutesLeft = $interval->i;
+        $secondsLeft = $interval->s;
+        $expiretime = "";
+        if(!empty($daysLeft)){
+            $expiretime .= "".$daysLeft." Days left";
+        } elseif(!empty($hoursLeft)){
+            $expiretime .= "".$hoursLeft." Hours left";
+        } elseif(!empty($minutesLeft)){
+            $expiretime .= "".$minutesLeft." Minutes left";
+        } elseif(!empty($secondsLeft)){
+            $expiretime .= "".$secondsLeft." Seconds left";
+        }
+
+        if($info['is_verified'] == 1){
+            $verified = '<p style="color: green;"><i class="la la-check-square-o"></i>Verified</p>';
+        } else {
+            $verified = '<p></p>';
+        }
+
         $item[$info['id']]['id'] = $info['id'];
         $item[$info['id']]['featured'] = $info['featured'];
         $item[$info['id']]['urgent'] = $info['urgent'];
@@ -348,6 +376,8 @@ if (mysqli_num_rows($result) > 0) {
         $item[$info['id']]['view'] = thousandsCurrencyFormat($info['view']);
         $item[$info['id']]['created_at'] = timeAgo($info['created_at']);
         //$item[$info['id']]['updated_at'] = date('d M Y', $info['updated_at']);
+        $item[$info['id']]['verified'] = $verified;
+        $item[$info['id']]['expiretime'] = $expiretime;
         $item[$info['id']]['cat_id'] = $info['category'];
         $item[$info['id']]['sub_cat_id'] = $info['sub_category'];
         $get_main = get_maincat_by_id($info['category']);
