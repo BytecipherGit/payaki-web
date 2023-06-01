@@ -1295,8 +1295,6 @@ class Api extends Rest
                         $responseArr['premium'][$key]['image']=[];
                     }
                 }
-                $response = ["status" => true, "code" => 200, "Message" => "All Advertisement successfully fetched.", "data" => $responseArr];
-                $this->returnResponse($response);
             } else {
                 $responseArr['premium'] = [];
             }
@@ -1338,8 +1336,6 @@ class Api extends Rest
                         $responseArr['latest'][$key]['image']=[];
                     }
                 }
-                $response = ["status" => true, "code" => 200, "Message" => "All Advertisement successfully fetched.", "data" => $responseArr];
-                $this->returnResponse($response);
             } else {
                 $responseArr['latest'] = [];
             }
