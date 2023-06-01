@@ -1777,7 +1777,7 @@ $where ORDER BY $order_by $pagelimit";
             // echo "Minutes left: " . $minutesLeft . "\n";
             // echo "Seconds left: " . $secondsLeft . "\n";
             if($info['is_verified'] == 1){
-                $verified = '<p style="color: green;"><i class="la la-check-square-o"></i>Verified</p>';
+                $verified = '<img src="{SITE_URL}storage/logo/{SITE_LOGO}" alt="{SITE_TITLE}" style="max-width: 39px; max-height: 39px;">';
             } else {
                 $verified = '<p></p>';
             }
