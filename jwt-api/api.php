@@ -967,12 +967,12 @@ class Api extends Rest
                     }
 
                     if(!empty($categoryId) && !empty($subCategoryId)){
-                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                         $similarPostData->bindValue(':sub_category', $subCategoryId, PDO::PARAM_STR);
                     } else if(!empty($categoryId)){
-                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
+                        $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                     }
@@ -1671,7 +1671,7 @@ class Api extends Rest
                         $stmt->bindParam(":user_id", $user_id);
                         $stmt->bindParam(":product_id", $product_id);
                         if ($stmt->execute()) {
-                            $response = ["status" => true, "code" => 200, "Message" => "You successfully disliked this products."];
+                            $response = ["status" => true, "code" => 200, "Message" => "Product successfully added in your favourite list."];
                             $this->returnResponse($response);
                         } else {
                             $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
