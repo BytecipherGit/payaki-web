@@ -172,14 +172,11 @@
                                 <li><i class="la la-credit-card"></i> {ITEM.price}</li>
                                 {:IF}
                                 <li><i class="la la-clock-o"></i> {ITEM.created_at}</li>
-<<<<<<< HEAD
+                                <li><i class="la la-clock-o"></i> {ITEM.expiretime}</li>
+                                <li>{ITEM.verified}</li>
                                 <li>
                                     <button type="button" data-id="{ITEM.id}" data-qty="1" class="button add_2_cart">Add to Cart</button>
                                 </li>
-=======
-                                <li><i class="la la-clock-o"></i> {ITEM.expiretime}</li>
-                                <li>{ITEM.verified}</li>
->>>>>>> developer
                             </ul>
                             <span class="fav-icon set-item-fav IF('{ITEM.favorite}'){ added {:IF}" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd"></span>
                         </div>

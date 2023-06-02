@@ -93,6 +93,7 @@ $router->map('GET|POST','/blog/[i:id]?/[*:slug]?/?', 'blog-single.php');
 $router->map('GET|POST','/webhook/[*:i]?/?', 'webhook.php');
 $router->map('GET|POST','/invoice/[i:id]?/?', 'invoice.php');
 $router->map('GET|POST','/viewcart/?', 'viewcart.php');
+$router->map('GET|POST','/checkout/?', 'checkout.php');
 // API Routes
 
 /* Match the current request */

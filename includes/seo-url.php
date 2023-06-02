@@ -46,4 +46,5 @@ $link['BLOG-AUTHOR']    = $config['site_url'] . 'blog/author';
 $link['INVOICE']        = $config['site_url'] . 'invoice';
 $link['ADVERTISE_HERE'] = $config['site_url'] . 'advertise-here';
 $link['VIEWCART']       = $config['site_url'].'viewcart';
+$link['CHECKOUT']       = $config['site_url'].'checkout';
 ?>
