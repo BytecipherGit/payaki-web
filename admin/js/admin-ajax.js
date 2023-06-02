@@ -193,6 +193,76 @@ jQuery(function($) {
         });
     });
 
+    //Verified Ads
+    $('#ajax-services').on('click', '.item-verified', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var action = $(this).data('ajax-action');
+        var $item = $(this).closest('tr');
+        var data = { action: action, id: $item.attr('id') };
+        if(action == 'verifieditem'){
+            swal({
+                title: "Are you sure?",
+                text: "You want to Verified this Item.!",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#8BC34A",
+                confirmButtonText: "Yes, Verified!",
+                closeOnConfirm: false
+            }, function(){
+                jQuery('.confirm').addClass('bookme-progress');
+    
+                $.post(ajaxurl+'?action='+action, data, function(response) {
+                        if(response != '0') {
+                            $item.find('.label').html("Verified");
+                            $item.find('.label').removeClass('label-warning');
+                            $item.find('.label').addClass('label-success');
+                            $item.find('.item-verified').remove();
+    
+                            alertify.success("Verified! Item has been Verified.");
+                            swal.close();
+                            location.reload();
+                        }else{
+                            swal("Error!", "Problem in Item Verified, Please try again.", "error");
+                        }
+                        jQuery('.confirm').removeClass('bookme-progress');
+    
+                });
+            });
+        } else {
+            swal({
+                title: "Are you sure?",
+                text: "You want to Un-verified this Item.!",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#8BC34A",
+                confirmButtonText: "Yes, Un-verified!",
+                closeOnConfirm: false
+            }, function(){
+                jQuery('.confirm').addClass('bookme-progress');
+    
+                $.post(ajaxurl+'?action='+action, data, function(response) {
+                        if(response != '0') {
+                            $item.find('.label').html("Un-verified");
+                            $item.find('.label').removeClass('label-warning');
+                            $item.find('.label').addClass('label-success');
+                            $item.find('.item-verified').remove();
+    
+                            alertify.success("Un-verified! Item has been Unverified.");
+                            swal.close();
+                            location.reload();
+                        }else{
+                            swal("Error!", "Problem in Item Un-verified, Please try again.", "error");
+                        }
+                        jQuery('.confirm').removeClass('bookme-progress');
+    
+                });
+            });
+        }
+        
+    });
+
     //ACTIVE BANNED USER
     $('#ajax-services').on('click', '.user-js-active', function(e) {
         e.stopPropagation();

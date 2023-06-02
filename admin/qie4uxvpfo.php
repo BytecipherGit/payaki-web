@@ -53,6 +53,8 @@ if(isset($_GET['action'])){
     if ($_GET['action'] == "deletefaq") { deletefaq(); }
     if ($_GET['action'] == "delcoustomfield") { delcoustomfield(); }
     if ($_GET['action'] == "approveitem") { approveitem(); }
+    if ($_GET['action'] == "verifieditem") { verifieditem(); }
+    if ($_GET['action'] == "unverifieditem") { unverifieditem(); }
     if ($_GET['action'] == "approveResubmitItem") { approveResubmitItem(); }
     if ($_GET['action'] == "activeuser") { activeuser(); }
     if ($_GET['action'] == "banuser") { banuser(); }
@@ -1172,6 +1174,84 @@ function approveitem()
     if (trim($id) != '') {
         if(check_allow()){
             $con->query("UPDATE `".$config['db']['pre']."product` set status='active' WHERE `id` = '".$id."'");
+
+            $query = "SELECT product_name,user_id from `".$config['db']['pre']."product` WHERE `id` = '".$id."' LIMIT 1";
+            $result = mysqli_query($con, $query);
+            if (mysqli_num_rows($result) > 0) {
+                $info = mysqli_fetch_assoc($result);
+
+                //Ad approve Email to seller
+                $product_id = $_POST['id'];
+                $item_title = $info['product_name'];
+                $item_author_id = $info['user_id'];
+
+                /*SEND AD APPROVE FIREBASE NOTIFICATION*/
+                $note_title = "Congratulations!!";
+                $message = $item_title." has been approved, Make it premium for more visibility.";
+
+                $type = "ad_approve";
+                add_firebase_notification("","","",$item_author_id,$product_id,$item_title,$type,$message);
+
+                sendFCM($message,$item_author_id,$note_title,$sending_type = "one_user");
+                /*SEND AD APPROVE EMAIL TO USER*/
+                email_template("ad_approve",$item_author_id,null,$product_id,$item_title);
+            }
+        }
+
+        echo 1;
+        die();
+    } else {
+        echo 0;
+        die();
+    }
+}
+
+function verifieditem()
+{
+    global $con,$config,$lang,$link;
+    $id = $_POST['id'];
+    if (trim($id) != '') {
+        if(check_allow()){
+            $con->query("UPDATE `".$config['db']['pre']."product` set is_verified='1' WHERE `id` = '".$id."'");
+
+            $query = "SELECT product_name,user_id from `".$config['db']['pre']."product` WHERE `id` = '".$id."' LIMIT 1";
+            $result = mysqli_query($con, $query);
+            if (mysqli_num_rows($result) > 0) {
+                $info = mysqli_fetch_assoc($result);
+
+                //Ad approve Email to seller
+                $product_id = $_POST['id'];
+                $item_title = $info['product_name'];
+                $item_author_id = $info['user_id'];
+
+                /*SEND AD APPROVE FIREBASE NOTIFICATION*/
+                $note_title = "Congratulations!!";
+                $message = $item_title." has been approved, Make it premium for more visibility.";
+
+                $type = "ad_approve";
+                add_firebase_notification("","","",$item_author_id,$product_id,$item_title,$type,$message);
+
+                sendFCM($message,$item_author_id,$note_title,$sending_type = "one_user");
+                /*SEND AD APPROVE EMAIL TO USER*/
+                email_template("ad_approve",$item_author_id,null,$product_id,$item_title);
+            }
+        }
+
+        echo 1;
+        die();
+    } else {
+        echo 0;
+        die();
+    }
+}
+
+function unverifieditem()
+{
+    global $con,$config,$lang,$link;
+    $id = $_POST['id'];
+    if (trim($id) != '') {
+        if(check_allow()){
+            $con->query("UPDATE `".$config['db']['pre']."product` set is_verified='0' WHERE `id` = '".$id."'");
 
             $query = "SELECT product_name,user_id from `".$config['db']['pre']."product` WHERE `id` = '".$id."' LIMIT 1";
             $result = mysqli_query($con, $query);

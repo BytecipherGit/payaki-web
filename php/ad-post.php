@@ -328,6 +328,13 @@ function ajax_post_advertise(){
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$ad_duration.' day'));
                 $expire_timestamp = strtotime($expire_time);
 
+
+                if(isset($_POST['available_days'])){
+                    $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$_POST['available_days'].' day'));
+                } else {
+                    $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +7 day'));
+                }
+
                 $item_insrt = ORM::for_table($config['db']['pre'].'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->product_name = validate_input($post_title);
@@ -349,6 +356,8 @@ function ajax_post_advertise(){
                 $item_insrt->tag = validate_input($tags);
                 $item_insrt->created_at = $timenow;
                 $item_insrt->updated_at = $timenow;
+                $item_insrt->expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
+                $item_insrt->expired_date = $expired_date;
                 $item_insrt->expire_date = $expire_timestamp;
                 $item_insrt->save();
 
