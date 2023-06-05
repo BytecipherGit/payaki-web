@@ -1162,6 +1162,12 @@ class Api extends Rest
             $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
             }*/
 
+            if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
+                $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight)";
+            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
+                $getpost .= " ORDER BY ap.updated_at DESC";
+            }
+
             if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
                 $getpost .= " ORDER BY ap.product_name ASC";
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc') {
@@ -1201,6 +1207,12 @@ class Api extends Rest
             if (!empty($this->param['country'])) {
                 $postData->bindValue(':countryId', $this->param['country'], PDO::PARAM_STR);
             }
+
+            if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
+                $postData->bindValue(':featured', 1, PDO::PARAM_STR);
+                $postData->bindValue(':urgent', 1, PDO::PARAM_STR);
+                $postData->bindValue(':highlight', 1, PDO::PARAM_STR);
+            } 
 
             $postData->execute();
             // echo "Last executed query: " . $postData->queryString;
