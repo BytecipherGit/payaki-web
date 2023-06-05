@@ -1,9 +1,11 @@
 <?php
 if (isset($_SESSION["cart"])) {
-    // echo '<pre>';
-    // print_r($_SESSION["cart"]);
-    // // echo $lang['PROFILE'];
-    // die();
+    
+    if (isset($_SESSION["cart"]) && isset($_POST["submit"])) {
+        echo '<pre>';
+        print_r($_POST);
+        die();    
+    }
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/checkout.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
     $page->SetLoop ('CART', $_SESSION["cart"]);

@@ -9,54 +9,70 @@
             </div>
             <div class="content with-padding">
                <div class="table-responsive">
-                  <form role="form" action="/action_page.php" method="post">
-			    			<div class="row">
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			                <input type="text" name="first_name" id="first_name" class="form-control input-sm" placeholder="First Name">
-			    					</div>
-			    				</div>
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			    						<input type="text" name="last_name" id="last_name" class="form-control input-sm" placeholder="Last Name">
-			    					</div>
-			    				</div>
-			    			</div>
-
-			    			<div class="form-group">
-			    				<input type="email" name="email" id="email" class="form-control input-sm" placeholder="Email Address">
-			    			</div>
-
-			    			<div class="row">
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			    						<input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password">
-			    					</div>
-			    				</div>
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			    						<input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">
-			    					</div>
-			    				</div>
-			    			</div>
-
+                  <form method="post" name="checkout-form" id="checkout-form" action="#" accept-charset="UTF-8" enctype="multipart/form-data">
                      <div class="row">
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			    						
-			    					</div>
-			    				</div>
-			    				<div class="col-xs-6 col-sm-6 col-md-6">
-			    					<div class="form-group">
-			    						<input type="submit" value="Register" class="btn btn-info btn-block" style="float:right;">
-			    					</div>
-			    				</div>
-			    			</div>
-			    			
-			    		</form>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="name" id="name" class="form-control input-sm" placeholder="Full Name">
+                           </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="email" name="email" id="email" class="form-control input-sm" placeholder="Email Address">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="country" id="country" class="form-control input-sm" placeholder="Country">
+                           </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="state" id="state" class="form-control input-sm" placeholder="State">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="city" id="city" class="form-control input-sm" placeholder="City">
+                           </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="pincode" id="pincode" class="form-control input-sm" placeholder="Pincode">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="address" id="address" class="form-control input-sm" placeholder="Full Address">
+                           </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <input type="text" name="mobile" id="mobile" class="form-control input-sm" placeholder="Contact Mobile">
+                           </div>
+                        </div>
+                     </div>
+                     <input type="hidden" name="amount" id="amount" value="{TOTAL}">
+                     <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                           </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                           <div class="form-group">
+                              <button class="button full-width button-sliding-icon ripple-effect margin-top-10" name="submit" type="submit">Checkout</button>
+                           </div>
+                        </div>
+                     </div>
+                  </form>
                </div>
             </div>
-            
          </div>
       </div>
    </div>
