@@ -1162,11 +1162,9 @@ class Api extends Rest
             $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
             }*/
 
-            if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
-                $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight)";
-            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
-                $getpost .= " ORDER BY ap.updated_at DESC";
-            }
+            // if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
+            //     $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight)";
+            // }
 
             if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
                 $getpost .= " ORDER BY ap.product_name ASC";
@@ -1179,7 +1177,11 @@ class Api extends Rest
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc') {
                 $getpost .= " ORDER BY ap.created_at ASC";
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
-                $getpost .= " ORDER BY ap.created_at DESC";
+                $getpost .= " ORDER BY ap.updated_at DESC";
+            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium'){
+                $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight) ORDER BY ap.updated_at DESC";
+            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest'){
+                $getpost .= " ORDER BY ap.updated_at DESC";
             }
             $postData = $this->dbConn->prepare($getpost);
             
