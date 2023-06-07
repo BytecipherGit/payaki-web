@@ -542,6 +542,7 @@ class Api extends Rest
                     $name = $this->validateParameter('name', $this->param['name'], STRING);
                     $address = $this->validateParameter('address', $this->param['address'], STRING);
                     $country = $this->validateParameter('country', $this->param['country'], STRING);
+                    $website = $this->validateParameter('website', $this->param['website'], STRING);
                     $facebook = $this->validateParameter('facebook', $this->param['facebook'], STRING);
                     $twitter = $this->validateParameter('twitter', $this->param['twitter'], STRING);
                     $googleplus = $this->validateParameter('googleplus', $this->param['googleplus'], STRING);
@@ -552,6 +553,7 @@ class Api extends Rest
                     $name = !empty($name) ? $name : $userData['name'];
                     $address = !empty($address) ? $address : $userData['address'];
                     $country = !empty($country) ? $country : $userData['country'];
+                    $website = !empty($website) ? $website : $userData['website'];
                     $facebook = !empty($facebook) ? $facebook : $userData['facebook'];
                     $twitter = !empty($twitter) ? $twitter : $userData['twitter'];
                     $googleplus = !empty($googleplus) ? $googleplus : $userData['googleplus'];
@@ -561,13 +563,14 @@ class Api extends Rest
 
                     //Update
                     // Prepare the SQL UPDATE statement
-                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name, address = :address, country = :country, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
+                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name, address = :address, country = :country, website = :website, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
 
                     // Bind the parameters and execute the statement
                     $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
                     $stmt->bindValue(':name', $name, PDO::PARAM_STR);
                     $stmt->bindValue(':address', $address, PDO::PARAM_STR);
                     $stmt->bindValue(':country', $country, PDO::PARAM_STR);
+                    $stmt->bindValue(':website', $website, PDO::PARAM_STR);
                     $stmt->bindValue(':facebook', $facebook, PDO::PARAM_STR);
                     $stmt->bindValue(':twitter', $twitter, PDO::PARAM_STR);
                     $stmt->bindValue(':googleplus', $googleplus, PDO::PARAM_STR);
