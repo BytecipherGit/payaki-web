@@ -47,7 +47,7 @@
                 <div class="pricing-plans-container">
                     <div class="row">
                         {LOOP: SUB_TYPES}
-                        <div class="col-3">
+                        <div class="col-12">
                             <!-- Plan -->
                             <div class='pricing-plan IF("{SUB_TYPES.recommended}"=="yes"){ recommended {:IF}'>
                         IF("{SUB_TYPES.recommended}"=="yes"){ <div class="recommended-badge">{LANG_RECOMMENDED}</div> {:IF}
