@@ -1031,20 +1031,54 @@ class Api extends Rest
 
     }
 
-    public function getAllUserPostDetails()
+    public function getUserPost()
     {
         try {
+            $listType = $this->validateParameter('listing_type', $this->param['listing_type'], STRING);
             $token = $this->getBearerToken();
             if (!empty($token)) {
                 $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
                 if (!empty($payload->userId)) {
                     $now = date("Y-m-d H:i:s");
                     $responseArr = array();
-                    $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.user_id=:userId AND ap.status='active' AND ap.expired_date >= :expired_date";
-                    $postData = $this->dbConn->prepare($getpost);
-                    $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
-                    $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
+                    if(!empty($listType) && $listType == 'favourite'){
+                        $postIds = array();
+                        $getFavPost = "SELECT product_id FROM ad_favads WHERE user_id=:userId";
+                        $favPostData = $this->dbConn->prepare($getFavPost);
+                        $favPostData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                        $favPostData->execute();
+                        $favPostData = $favPostData->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        if (count($favPostData) > 0) {
+                            foreach ($favPostData as $key => $favPost) {
+                                $postIds[] = $favPost['product_id'];
+                            }
+                        }
+                        // Create the placeholders string
+                        $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id IN ($placeholders) AND ap.status='active'";
+                        $postData = $this->dbConn->prepare($getpost);
+                        // Bind the values to the statement
+                        foreach ($postIds as $key => $value) {
+                            $postData->bindValue(($key + 1), $value, PDO::PARAM_INT);
+                        }
+                    } elseif(!empty($listType) && $listType == 'expire'){
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='expire' AND ap.user_id=:userId";
+                        $postData = $this->dbConn->prepare($getpost);
+                        $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    } elseif(!empty($listType) && $listType == 'pending'){
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='pending' AND ap.user_id=:userId";
+                        $postData = $this->dbConn->prepare($getpost);
+                        $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    } elseif(!empty($listType) && $listType == 'all'){
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date";
+                        $postData = $this->dbConn->prepare($getpost);
+                        $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                        $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
+                    }
                     $postData->execute();
+                    // echo "Last executed query: " . $postData->queryString;
+                    // exit;
                     $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
                     if (count($postData) > 0) {
                         foreach ($postData as $key => $post) {
@@ -1058,10 +1092,10 @@ class Api extends Rest
                                 }
                             }
                         }
-                        $response = ["status" => true, "code" => 200, "Message" => "All Advertisement details fetched.", "data" => $responseArr];
+                        $response = ["status" => true, "code" => 200, "Message" => "All post details fetched.", "data" => $responseArr];
                         $this->returnResponse($response);
                     } else {
-                        $response = ["status" => false, "code" => 400, "Message" => "No post found for this user."];
+                        $response = ["status" => true, "code" => 200, "Message" => "No post found.", "data" => $responseArr];
                         $this->returnResponse($response);
                     }
                 } else {
