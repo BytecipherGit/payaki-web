@@ -1048,20 +1048,22 @@ class Api extends Rest
                         $favPostData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                         $favPostData->execute();
                         $favPostData = $favPostData->fetchAll(PDO::FETCH_ASSOC);
-                        
                         if (count($favPostData) > 0) {
                             foreach ($favPostData as $key => $favPost) {
                                 $postIds[] = $favPost['product_id'];
                             }
-                        }
-                        // Create the placeholders string
-                        $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id IN ($placeholders) AND ap.status='active'";
-                        $postData = $this->dbConn->prepare($getpost);
-                        // Bind the values to the statement
-                        foreach ($postIds as $key => $value) {
-                            $postData->bindValue(($key + 1), $value, PDO::PARAM_INT);
-                        }
+                            // Create the placeholders string
+                            $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
+                            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id IN ($placeholders) AND ap.status='active'";
+                            $postData = $this->dbConn->prepare($getpost);
+                            // Bind the values to the statement
+                            foreach ($postIds as $key => $value) {
+                                $postData->bindValue(($key + 1), $value, PDO::PARAM_INT);
+                            }
+                        } else {
+                            $response = ["status" => true, "code" => 200, "Message" => "All post details fetched.", "data" => $responseArr];
+                            $this->returnResponse($response);
+                        } 
                     } elseif(!empty($listType) && $listType == 'expire'){
                         $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='expire' AND ap.user_id=:userId";
                         $postData = $this->dbConn->prepare($getpost);
