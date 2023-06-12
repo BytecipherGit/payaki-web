@@ -1762,7 +1762,7 @@ class Api extends Rest
                         $stmt->bindParam(":user_id", $user_id);
                         $stmt->bindParam(":product_id", $product_id);
                         if ($stmt->execute()) {
-                            $response = ["status" => true, "code" => 200, "Message" => "Product has been added in your favourite list."];
+                            $response = ["status" => true, "code" => 200, "Message" => "Product has been removed from your favourite list."];
                             $this->returnResponse($response);
                         } else {
                             $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
@@ -1775,7 +1775,7 @@ class Api extends Rest
                         $stmt->bindParam(':user_id', $user_id);
                         $stmt->bindParam(':product_id', $product_id);
                         if ($stmt->execute()) {
-                            $response = ["status" => true, "code" => 200, "Message" => "Product has been removed from your favourite list."];
+                            $response = ["status" => true, "code" => 200, "Message" => "Product has been added in your favourite list."];
                             $this->returnResponse($response);
                         } else {
                             $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
