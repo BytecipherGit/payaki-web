@@ -266,12 +266,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-		                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-		                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-		                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-		                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-		                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-		                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+				                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+				                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+				                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+				                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+				                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+				                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -539,35 +539,49 @@ class Api extends Rest
                 $userData->execute();
                 $userData = $userData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($userData['id'])) {
-                    $name = $this->validateParameter('name', $this->param['name'], STRING);
-                    $address = $this->validateParameter('address', $this->param['address'], STRING);
-                    $country = $this->validateParameter('country', $this->param['country'], STRING);
-                    $website = $this->validateParameter('website', $this->param['website'], STRING);
-                    $facebook = $this->validateParameter('facebook', $this->param['facebook'], STRING);
-                    $twitter = $this->validateParameter('twitter', $this->param['twitter'], STRING);
-                    $googleplus = $this->validateParameter('googleplus', $this->param['googleplus'], STRING);
-                    $instagram = $this->validateParameter('instagram', $this->param['instagram'], STRING);
-                    $linkedin = $this->validateParameter('linkedin', $this->param['linkedin'], STRING);
-                    $youtube = $this->validateParameter('youtube', $this->param['youtube'], STRING);
+                    // $name = $this->validateParameter('name', $this->param['name'], STRING);
+                    // $address = $this->validateParameter('address', $this->param['address'], STRING);
+                    // $country = $this->validateParameter('country', $this->param['country'], STRING);
+                    // $website = $this->validateParameter('website', $this->param['website'], STRING);
+                    // $facebook = $this->validateParameter('facebook', $this->param['facebook'], STRING);
+                    // $twitter = $this->validateParameter('twitter', $this->param['twitter'], STRING);
+                    // $googleplus = $this->validateParameter('googleplus', $this->param['googleplus'], STRING);
+                    // $instagram = $this->validateParameter('instagram', $this->param['instagram'], STRING);
+                    // $linkedin = $this->validateParameter('linkedin', $this->param['linkedin'], STRING);
+                    // $youtube = $this->validateParameter('youtube', $this->param['youtube'], STRING);
 
-                    $name = !empty($name) ? $name : $userData['name'];
-                    $address = !empty($address) ? $address : $userData['address'];
-                    $country = !empty($country) ? $country : $userData['country'];
-                    $website = !empty($website) ? $website : $userData['website'];
-                    $facebook = !empty($facebook) ? $facebook : $userData['facebook'];
-                    $twitter = !empty($twitter) ? $twitter : $userData['twitter'];
-                    $googleplus = !empty($googleplus) ? $googleplus : $userData['googleplus'];
-                    $instagram = !empty($instagram) ? $instagram : $userData['instagram'];
-                    $linkedin = !empty($linkedin) ? $linkedin : $userData['linkedin'];
-                    $youtube = !empty($youtube) ? $youtube : $userData['youtube'];
+                    //Upload Profile Image
+                    $avatar_file_name = '';
+                    if (isset($_FILES['avatar'])) {
+                        $avatar_name = $_FILES['avatar']['name'];
+                        $avatar_tmp = $_FILES['avatar']['tmp_name'];
+                        if ($avatar_tmp != '') {
+                            $extension = pathinfo($avatar_name, PATHINFO_EXTENSION);
+                            $avatar_file_name = microtime(true) . '.' . $extension;
+                            $avatarNewFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/profile/' . $avatar_file_name;
+                            move_uploaded_file($avatar_tmp, $avatarNewFilePath);
+                        }
+                    }
+                    $name = !empty($_POST['username']) ? $_POST['username'] : $userData['name'];
+                    $avatar = !empty($avatar_file_name) ? $avatar_file_name : $userData['image'];
+                    $address = !empty($_POST['address']) ? $_POST['address'] : $userData['address'];
+                    $country = !empty($_POST['country']) ? $_POST['country'] : $userData['country'];
+                    $website = !empty($_POST['website']) ? $_POST['website'] : $userData['website'];
+                    $facebook = !empty($_POST['facebook']) ? $_POST['facebook'] : $userData['facebook'];
+                    $twitter = !empty($_POST['twitter']) ? $_POST['twitter'] : $userData['twitter'];
+                    $googleplus = !empty($_POST['googleplus']) ? $_POST['googleplus'] : $userData['googleplus'];
+                    $instagram = !empty($_POST['instagram']) ? $_POST['instagram'] : $userData['instagram'];
+                    $linkedin = !empty($_POST['linkedin']) ? $_POST['linkedin'] : $userData['linkedin'];
+                    $youtube = !empty($_POST['youtube']) ? $_POST['youtube'] : $userData['youtube'];
 
                     //Update
                     // Prepare the SQL UPDATE statement
-                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name, address = :address, country = :country, website = :website, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
+                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name,image = :image, address = :address, country = :country, website = :website, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
 
                     // Bind the parameters and execute the statement
                     $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
                     $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+                    $stmt->bindValue(':image', $avatar, PDO::PARAM_STR);
                     $stmt->bindValue(':address', $address, PDO::PARAM_STR);
                     $stmt->bindValue(':country', $country, PDO::PARAM_STR);
                     $stmt->bindValue(':website', $website, PDO::PARAM_STR);
@@ -578,7 +592,8 @@ class Api extends Rest
                     $stmt->bindValue(':linkedin', $linkedin, PDO::PARAM_STR);
                     $stmt->bindValue(':youtube', $youtube, PDO::PARAM_STR);
                     if ($stmt->execute()) {
-                        $response = ["status" => true, "code" => 200, "Message" => "User profile successfully updated.", "data" => $userData];
+                        // $response = ["status" => true, "code" => 200, "Message" => "User profile successfully updated.", "data" => $userData];
+                        $response = ["status" => true, "code" => 200, "Message" => "User profile successfully updated."];
                         $this->returnResponse($response);
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
@@ -753,7 +768,7 @@ class Api extends Rest
                 $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
                 $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
-                
+
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
                 if ($total_count > 0) {
@@ -830,7 +845,7 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
 
-                $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$expire_days.' day'));
+                $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
 
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
@@ -914,26 +929,26 @@ class Api extends Rest
                 if (!empty($postData)) {
                     // Get location,City, State, Country
                     $fullAddress = '';
-                    if(!empty($postData['location'])){
+                    if (!empty($postData['location'])) {
                         $fullAddress .= $postData['location'];
                     }
-                    if(!empty($postData['city_name'])){
-                        $fullAddress .= " ".$postData['city_name'];
+                    if (!empty($postData['city_name'])) {
+                        $fullAddress .= " " . $postData['city_name'];
                     }
-                    if(!empty($postData['state_name'])){
-                        $fullAddress .= " ".$postData['state_name'];
+                    if (!empty($postData['state_name'])) {
+                        $fullAddress .= " " . $postData['state_name'];
                     }
-                    if(!empty($postData['country_name'])){
-                        $fullAddress .= " ".$postData['country_name'];
+                    if (!empty($postData['country_name'])) {
+                        $fullAddress .= " " . $postData['country_name'];
                     }
                     $postData['full_address'] = trim($fullAddress);
-                    if(!empty($postData['slug'])){
-                        $postData['post_url'] = $this->display_image_url.'ad/'.$postData['id'].'/'.$postData['slug'];
+                    if (!empty($postData['slug'])) {
+                        $postData['post_url'] = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];
                     } else {
-                        $postData['post_url']= '';
+                        $postData['post_url'] = '';
                     }
 
-                    if(!empty($this->param['userId'])){
+                    if (!empty($this->param['userId'])) {
                         //Check Is favourite
                         $getFavourite = "SELECT af.* FROM ad_favads AS af WHERE af.user_id=:userId AND af.product_id=:postId";
                         $postFavouriteData = $this->dbConn->prepare($getFavourite);
@@ -941,13 +956,13 @@ class Api extends Rest
                         $postFavouriteData->bindValue(':postId', $postId, PDO::PARAM_STR);
                         $postFavouriteData->execute();
                         $postFavouriteData = $postFavouriteData->fetch(PDO::FETCH_ASSOC);
-                        if(!empty($postFavouriteData['id'])){
-                            $postData['is_favourite']= true;
+                        if (!empty($postFavouriteData['id'])) {
+                            $postData['is_favourite'] = true;
                         } else {
-                            $postData['is_favourite']= false;
+                            $postData['is_favourite'] = false;
                         }
                     } else {
-                        $postData['is_favourite']= false;
+                        $postData['is_favourite'] = false;
                     }
                     //Get Category & Sub Category to show simillar ads
                     $categoryId = $postData['category'];
@@ -961,7 +976,7 @@ class Api extends Rest
                             }
                         }
                     } else {
-                        $postData['image']=[];
+                        $postData['image'] = [];
                     }
                     //Fetch Post user details
                     if (!empty($postData['user_id'])) {
@@ -976,13 +991,13 @@ class Api extends Rest
                             $postData['post_user_details']['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['image'];
                         }
                     }
-                    
+
                     $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID";
                     $getReviewAndRatings = $this->dbConn->prepare($getReviewAndRatings);
                     $getReviewAndRatings->bindValue(':productID', $postId, PDO::PARAM_STR);
                     $getReviewAndRatings->execute();
                     $getReviewAndRatings = $getReviewAndRatings->fetchAll(PDO::FETCH_ASSOC);
-                    if(count($getReviewAndRatings) > 0){
+                    if (count($getReviewAndRatings) > 0) {
                         for ($i = 0; $i < count($getReviewAndRatings); $i++) {
                             $postData['review_rating'][$i]['rating'] = $getReviewAndRatings[$i]['rating'];
                             $postData['review_rating'][$i]['review'] = $getReviewAndRatings[$i]['comments'];
@@ -991,17 +1006,17 @@ class Api extends Rest
                         }
                     }
 
-                    if(!empty($categoryId) && !empty($subCategoryId)){
+                    if (!empty($categoryId) && !empty($subCategoryId)) {
                         $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category=:category AND ap.sub_category=:sub_category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                         $similarPostData->bindValue(':sub_category', $subCategoryId, PDO::PARAM_STR);
-                    } else if(!empty($categoryId)){
+                    } else if (!empty($categoryId)) {
                         $getSimilarPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category=:category ORDER BY ap.created_at DESC LIMIT 10";
                         $similarPostData = $this->dbConn->prepare($getSimilarPost);
                         $similarPostData->bindValue(':category', $categoryId, PDO::PARAM_STR);
                     }
-                    
+
                     $similarPostData->execute();
                     $similarPostData = $similarPostData->fetchAll(PDO::FETCH_ASSOC);
                     if (count($similarPostData) > 0) {
@@ -1010,17 +1025,17 @@ class Api extends Rest
                             $postData['similar_post'][$i] = $similarPostData[$i];
                             // Get location,City, State, Country
                             $fullAddress = '';
-                            if(!empty($similarPostData[$i]['location'])){
+                            if (!empty($similarPostData[$i]['location'])) {
                                 $fullAddress .= $similarPostData[$i]['location'];
                             }
-                            if(!empty($similarPostData[$i]['city_name'])){
-                                $fullAddress .= " ".$similarPostData[$i]['city_name'];
+                            if (!empty($similarPostData[$i]['city_name'])) {
+                                $fullAddress .= " " . $similarPostData[$i]['city_name'];
                             }
-                            if(!empty($similarPostData[$i]['state_name'])){
-                                $fullAddress .= " ".$similarPostData[$i]['state_name'];
+                            if (!empty($similarPostData[$i]['state_name'])) {
+                                $fullAddress .= " " . $similarPostData[$i]['state_name'];
                             }
-                            if(!empty($similarPostData[$i]['country_name'])){
-                                $fullAddress .= " ".$similarPostData[$i]['country_name'];
+                            if (!empty($similarPostData[$i]['country_name'])) {
+                                $fullAddress .= " " . $similarPostData[$i]['country_name'];
                             }
                             $postData['similar_post'][$i]['full_address'] = trim($fullAddress);
                             if (!empty($similarPostData[$i]['screen_shot'])) {
@@ -1031,7 +1046,7 @@ class Api extends Rest
                                     }
                                 }
                             } else {
-                                $postData['similar_post'][$i]['image']=[];
+                                $postData['similar_post'][$i]['image'] = [];
                             }
                         }
                     }
@@ -1063,7 +1078,7 @@ class Api extends Rest
                 if (!empty($payload->userId)) {
                     $now = date("Y-m-d H:i:s");
                     $responseArr = array();
-                    if(!empty($listType) && $listType == 'favourite'){
+                    if (!empty($listType) && $listType == 'favourite') {
                         $postIds = array();
                         $getFavPost = "SELECT product_id FROM ad_favads WHERE user_id=:userId";
                         $favPostData = $this->dbConn->prepare($getFavPost);
@@ -1085,16 +1100,16 @@ class Api extends Rest
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "All post details fetched.", "data" => $responseArr];
                             $this->returnResponse($response);
-                        } 
-                    } elseif(!empty($listType) && $listType == 'expire'){
+                        }
+                    } elseif (!empty($listType) && $listType == 'expire') {
                         $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='expire' AND ap.user_id=:userId";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
-                    } elseif(!empty($listType) && $listType == 'pending'){
+                    } elseif (!empty($listType) && $listType == 'pending') {
                         $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='pending' AND ap.user_id=:userId";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
-                    } elseif(!empty($listType) && $listType == 'all'){
+                    } elseif (!empty($listType) && $listType == 'all') {
                         $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
@@ -1239,11 +1254,11 @@ class Api extends Rest
                 $getpost .= " ORDER BY ap.created_at ASC";
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
                 $getpost .= " ORDER BY ap.updated_at DESC";
-            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest'){
+            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
                 $getpost .= " ORDER BY ap.updated_at DESC";
             }
             $postData = $this->dbConn->prepare($getpost);
-            
+
             $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
 
             if (!empty($this->param['title'])) {
@@ -1273,7 +1288,7 @@ class Api extends Rest
                 $postData->bindValue(':featured', 1, PDO::PARAM_STR);
                 $postData->bindValue(':urgent', 1, PDO::PARAM_STR);
                 $postData->bindValue(':highlight', 1, PDO::PARAM_STR);
-            } 
+            }
 
             $postData->execute();
             // echo "Last executed query: " . $postData->queryString;
@@ -1284,17 +1299,17 @@ class Api extends Rest
                     $responseArr[$key] = $post;
                     // Get location,City, State, Country
                     $fullAddress = '';
-                    if(!empty($post['location'])){
+                    if (!empty($post['location'])) {
                         $fullAddress .= $post['location'];
                     }
-                    if(!empty($post['city_name'])){
-                        $fullAddress .= " ".$post['city_name'];
+                    if (!empty($post['city_name'])) {
+                        $fullAddress .= " " . $post['city_name'];
                     }
-                    if(!empty($post['state_name'])){
-                        $fullAddress .= " ".$post['state_name'];
+                    if (!empty($post['state_name'])) {
+                        $fullAddress .= " " . $post['state_name'];
                     }
-                    if(!empty($post['country_name'])){
-                        $fullAddress .= " ".$post['country_name'];
+                    if (!empty($post['country_name'])) {
+                        $fullAddress .= " " . $post['country_name'];
                     }
                     $responseArr[$key]['full_address'] = trim($fullAddress);
                     if (!empty($post['screen_shot'])) {
@@ -1305,7 +1320,7 @@ class Api extends Rest
                             }
                         }
                     } else {
-                        $responseArr[$key]['image']=[];
+                        $responseArr[$key]['image'] = [];
                     }
                 }
                 $response = ["status" => true, "code" => 200, "Message" => "All Advertisement successfully fetched.", "data" => $responseArr];
@@ -1344,17 +1359,17 @@ class Api extends Rest
                     $responseArr['premium'][$key] = $post;
                     // Get location,City, State, Country
                     $fullAddress = '';
-                    if(!empty($post['location'])){
+                    if (!empty($post['location'])) {
                         $fullAddress .= $post['location'];
                     }
-                    if(!empty($post['city_name'])){
-                        $fullAddress .= " ".$post['city_name'];
+                    if (!empty($post['city_name'])) {
+                        $fullAddress .= " " . $post['city_name'];
                     }
-                    if(!empty($post['state_name'])){
-                        $fullAddress .= " ".$post['state_name'];
+                    if (!empty($post['state_name'])) {
+                        $fullAddress .= " " . $post['state_name'];
                     }
-                    if(!empty($post['country_name'])){
-                        $fullAddress .= " ".$post['country_name'];
+                    if (!empty($post['country_name'])) {
+                        $fullAddress .= " " . $post['country_name'];
                     }
                     $responseArr['premium'][$key]['full_address'] = trim($fullAddress);
                     if (!empty($post['screen_shot'])) {
@@ -1365,7 +1380,7 @@ class Api extends Rest
                             }
                         }
                     } else {
-                        $responseArr['premium'][$key]['image']=[];
+                        $responseArr['premium'][$key]['image'] = [];
                     }
                 }
             } else {
@@ -1385,17 +1400,17 @@ class Api extends Rest
                     $responseArr['latest'][$key] = $post;
                     // Get location,City, State, Country
                     $fullAddress = '';
-                    if(!empty($post['location'])){
+                    if (!empty($post['location'])) {
                         $fullAddress .= $post['location'];
                     }
-                    if(!empty($post['city_name'])){
-                        $fullAddress .= " ".$post['city_name'];
+                    if (!empty($post['city_name'])) {
+                        $fullAddress .= " " . $post['city_name'];
                     }
-                    if(!empty($post['state_name'])){
-                        $fullAddress .= " ".$post['state_name'];
+                    if (!empty($post['state_name'])) {
+                        $fullAddress .= " " . $post['state_name'];
                     }
-                    if(!empty($post['country_name'])){
-                        $fullAddress .= " ".$post['country_name'];
+                    if (!empty($post['country_name'])) {
+                        $fullAddress .= " " . $post['country_name'];
                     }
                     $responseArr['latest'][$key]['full_address'] = trim($fullAddress);
                     if (!empty($post['screen_shot'])) {
@@ -1406,7 +1421,7 @@ class Api extends Rest
                             }
                         }
                     } else {
-                        $responseArr['latest'][$key]['image']=[];
+                        $responseArr['latest'][$key]['image'] = [];
                     }
                 }
             } else {
@@ -1655,19 +1670,19 @@ class Api extends Rest
         // $violation_url = $this->validateParameter('violation_url', $this->param['violation_url'], STRING);
         $violation_details = $this->validateParameter('violation_details', $this->param['violation_details'], STRING);
         if (!empty($name) && !empty($email) && !empty($violation_type) && !empty($violation_details)) {
-            if(!empty($this->param['username'])){
+            if (!empty($this->param['username'])) {
                 $username = $this->param['username'];
             } else {
                 $username = '';
             }
 
-            if(!empty($this->param['other_person_name'])){
+            if (!empty($this->param['other_person_name'])) {
                 $other_person_name = $this->param['other_person_name'];
             } else {
                 $other_person_name = '';
             }
 
-            if(!empty($this->param['violation_url'])){
+            if (!empty($this->param['violation_url'])) {
                 $violation_url = $this->param['violation_url'];
             } else {
                 $violation_url = '';
