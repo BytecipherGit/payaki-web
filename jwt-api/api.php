@@ -927,6 +927,28 @@ class Api extends Rest
                         $fullAddress .= " ".$postData['country_name'];
                     }
                     $postData['full_address'] = trim($fullAddress);
+                    if(!empty($postData['slug'])){
+                        $postData['post_url'] = $this->display_image_url.'ad/'.$postData['id'].'/'.$postData['slug'];
+                    } else {
+                        $postData['post_url']= '';
+                    }
+
+                    if(!empty($this->param['userId'])){
+                        //Check Is favourite
+                        $getFavourite = "SELECT af.* FROM ad_favads AS af WHERE af.user_id=:userId AND af.product_id=:postId";
+                        $postFavouriteData = $this->dbConn->prepare($getFavourite);
+                        $postFavouriteData->bindValue(':userId', $this->param['userId'], PDO::PARAM_STR);
+                        $postFavouriteData->bindValue(':postId', $postId, PDO::PARAM_STR);
+                        $postFavouriteData->execute();
+                        $postFavouriteData = $postFavouriteData->fetch(PDO::FETCH_ASSOC);
+                        if(!empty($postFavouriteData['id'])){
+                            $postData['is_favourite']= true;
+                        } else {
+                            $postData['is_favourite']= false;
+                        }
+                    } else {
+                        $postData['is_favourite']= false;
+                    }
                     //Get Category & Sub Category to show simillar ads
                     $categoryId = $postData['category'];
                     $subCategoryId = $postData['sub_category'];
@@ -1627,12 +1649,30 @@ class Api extends Rest
     {
         $name = $this->validateParameter('name', $this->param['name'], STRING);
         $email = $this->validateParameter('email', $this->param['email'], STRING);
-        $username = $this->validateParameter('username', $this->param['username'], STRING);
+        // $username = $this->validateParameter('username', $this->param['username'], STRING);
         $violation_type = $this->validateParameter('violation_type', $this->param['violation_type'], STRING);
-        $other_person_name = $this->validateParameter('other_person_name', $this->param['other_person_name'], STRING);
-        $violation_url = $this->validateParameter('violation_url', $this->param['violation_url'], STRING);
+        // $other_person_name = $this->validateParameter('other_person_name', $this->param['other_person_name'], STRING);
+        // $violation_url = $this->validateParameter('violation_url', $this->param['violation_url'], STRING);
         $violation_details = $this->validateParameter('violation_details', $this->param['violation_details'], STRING);
-        if (!empty($name) && !empty($email) && !empty($username) && !empty($violation_type) && !empty($other_person_name) && !empty($violation_url) && !empty($violation_details)) {
+        if (!empty($name) && !empty($email) && !empty($violation_type) && !empty($violation_details)) {
+            if(!empty($this->param['username'])){
+                $username = $this->param['username'];
+            } else {
+                $username = '';
+            }
+
+            if(!empty($this->param['other_person_name'])){
+                $other_person_name = $this->param['other_person_name'];
+            } else {
+                $other_person_name = '';
+            }
+
+            if(!empty($this->param['violation_url'])){
+                $violation_url = $this->param['violation_url'];
+            } else {
+                $violation_url = '';
+            }
+
             $mail = new PHPMailer(true);
             $mail->Host = $this->Host;
             $mail->SMTPAuth = $this->SMTPAuth;
