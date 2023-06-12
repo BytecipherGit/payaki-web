@@ -123,7 +123,11 @@
 
 		public function throwError($code, $message) {
 			header("content-type: application/json");
-			$errorMsg = ["status" => false, "code" => 400, "Message" => $message];
+			if($message == 'Expired token'){
+				$errorMsg = ["status" => false, "code" => 403, "Message" => $message];
+			} else {
+				$errorMsg = ["status" => false, "code" => 400, "Message" => $message];
+			}
 			$response = json_encode($errorMsg);
 			echo $response; exit;
 		}
