@@ -71,7 +71,7 @@ class Api extends Rest
             $paylod = [
                 'iat' => time(),
                 'iss' => 'localhost',
-                'exp' => time() + (144000),
+                'exp' => time() + (14400000),
                 'userId' => $user['id'],
             ];
 
@@ -144,7 +144,7 @@ class Api extends Rest
                     $paylod = [
                         'iat' => time(),
                         'iss' => 'localhost',
-                        'exp' => time() + (144000),
+                        'exp' => time() + (14400000),
                         'userId' => $user['id'],
                     ];
                     $token = GlobalJWT::encode($paylod, SECRETE_KEY);
@@ -259,7 +259,7 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (144000), 'userId' => $user_id];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user_id];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
                 /*SEND CONFIRMATION EMAIL*/
@@ -667,7 +667,7 @@ class Api extends Rest
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
                 $stmt->execute();
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (144000), 'userId' => $user['id']];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
@@ -694,7 +694,7 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (144000), 'userId' => $last_id];
+                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $last_id];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
