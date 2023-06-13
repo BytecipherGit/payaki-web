@@ -622,11 +622,11 @@ class Api extends Rest
                 $userData->execute();
                 $userData = $userData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($userData['id'])) {
-                    $current_password = $this->validateParameter('current_password', $this->param['current_password'], STRING);
+                    // $current_password = $this->validateParameter('current_password', $this->param['current_password'], STRING);
                     $new_password = $this->validateParameter('new_password', $this->param['new_password'], STRING);
                     $confirm_password = $this->validateParameter('confirm_password', $this->param['confirm_password'], STRING);
                     //Check current password is valid or not
-                    if (password_verify($current_password, $userData['password_hash'])) {
+                    // if (password_verify($current_password, $userData['password_hash'])) {
                         if ($new_password == $confirm_password) {
                             //Update New password
                             // Prepare the SQL UPDATE statement
@@ -646,10 +646,10 @@ class Api extends Rest
                             $this->returnResponse($response);
                         }
 
-                    } else {
-                        $response = ["status" => false, "code" => 400, "Message" => "Current password does not matched."];
-                        $this->returnResponse($response);
-                    }
+                    // } else {
+                    //     $response = ["status" => false, "code" => 400, "Message" => "Current password does not matched."];
+                    //     $this->returnResponse($response);
+                    // }
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
                     $this->returnResponse($response);
