@@ -689,8 +689,17 @@ class Api extends Rest
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
                 $stmt->bindValue(':email', $email, PDO::PARAM_STR);
                 $stmt->execute();
+
+                // Select the last insert row
+                $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE id=:id");
+                $stmt->bindParam(':id', $user['id']);
+                $stmt->execute();
+                // Fetch the row
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
             } else {
