@@ -155,7 +155,8 @@
                                 <div class="col-md-12">
                                     <div class="submit-field">
                                         <h5>{LANG_ABOUT_ME}</h5>
-                                        <textarea class="with-border" id="pageContent" rows="2" name="content">{AUTHORABOUT}</textarea>
+                                        <textarea class="with-border" rows="3" name="content">{AUTHORABOUT}</textarea>
+                                        <!-- <textarea class="with-border" id="pageContent" rows="2" name="content">{AUTHORABOUT}</textarea> -->
                                     </div>
                                 </div>
                                 <div class="col-md-12">

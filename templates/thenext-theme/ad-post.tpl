@@ -233,7 +233,7 @@ IF("{POST_WATERMARK}"=="0"){
                                     </div>
                                     <div class="submit-field">
                                         <h5>{LANG_DESCRIPTION} *</h5>
-                                        <textarea cols="30" rows="5" class="with-border text-editor" name="content" placeholder="{LANG_AD_DESCRIPTION}"></textarea>
+                                        <textarea cols="30" rows="5" class="with-border" name="content" placeholder="{LANG_AD_DESCRIPTION}"></textarea>
                                     </div>
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
@@ -526,7 +526,7 @@ IF("{POST_DESC_EDITOR}"=="1"){
 <script src="{SITE_URL}includes/assets/plugins/simditor/scripts/hotkeys.js"></script>
 <script src="{SITE_URL}includes/assets/plugins/simditor/scripts/simditor.js"></script>
 <script>
-    (function() {
+    /*(function() {
         $(function() {
             var $preview, editor, mobileToolbar, toolbar, allowedTags;
             Simditor.locale = 'en-US';
@@ -552,7 +552,7 @@ IF("{POST_DESC_EDITOR}"=="1"){
                 });
             }
         });
-    }).call(this);
+    }).call(this);*/
 </script>
 {:IF}
 
