@@ -667,6 +667,12 @@ class Api extends Rest
         $oauthUid = $this->validateParameter('oauth_uid', $this->param['oauth_uid'], STRING);
 
         try {
+            if(!empty($this->param['email'])){
+                $email = $this->param['email'];
+            } else {
+                $email = '';
+            }
+
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE oauth_provider =:oauth_provider AND oauth_uid=:oauth_uid");
             $stmt->bindParam(":oauth_provider", $oauthProvider);
             $stmt->bindParam(":oauth_uid", $oauthUid);
@@ -675,23 +681,19 @@ class Api extends Rest
             if (!empty($user)) {
                 //Update
                 // Prepare the SQL UPDATE statement
-                $stmt = $this->dbConn->prepare('UPDATE ad_user SET oauth_provider = :oauth_provider, oauth_uid = :oauth_uid WHERE id = :id');
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET oauth_provider = :oauth_provider, oauth_uid = :oauth_uid, email = :email WHERE id = :id');
 
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
+                $stmt->bindValue(':email', $email, PDO::PARAM_STR);
                 $stmt->execute();
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
             } else {
-                if(!empty($this->param['email'])){
-                    $email = $this->param['email'];
-                } else {
-                    $email = '';
-                }
                 //Create
                 $insert_query = "INSERT INTO `ad_user` (`oauth_provider`,`oauth_uid`,`email`) VALUES(:oauth_provider,:oauth_uid,:email)";
                 $stmt = $this->dbConn->prepare($insert_query);
