@@ -566,6 +566,7 @@ class Api extends Rest
                     $avatar = !empty($avatar_file_name) ? $avatar_file_name : $userData['image'];
                     $address = !empty($_POST['address']) ? $_POST['address'] : $userData['address'];
                     $country = !empty($_POST['country']) ? $_POST['country'] : $userData['country'];
+                    $description = !empty($_POST['description']) ? $_POST['description'] : $userData['description'];
                     $website = !empty($_POST['website']) ? $_POST['website'] : $userData['website'];
                     $facebook = !empty($_POST['facebook']) ? $_POST['facebook'] : $userData['facebook'];
                     $twitter = !empty($_POST['twitter']) ? $_POST['twitter'] : $userData['twitter'];
@@ -576,7 +577,7 @@ class Api extends Rest
 
                     //Update
                     // Prepare the SQL UPDATE statement
-                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name,image = :image, address = :address, country = :country, website = :website, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
+                    $stmt = $this->dbConn->prepare('UPDATE ad_user SET name = :name,image = :image, address = :address, country = :country, description = :description, website = :website, facebook = :facebook, twitter = :twitter, googleplus = :googleplus, instagram = :instagram, linkedin = :linkedin, youtube = :youtube WHERE id = :id');
 
                     // Bind the parameters and execute the statement
                     $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
@@ -584,6 +585,7 @@ class Api extends Rest
                     $stmt->bindValue(':image', $avatar, PDO::PARAM_STR);
                     $stmt->bindValue(':address', $address, PDO::PARAM_STR);
                     $stmt->bindValue(':country', $country, PDO::PARAM_STR);
+                    $stmt->bindValue(':description', $description, PDO::PARAM_STR);
                     $stmt->bindValue(':website', $website, PDO::PARAM_STR);
                     $stmt->bindValue(':facebook', $facebook, PDO::PARAM_STR);
                     $stmt->bindValue(':twitter', $twitter, PDO::PARAM_STR);
