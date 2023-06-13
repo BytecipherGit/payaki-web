@@ -687,15 +687,21 @@ class Api extends Rest
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
             } else {
+                if(!empty($this->param['email'])){
+                    $email = $this->param['email'];
+                } else {
+                    $email = '';
+                }
                 //Create
-                $insert_query = "INSERT INTO `ad_user` (`oauth_provider`,`oauth_uid`) VALUES(:oauth_provider,:oauth_uid)";
+                $insert_query = "INSERT INTO `ad_user` (`oauth_provider`,`oauth_uid`,`email`) VALUES(:oauth_provider,:oauth_uid,:email)";
                 $stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
+                $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+                
                 // $stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
                 // $stmt->bindValue(':name', htmlspecialchars(strip_tags($fName)), PDO::PARAM_STR);
-                // $stmt->bindValue(':email', $email, PDO::PARAM_STR);
                 // $stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
                 // $stmt->bindValue(':status', 0, PDO::PARAM_STR);
                 // $stmt->bindValue(':password_hash', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
