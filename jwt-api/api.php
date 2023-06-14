@@ -1110,7 +1110,7 @@ class Api extends Rest
                             }
                             // Create the placeholders string
                             $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
-                            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.id IN ($placeholders) AND ap.status='active'";
+                            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id IN ($placeholders) AND ap.status='active'";
                             $postData = $this->dbConn->prepare($getpost);
                             // Bind the values to the statement
                             foreach ($postIds as $key => $value) {
@@ -1121,15 +1121,15 @@ class Api extends Rest
                             $this->returnResponse($response);
                         }
                     } elseif (!empty($listType) && $listType == 'expire') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='expire' AND ap.user_id=:userId";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='expire' AND ap.user_id=:userId";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                     } elseif (!empty($listType) && $listType == 'pending') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='pending' AND ap.user_id=:userId";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='pending' AND ap.user_id=:userId";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                     } elseif (!empty($listType) && $listType == 'all') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                         $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
@@ -1141,6 +1141,21 @@ class Api extends Rest
                     if (count($postData) > 0) {
                         foreach ($postData as $key => $post) {
                             $responseArr[$key] = $post;
+                            // Get location,City, State, Country
+                            $fullAddress = '';
+                            if (!empty($post['location'])) {
+                                $fullAddress .= $post['location'];
+                            }
+                            if (!empty($post['city_name'])) {
+                                $fullAddress .= " " . $post['city_name'];
+                            }
+                            if (!empty($post['state_name'])) {
+                                $fullAddress .= " " . $post['state_name'];
+                            }
+                            if (!empty($post['country_name'])) {
+                                $fullAddress .= " " . $post['country_name'];
+                            }
+                            $responseArr[$key]['full_address'] = trim($fullAddress);
                             if (!empty($post['screen_shot'])) {
                                 $screenShotArr = explode(",", $post['screen_shot']);
                                 if (count($screenShotArr) > 0) {
