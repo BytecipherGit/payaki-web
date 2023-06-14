@@ -1188,6 +1188,52 @@ class Api extends Rest
 
     }
 
+    public function getTransactionListing()
+    {
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $responseArr = array();
+                    $getpost = "SELECT product_name,amount,featured,urgent,highlight,transaction_time,status,transaction_gatway FROM ad_transaction WHERE seller_id=:userId";
+                    $postData = $this->dbConn->prepare($getpost);
+                    $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                    $postData->execute();
+                    // echo "Last executed query: " . $postData->queryString;
+                    // exit;
+                    $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($postData) > 0) {
+                        foreach ($postData as $key => $post) {
+                            $responseArr[$key] = $post;
+                            if(!empty($post['transaction_time'])){
+                                $responseArr[$key]['transaction_time'] = date('d M Y h:i A', $post['transaction_time']);
+                            }
+                            $responseArr[$key]['invoice_url'] = $this->display_image_url . 'invoice/' . $payload->userId;
+                        }
+                        
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction listing successfully fetched.", "data" => $responseArr];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => true, "code" => 200, "Message" => "No post found.", "data" => $responseArr];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
     public function getAllUserFavoritePosts()
     {
         try {
