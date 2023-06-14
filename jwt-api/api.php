@@ -266,12 +266,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-				                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-				                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-				                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-				                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-				                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-				                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+					                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+					                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+					                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+					                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+					                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+					                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -629,24 +629,24 @@ class Api extends Rest
                     $confirm_password = $this->validateParameter('confirm_password', $this->param['confirm_password'], STRING);
                     //Check current password is valid or not
                     // if (password_verify($current_password, $userData['password_hash'])) {
-                        if ($new_password == $confirm_password) {
-                            //Update New password
-                            // Prepare the SQL UPDATE statement
-                            $stmt = $this->dbConn->prepare('UPDATE ad_user SET password_hash = :password_hash WHERE id = :id');
-                            // Bind the parameters and execute the statement
-                            $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
-                            $stmt->bindValue(':password_hash', password_hash($new_password, PASSWORD_DEFAULT), PDO::PARAM_STR);
-                            if ($stmt->execute()) {
-                                $response = ["status" => true, "code" => 200, "Message" => "Password successfully updated."];
-                                $this->returnResponse($response);
-                            } else {
-                                $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
-                                $this->returnResponse($response);
-                            }
+                    if ($new_password == $confirm_password) {
+                        //Update New password
+                        // Prepare the SQL UPDATE statement
+                        $stmt = $this->dbConn->prepare('UPDATE ad_user SET password_hash = :password_hash WHERE id = :id');
+                        // Bind the parameters and execute the statement
+                        $stmt->bindValue(':id', $userData['id'], PDO::PARAM_STR);
+                        $stmt->bindValue(':password_hash', password_hash($new_password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+                        if ($stmt->execute()) {
+                            $response = ["status" => true, "code" => 200, "Message" => "Password successfully updated."];
+                            $this->returnResponse($response);
                         } else {
-                            $response = ["status" => false, "code" => 400, "Message" => "New password & confirm password does not match."];
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
                             $this->returnResponse($response);
                         }
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "New password & confirm password does not match."];
+                        $this->returnResponse($response);
+                    }
 
                     // } else {
                     //     $response = ["status" => false, "code" => 400, "Message" => "Current password does not matched."];
@@ -669,7 +669,7 @@ class Api extends Rest
         $oauthUid = $this->validateParameter('oauth_uid', $this->param['oauth_uid'], STRING);
 
         try {
-            if(!empty($this->param['email'])){
+            if (!empty($this->param['email'])) {
                 $email = $this->param['email'];
             } else {
                 $email = '';
@@ -712,7 +712,7 @@ class Api extends Rest
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
                 $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-                
+
                 // $stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
                 // $stmt->bindValue(':name', htmlspecialchars(strip_tags($fName)), PDO::PARAM_STR);
                 // $stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
@@ -1116,7 +1116,7 @@ class Api extends Rest
                             foreach ($postIds as $key => $value) {
                                 $postData->bindValue(($key + 1), $value, PDO::PARAM_INT);
                             }
-                            
+
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "All post details fetched.", "data" => $responseArr];
                             $this->returnResponse($response);
@@ -1206,12 +1206,12 @@ class Api extends Rest
                     if (count($postData) > 0) {
                         foreach ($postData as $key => $post) {
                             $responseArr[$key] = $post;
-                            if(!empty($post['transaction_time'])){
+                            if (!empty($post['transaction_time'])) {
                                 $responseArr[$key]['transaction_time'] = date('d M Y h:i A', $post['transaction_time']);
                             }
                             $responseArr[$key]['invoice_url'] = $this->display_image_url . 'invoice/' . $payload->userId;
                         }
-                        
+
                         $response = ["status" => true, "code" => 200, "Message" => "Transaction listing successfully fetched.", "data" => $responseArr];
                         $this->returnResponse($response);
                     } else {
