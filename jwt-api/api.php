@@ -1116,6 +1116,7 @@ class Api extends Rest
                             foreach ($postIds as $key => $value) {
                                 $postData->bindValue(($key + 1), $value, PDO::PARAM_INT);
                             }
+                            
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "All post details fetched.", "data" => $responseArr];
                             $this->returnResponse($response);

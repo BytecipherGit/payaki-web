@@ -2490,9 +2490,13 @@ function payment_success_save_detail($access_token){
         if(check_valid_author($item_pro_id)) {
 
             $group_info = get_user_membership_detail($user_id);
-            $featured_duration = $group_info['settings']['featured_duration'];
-            $urgent_duration = $group_info['settings']['urgent_duration'];
-            $highlight_duration = $group_info['settings']['highlight_duration'];
+            $decodeSettingObj = json_decode($group_info['settings']);
+            $featured_duration = $decodeSettingObj->featured_duration;
+            $urgent_duration = $decodeSettingObj->urgent_duration;
+            $highlight_duration = $decodeSettingObj->highlight_duration;
+            // $featured_duration = $group_info['settings']['featured_duration'];
+            // $urgent_duration = $group_info['settings']['urgent_duration'];
+            // $highlight_duration = $group_info['settings']['highlight_duration'];
 
             $f_duration_timestamp = $featured_duration*86400;
             $featured_exp_date = (time()+$f_duration_timestamp);
