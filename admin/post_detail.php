@@ -38,7 +38,7 @@ if (!empty($info)) {
     $item_status = $info['status'];
     $item_view = $info['view'];
     $item_created_at = timeAgo($info['created_at']);
-    $item_updated_at = date('d M Y', $info['updated_at']);
+    $item_updated_at = date('d M Y', strtotime($info['updated_at']));
     $expire_date_timestamp = $info['expire_date'];
     $expire_date = date('d-M-y', $expire_date_timestamp);
 
@@ -156,9 +156,6 @@ else {
     header('Location: 404.php');
     exit();
 }
-
-
-
 
 ?>
 
