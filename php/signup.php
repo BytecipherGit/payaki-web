@@ -110,23 +110,23 @@ if (isset($_POST["submit"])) {
         $idproof_error = "<span class='status-not-available'> " . $idproof_error . "</span>";
     }
 
-    if (empty($_POST["address_proof_type"])) {
-        $errors++;
-        $addressprooftype_error = 'Address Proof Type';
-        $addressprooftype_error = "<span class='status-not-available'> " . $addressprooftype_error . "</span>";
-    }
+    // if (empty($_POST["address_proof_type"])) {
+    //     $errors++;
+    //     $addressprooftype_error = 'Address Proof Type';
+    //     $addressprooftype_error = "<span class='status-not-available'> " . $addressprooftype_error . "</span>";
+    // }
 
-    if (empty($_POST["address_proof_number"])) {
-        $errors++;
-        $addressproofnumber_error = 'Address Proof Number';
-        $addressproofnumber_error = "<span class='status-not-available'> " . $addressproofnumber_error . "</span>";
-    }
+    // if (empty($_POST["address_proof_number"])) {
+    //     $errors++;
+    //     $addressproofnumber_error = 'Address Proof Number';
+    //     $addressproofnumber_error = "<span class='status-not-available'> " . $addressproofnumber_error . "</span>";
+    // }
 
-    if (!isset($_FILES['address_proof'])) {
-        $errors++;
-        $addressproof_error = 'Address Proof Document';
-        $addressproof_error = "<span class='status-not-available'> " . $addressproof_error . "</span>";
-    }
+    // if (!isset($_FILES['address_proof'])) {
+    //     $errors++;
+    //     $addressproof_error = 'Address Proof Document';
+    //     $addressproof_error = "<span class='status-not-available'> " . $addressproof_error . "</span>";
+    // }
 
     //Upload Id Proof & Address Proof Document on storage directory
 
@@ -141,16 +141,16 @@ if (isset($_POST["submit"])) {
         }
     }
 
-    if (isset($_FILES['address_proof'])) {
-        $address_proof_file_name = $_FILES['address_proof']['name'];
-        $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
-        if ($address_proof_file_tmp != '') {
-            $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
-            $address_proof_new_file_name = microtime(true) . '.' . $extension;
-            $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
-            move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
-        }
-    }
+    // if (isset($_FILES['address_proof'])) {
+    //     $address_proof_file_name = $_FILES['address_proof']['name'];
+    //     $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
+    //     if ($address_proof_file_tmp != '') {
+    //         $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
+    //         $address_proof_new_file_name = microtime(true) . '.' . $extension;
+    //         $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
+    //         move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
+    //     }
+    // }
 
     // Check if this is an Email availability check from signup page using ajax
     $_POST["email"] = strtolower($_POST["email"]);
@@ -231,9 +231,9 @@ if (isset($_POST["submit"])) {
         $insert_user->id_proof_type = $_POST["id_proof_type"];
         $insert_user->id_proof_number = $_POST["id_proof_number"];
         $insert_user->id_proof = $id_proof_new_file_name;
-        $insert_user->address_proof_type = $_POST["address_proof_type"];
-        $insert_user->address_proof_number = $_POST["address_proof_number"];
-        $insert_user->address_proof = $address_proof_new_file_name;
+        // $insert_user->address_proof_type = $_POST["address_proof_type"];
+        // $insert_user->address_proof_number = $_POST["address_proof_number"];
+        // $insert_user->address_proof = $address_proof_new_file_name;
         $insert_user->save();
         $user_id = $insert_user->id();
         $insert = !empty($user_id > 0) ? true : false;
@@ -269,8 +269,8 @@ if (isset($_POST['submit'])) {
     $page->SetParameter('USERNAME_FIELD', $_POST['username']);
     $page->SetParameter('IDPROOFTYPE_FIELD', $_POST['id_proof_type']);
     $page->SetParameter('IDPROOFNUMBER_FIELD', $_POST['id_proof_number']);
-    $page->SetParameter('ADDRESSPROOFTYPE__FIELD', $_POST['address_proof_type']);
-    $page->SetParameter('ADDRESSPROOFNUMBER_FIELD', $_POST['address_proof_number']);
+    // $page->SetParameter('ADDRESSPROOFTYPE__FIELD', $_POST['address_proof_type']);
+    // $page->SetParameter('ADDRESSPROOFNUMBER_FIELD', $_POST['address_proof_number']);
     $page->SetParameter('EMAIL_FIELD', $_POST['email']);
     $page->SetParameter('PHONE_FIELD', '');
     $page->SetParameter('NAME_ERROR', $name_error);
@@ -278,9 +278,9 @@ if (isset($_POST['submit'])) {
     $page->SetParameter('IDPROOFTYPE_ERROR', $idprooftype_error);
     $page->SetParameter('IDPROOFNUMBER_ERROR', $idproofnumber_error);
     $page->SetParameter('IDPROOF', $idproof_error);
-    $page->SetParameter('ADDRESSPROOFTYPE_ERROR', $addressprooftype_error);
-    $page->SetParameter('ADDRESSPROOFNUMBER_ERROR', $addressproofnumber_error);
-    $page->SetParameter('ADDRESSPROOF_ERROR', $addressproof_error);
+    // $page->SetParameter('ADDRESSPROOFTYPE_ERROR', $addressprooftype_error);
+    // $page->SetParameter('ADDRESSPROOFNUMBER_ERROR', $addressproofnumber_error);
+    // $page->SetParameter('ADDRESSPROOF_ERROR', $addressproof_error);
     $page->SetParameter('EMAIL_ERROR', $email_error);
     $page->SetParameter('PHONE_ERROR', $phone_error);
     $page->SetParameter('PASSWORD_ERROR', $password_error);
