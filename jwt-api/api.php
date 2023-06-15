@@ -190,9 +190,10 @@ class Api extends Rest
             $id_proof_number = $_POST['id_proof_number'];
             $id_proof_new_file_name = '';
 
-            $address_proof_type = $_POST['address_proof_type'];
-            $address_proof_number = $_POST['address_proof_number'];
-            $address_proof_new_file_name = '';
+            // $address_proof_type = $_POST['address_proof_type'];
+            // $address_proof_number = $_POST['address_proof_number'];
+            // $address_proof_new_file_name = '';
+
             if (isset($_FILES['id_proof'])) {
                 $id_proof_file_name = $_FILES['id_proof']['name'];
                 $id_proof_file_tmp = $_FILES['id_proof']['tmp_name'];
@@ -204,16 +205,16 @@ class Api extends Rest
                 }
             }
 
-            if (isset($_FILES['address_proof'])) {
-                $address_proof_file_name = $_FILES['address_proof']['name'];
-                $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
-                if ($address_proof_file_tmp != '') {
-                    $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
-                    $address_proof_new_file_name = microtime(true) . '.' . $extension;
-                    $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
-                    move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
-                }
-            }
+            // if (isset($_FILES['address_proof'])) {
+            //     $address_proof_file_name = $_FILES['address_proof']['name'];
+            //     $address_proof_file_tmp = $_FILES['address_proof']['tmp_name'];
+            //     if ($address_proof_file_tmp != '') {
+            //         $extension = pathinfo($address_proof_file_name, PATHINFO_EXTENSION);
+            //         $address_proof_new_file_name = microtime(true) . '.' . $extension;
+            //         $addressProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/user_documents/address_proof/' . $address_proof_new_file_name;
+            //         move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
+            //     }
+            // }
             $check_email = "SELECT `email` FROM `ad_user` WHERE `email`=:email OR `phone`=:phone";
             $check_email_stmt = $this->dbConn->prepare($check_email);
             $check_email_stmt->bindValue(':email', $email, PDO::PARAM_STR);
@@ -226,7 +227,7 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`confirm`,`created_at`,`updated_at`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`,`address_proof_type`,`address_proof_number`,`address_proof`) VALUES(:username,:name,:email,:confirm,:created_at,:updated_at,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof,:address_proof_type,:address_proof_number,:address_proof)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`confirm`,`created_at`,`updated_at`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`) VALUES(:username,:name,:email,:confirm,:created_at,:updated_at,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
@@ -243,9 +244,9 @@ class Api extends Rest
                 $insert_stmt->bindValue(':id_proof_type', $id_proof_type, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':id_proof_number', $id_proof_number, PDO::PARAM_STR);
                 $insert_stmt->bindValue(':id_proof', $id_proof_new_file_name, PDO::PARAM_STR);
-                $insert_stmt->bindValue(':address_proof_type', $address_proof_type, PDO::PARAM_STR);
-                $insert_stmt->bindValue(':address_proof_number', $address_proof_number, PDO::PARAM_STR);
-                $insert_stmt->bindValue(':address_proof', $address_proof_new_file_name, PDO::PARAM_STR);
+                // $insert_stmt->bindValue(':address_proof_type', $address_proof_type, PDO::PARAM_STR);
+                // $insert_stmt->bindValue(':address_proof_number', $address_proof_number, PDO::PARAM_STR);
+                // $insert_stmt->bindValue(':address_proof', $address_proof_new_file_name, PDO::PARAM_STR);
                 $insert_stmt->execute();
                 $subject = 'Plese verify OTP';
                 $body = 'Your verification OTP is ' . $otp;

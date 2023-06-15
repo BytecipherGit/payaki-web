@@ -87,16 +87,8 @@
 </svg></i>
                             <select name="id_proof_type" id="idprooftype" class="form-control with-border select-register">
                             <option value="">Select Identification Type</option>
-                            <option value="State identification (ID) card" IF("{IDPROOFTYPE_FIELD}"=="State identification (ID) card"){ "selected" {:IF}>State identification (ID) card</option>
-                            <option value="Driver license" IF("{IDPROOFTYPE_FIELD}"=="Driver license"){ "selected" {:IF}>Driver license</option>
-                            <option value="US passport or passport card" IF("{IDPROOFTYPE_FIELD}"=="US passport or passport card"){ "selected" {:IF}>US passport or passport card</option>
-                            <option value="US military card" IF("{IDPROOFTYPE_FIELD}"=="US military card"){ "selected" {:IF}>US military card</option>
-                            <option value="Military dependents ID card" IF("{IDPROOFTYPE_FIELD}"=="Military dependents ID card"){ "selected" {:IF}>Military dependents ID card</option>
-                            <option value="Permanent Resident Card" IF("{IDPROOFTYPE_FIELD}"=="Permanent Resident Card"){ "selected" {:IF}>Permanent Resident Card</option>
-                            <option value="Certificate of Citizenship" IF("{IDPROOFTYPE_FIELD}"=="Certificate of Citizenship"){ "selected" {:IF}>Certificate of Citizenship</option>
-                            <option value="Certificate of Naturalization" IF("{IDPROOFTYPE_FIELD}"=="Certificate of Naturalization"){ "selected" {:IF}>Certificate of Naturalization</option>
-                            <option value="Employment Authorization Document" IF("{IDPROOFTYPE_FIELD}"=="Employment Authorization Document"){ "selected" {:IF}>Employment Authorization Document</option>
-                            <option value="Foreign passport" IF("{IDPROOFTYPE_FIELD}"=="Foreign passport"){ "selected" {:IF}>Foreign passport</option>
+                            <option value="Bilhete de Identidade (BI)" IF("{IDPROOFTYPE_FIELD}"=="Bilhete de Identidade (BI)"){ "selected" {:IF}>Bilhete de Identidade (BI)</option>
+                            <option value="Passaporte" IF("{IDPROOFTYPE_FIELD}"=="Passaporte"){ "selected" {:IF}>Passaporte</option>
                             </select>
                         </div>
                         <span id="idprooftype-availability-status">IF("{IDPROOFTYPE_ERROR}"!=""){ {IDPROOFTYPE_ERROR} {:IF}</span>
@@ -115,39 +107,6 @@
                     <label>Upload Identification Document</label>
                         <input type="file" class="form-control" id="idproof" name="id_proof" style="padding: 0px 0px !important; height: auto !important;" required/>
                         <span id="idproof-availability-status">IF("{IDPROOF}"!=""){ {IDPROOF} {:IF}</span>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon-left">
-                            <i class="la la-address-book"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
-  <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
-</svg></i>
-                            <select name="address_proof_type" id="addressprooftype" class="form-control with-border select-register">
-                            <option value="">Select Address Verification Type</option>
-                            <option value="Utility bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Utility bill"){ "selected" {:IF}>Utility bill</option>
-                            <option value="Cable TV or internet bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Cable TV or internet bill"){ "selected" {:IF}>Cable TV or internet bill</option>
-                            <option value="Telephone bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Telephone bill"){ "selected" {:IF}>Telephone bill</option>
-                            <option value="Bank statement" IF("{ADDRESSPROOFTYPE_FIELD}"=="Bank statement"){ "selected" {:IF}>Bank statement</option>
-                            <option value="Property tax bill" IF("{ADDRESSPROOFTYPE_FIELD}"=="Property tax bill"){ "selected" {:IF}>Property tax bill</option>
-                            <option value="Mortgage statement" IF("{ADDRESSPROOFTYPE_FIELD}"=="Mortgage statement"){ "selected" {:IF}>Mortgage statement</option>
-                            </select>
-                        </div>
-                        <span id="addressprooftype-availability-status">IF("{ADDRESSPROOFTYPE_ERROR}"!=""){ {ADDRESSPROOFTYPE_ERROR} {:IF}</span>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-with-icon-left">
-                        <i class="la la-address-book"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cassette" viewBox="0 0 16 16">
-  <path d="M4 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm9-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 6a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H7Z"/>
-  <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13ZM1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-.691l-1.362-2.724A.5.5 0 0 0 12 10H4a.5.5 0 0 0-.447.276L2.19 13H1.5a.5.5 0 0 1-.5-.5v-9ZM11.691 11l1 2H3.309l1-2h7.382Z"/>
-</svg></i>
-                            <input type="text" class="input-text with-border" placeholder="Address Proof Number" id="addproofnumber" value="{ADDRESSPROOFNUMBER_FIELD}" name="address_proof_number" required/>
-                        </div>
-                        <span id="addproofnumber-availability-status">IF("{ADDRESSPROOFNUMBER_ERROR}"!=""){ {ADDRESSPROOFNUMBER_ERROR} {:IF}</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Upload Address Verification Document</label>
-                        <input type="file" class="form-control" id="addressproof" name="address_proof" style="padding: 0px 0px !important; height: auto !important;" required/>
-                        <span id="addressproof-availability-status">IF("{ADDRESSPROOF_ERROR}"!=""){ {ADDRESSPROOF_ERROR} {:IF}</span>
                     </div>
                     <div class="form-group">
                         <div class="text-center">
