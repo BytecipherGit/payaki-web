@@ -8,7 +8,8 @@
             $.get('https://ipinfo.io', function () {
             }, 'jsonp').always(function (resp) {
                 var countryCode = (resp && resp.country) ? resp.country : '';
-                callback(countryCode);
+                // callback(countryCode);
+                callback('ao');
             });
         },
         utilsScript: siteurl+"includes/assets/plugins/intlTelInput/js/intlTelInput.utils.js"
