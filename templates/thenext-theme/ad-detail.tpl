@@ -89,13 +89,13 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                     </div>
 
                     IF("{ITEM_HIDE_PHONE}"=="no" && '{ITEM_PHONE}'){
-                    <div class="col-md-6">
+                    <!--<div class="col-md-6">
                         <div class="job-property">
                             <i class="la la-phone"></i>
                             <span>{LANG_PHONE_NO}</span>
                             <h5>{ITEM_PHONE}</h5>
                         </div>
-                    </div>
+                    </div> -->
                     {:IF}
                 </div>
             </div>
@@ -248,15 +248,15 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                 </li>
 
                                 IF("{ITEM_PHONE}" != "" && "{NON_LOGIN_PHONE_SHOW}"=="1"){
-                                    <li class="tg-btnphone">
+                                    <!--<li class="tg-btnphone">
                                         <i class="icon-feather-phone-call"></i>
                                         <span data-last="{ITEM_PHONE}"><a href="tel:{ITEM_PHONE}" rel="nofollow"><em>{LANG_SHOW_PHONE_NO}</em></a></span>
-                                    </li>
+                                    </li>-->
                                 ELSEIF({LOGGED_IN} && "{ITEM_PHONE}" != ""){
-                                    <li class="tg-btnphone">
+                                    <!--<li class="tg-btnphone">
                                         <i class="icon-feather-phone-call"></i>
                                         <span data-last="{ITEM_PHONE}"><a href="tel:{ITEM_PHONE}" rel="nofollow"><em>{LANG_SHOW_PHONE_NO}</em></a></span>
-                                    </li>
+                                    </li>-->
                                 {:IF}
 
                             </ul>
