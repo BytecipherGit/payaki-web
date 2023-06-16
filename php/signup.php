@@ -216,7 +216,6 @@ if (isset($_POST["submit"])) {
         $password = $_POST["password"];
         $pass_hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 13]);
         $now = date("Y-m-d H:i:s");
-
         $insert_user = ORM::for_table($config['db']['pre'] . 'user')->create();
         $insert_user->status = '0';
         $insert_user->name = $_POST["name"];
@@ -226,6 +225,8 @@ if (isset($_POST["submit"])) {
         $insert_user->confirm = $confirm_id;
         $insert_user->created_at = $now;
         $insert_user->updated_at = $now;
+        $insert_user->country_code = $_POST['country_code'];
+        $insert_user->phone = $_POST['phone'];
         $insert_user->country = $location['country'];
         $insert_user->city = $location['city'];
         $insert_user->id_proof_type = $_POST["id_proof_type"];

@@ -184,7 +184,7 @@ class Api extends Rest
             $uName = $_POST['user_name'];
             $email = $_POST['email'];
             $countryCode = $_POST['country_code'];
-            $phone = $_POST['phone'];
+            $phone = $_POST['country_code'].$_POST['phone'];
             $password = $_POST['pass'];
             $id_proof_type = $_POST['id_proof_type'];
             $id_proof_number = $_POST['id_proof_number'];
