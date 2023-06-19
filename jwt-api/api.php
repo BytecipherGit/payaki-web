@@ -1957,7 +1957,7 @@ class Api extends Rest
                 $post_user_id = $this->validateParameter('post_user_id', $this->param['post_user_id'], STRING);
                 $amount = $this->validateParameter('amount', $this->param['amount'], STRING);
                 $message = $this->validateParameter('message', $this->param['message'], STRING);
-                if (!empty($post_id) && !empty($user_id) && !empty($amount) && !empty($message)) {
+                if (!empty($post_id) && !empty($post_user_id) && !empty($amount) && !empty($message)) {
                     $timenow = date('Y-m-d H:i:s');
                     // Write insert code
                     $sql = 'INSERT INTO ad_quotes (id, post_id, seller_id, sender_id, amount, message, created_at) VALUES(null, :post_id, :seller_id, :sender_id, :amount, :message, :created_at)';
