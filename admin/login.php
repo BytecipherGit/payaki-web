@@ -97,7 +97,7 @@ if(isset($_POST['username']))
                     <div class="row">
                         <!-- Login card -->
                         <div class="col-md-6 col-md-offset-3">
-                            <div class="text-center"><img class="img-responsive" src="../storage/logo/<?php echo $config['site_admin_logo']?>"/></div>
+                            <div class="text-center" style="padding: 59px !important;"><img class="img-responsive" src="../storage/logo/<?php echo $config['site_admin_logo']?>"/></div>
                             <div class="card" id="admin_login_card">
                                 <h3 class="card-header h4">Login</h3>
                                 <div class="card-block">
