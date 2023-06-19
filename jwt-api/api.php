@@ -1954,7 +1954,7 @@ class Api extends Rest
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
             if (!empty($payload->userId)) {
                 $post_id = $this->validateParameter('post_id', $this->param['post_id'], STRING);
-                $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+                $post_user_id = $this->validateParameter('post_user_id', $this->param['post_user_id'], STRING);
                 $amount = $this->validateParameter('amount', $this->param['amount'], STRING);
                 $message = $this->validateParameter('message', $this->param['message'], STRING);
                 if (!empty($post_id) && !empty($user_id) && !empty($amount) && !empty($message)) {
@@ -1963,7 +1963,7 @@ class Api extends Rest
                     $sql = 'INSERT INTO ad_quotes (id, post_id, seller_id, sender_id, amount, message, created_at) VALUES(null, :post_id, :seller_id, :sender_id, :amount, :message, :created_at)';
                     $stmt = $this->dbConn->prepare($sql);
                     $stmt->bindParam(':post_id', $post_id);
-                    $stmt->bindParam(':seller_id', $user_id);
+                    $stmt->bindParam(':seller_id', $post_user_id);
                     $stmt->bindParam(':sender_id', $payload->userId);
                     $stmt->bindParam(':amount', $amount);
                     $stmt->bindParam(':message', $message);
