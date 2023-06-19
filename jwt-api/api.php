@@ -36,6 +36,8 @@ class Api extends Rest
     {
         $email = $this->validateParameter('email', $this->param['email'], STRING);
         $password = $this->validateParameter('pass', $this->param['pass'], STRING);
+        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
         try {
             // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email");
@@ -68,6 +70,17 @@ class Api extends Rest
                 $user['address_proof'] = $this->display_image_url . 'storage/user_documents/address_proof/' . $user['address_proof'];
             }
 
+            //Update Device Token & Device Type in user table
+            $stmt = $this->dbConn->prepare('UPDATE ad_user SET device_token = :device_token,device_type = :device_type WHERE id = :id');
+            // Bind the parameters and execute the statement
+            $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
+            $stmt->bindValue(':device_token', $device_token, PDO::PARAM_STR);
+            $stmt->bindValue(':device_type', $device_type, PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                $user['address_proof'] = $device_token;
+                $user['device_type'] = $device_type;
+            }
+
             $paylod = [
                 'iat' => time(),
                 'iss' => 'localhost',
@@ -76,7 +89,6 @@ class Api extends Rest
             ];
 
             $token = GlobalJWT::encode($paylod, SECRETE_KEY);
-
             $response = [
                 "status" => true,
                 "code" => 200,
@@ -94,25 +106,29 @@ class Api extends Rest
     {
         $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
         $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
-
+        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
         try {
+            $phoneWithCountryCode = $countryCode . $phone;
             // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE country_code =:country_code AND phone =:phone");
             $stmt->bindParam(":country_code", $countryCode);
-            $stmt->bindParam(":phone", $phone);
+            $stmt->bindParam(":phone", $phoneWithCountryCode);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!empty($user['id'])) {
                 $otp = mt_rand(111111, 999999);
                 // Prepare the SQL UPDATE statement
-                $stmt = $this->dbConn->prepare('UPDATE ad_user SET otp = :otp WHERE id = :id');
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET otp = :otp, device_token = :device_token, device_type = :device_type WHERE id = :id');
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
                 $stmt->bindValue(':otp', $otp, PDO::PARAM_STR);
+                $stmt->bindValue(':device_token', $device_token, PDO::PARAM_STR);
+                $stmt->bindValue(':device_type', $device_type, PDO::PARAM_STR);
                 $stmt->execute();
                 // Check for errors and return a response
                 if ($stmt->rowCount() > 0) {
-                    $response = ["status" => false, "code" => 200, "Message" => 'OTP successfully sent on your registered mobile.', "data" => ["country_code" => $countryCode, "phone" => $phone, "otp" => (string) $otp]];
+                    $response = ["status" => false, "code" => 200, "Message" => 'OTP successfully sent on your registered mobile.', "data" => ["country_code" => $countryCode, "phone" => $phone, "otp" => (string) $otp, "device_token" => $device_token, "device_type" => $device_type]];
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => 'Record not found'];
@@ -134,9 +150,10 @@ class Api extends Rest
         $otp = $this->validateParameter('otp', $this->param['otp'], STRING);
 
         try {
+            $phoneWithCountryCode = $countryCode . $phone;
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE country_code =:country_code AND phone =:phone");
             $stmt->bindParam(":country_code", $countryCode);
-            $stmt->bindParam(":phone", $phone);
+            $stmt->bindParam(":phone", $phoneWithCountryCode);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!empty($user['id'])) {
@@ -190,6 +207,9 @@ class Api extends Rest
             $id_proof_number = $_POST['id_proof_number'];
             $id_proof_new_file_name = '';
 
+            $device_token = $_POST['device_token'];
+            $device_type = $_POST['device_type'];
+
             // $address_proof_type = $_POST['address_proof_type'];
             // $address_proof_number = $_POST['address_proof_number'];
             // $address_proof_new_file_name = '';
@@ -215,10 +235,11 @@ class Api extends Rest
             //         move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
             //     }
             // }
+            $phoneWithCountryCode = $countryCode.$phone;
             $check_email = "SELECT `email` FROM `ad_user` WHERE `email`=:email OR `phone`=:phone";
             $check_email_stmt = $this->dbConn->prepare($check_email);
             $check_email_stmt->bindValue(':email', $email, PDO::PARAM_STR);
-            $check_email_stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
+            $check_email_stmt->bindValue(':phone', $phoneWithCountryCode, PDO::PARAM_STR);
             $check_email_stmt->execute();
 
             if ($check_email_stmt->rowCount()):
@@ -227,7 +248,7 @@ class Api extends Rest
 
             else:
                 $otp = mt_rand(111111, 999999);
-                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`confirm`,`created_at`,`updated_at`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`) VALUES(:username,:name,:email,:confirm,:created_at,:updated_at,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof)";
+                $insert_query = "INSERT INTO `ad_user` (`username`,`name`,`email`,`confirm`,`created_at`,`updated_at`,`country_code`,`phone`,`status`,`password_hash`,`otp`,`id_proof_type`,`id_proof_number`,`id_proof`,`device_token`,`device_type`) VALUES(:username,:name,:email,:confirm,:created_at,:updated_at,:country_code,:phone,:status,:password_hash,:otp,:id_proof_type,:id_proof_number,:id_proof,:device_token,:device_type)";
                 $insert_stmt = $this->dbConn->prepare($insert_query);
                 // DATA BINDING
                 $insert_stmt->bindValue(':username', htmlspecialchars(strip_tags($uName)), PDO::PARAM_STR);
@@ -247,6 +268,8 @@ class Api extends Rest
                 // $insert_stmt->bindValue(':address_proof_type', $address_proof_type, PDO::PARAM_STR);
                 // $insert_stmt->bindValue(':address_proof_number', $address_proof_number, PDO::PARAM_STR);
                 // $insert_stmt->bindValue(':address_proof', $address_proof_new_file_name, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':device_token', $device_token, PDO::PARAM_STR);
+                $insert_stmt->bindValue(':device_type', $device_type, PDO::PARAM_STR);
                 $insert_stmt->execute();
                 $subject = 'Plese verify OTP';
                 $body = 'Your verification OTP is ' . $otp;
@@ -267,12 +290,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-						                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-						                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-						                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-						                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-						                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-						                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+								                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+								                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+								                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+								                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+								                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+								                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -668,6 +691,8 @@ class Api extends Rest
     {
         $oauthProvider = $this->validateParameter('oauth_provider', $this->param['oauth_provider'], STRING);
         $oauthUid = $this->validateParameter('oauth_uid', $this->param['oauth_uid'], STRING);
+        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
 
         try {
             if (!empty($this->param['email'])) {
@@ -684,13 +709,15 @@ class Api extends Rest
             if (!empty($user)) {
                 //Update
                 // Prepare the SQL UPDATE statement
-                $stmt = $this->dbConn->prepare('UPDATE ad_user SET oauth_provider = :oauth_provider, oauth_uid = :oauth_uid, email = :email WHERE id = :id');
+                $stmt = $this->dbConn->prepare('UPDATE ad_user SET oauth_provider = :oauth_provider, oauth_uid = :oauth_uid, email = :email, device_token = :device_token, device_type = :device_type WHERE id = :id');
 
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':id', $user['id'], PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_provider', $oauthProvider, PDO::PARAM_STR);
                 $stmt->bindValue(':oauth_uid', $oauthUid, PDO::PARAM_STR);
                 $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+                $stmt->bindValue(':device_token', $device_token, PDO::PARAM_STR);
+                $stmt->bindValue(':device_type', $device_type, PDO::PARAM_STR);
                 $stmt->execute();
 
                 // Select the last insert row
