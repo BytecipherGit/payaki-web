@@ -184,7 +184,7 @@ class Api extends Rest
             $uName = $_POST['user_name'];
             $email = $_POST['email'];
             $countryCode = $_POST['country_code'];
-            $phone = $_POST['country_code'].$_POST['phone'];
+            $phone = $_POST['country_code'] . $_POST['phone'];
             $password = $_POST['pass'];
             $id_proof_type = $_POST['id_proof_type'];
             $id_proof_number = $_POST['id_proof_number'];
@@ -267,12 +267,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-					                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-					                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-					                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-					                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-					                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-					                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+						                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+						                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+						                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+						                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+						                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+						                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -1945,6 +1945,69 @@ class Api extends Rest
             $this->returnResponse($response);
         }
 
+    }
+
+    public function placeQuote()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $post_id = $this->validateParameter('post_id', $this->param['post_id'], STRING);
+                $user_id = $this->validateParameter('user_id', $this->param['user_id'], STRING);
+                $amount = $this->validateParameter('amount', $this->param['amount'], STRING);
+                $message = $this->validateParameter('message', $this->param['message'], STRING);
+                if (!empty($post_id) && !empty($user_id) && !empty($amount) && !empty($message)) {
+                    $timenow = date('Y-m-d H:i:s');
+                    // Write insert code
+                    $sql = 'INSERT INTO ad_quotes (id, post_id, seller_id, sender_id, amount, message, created_at) VALUES(null, :post_id, :seller_id, :sender_id, :amount, :message, :created_at)';
+                    $stmt = $this->dbConn->prepare($sql);
+                    $stmt->bindParam(':post_id', $post_id);
+                    $stmt->bindParam(':seller_id', $user_id);
+                    $stmt->bindParam(':sender_id', $payload->userId);
+                    $stmt->bindParam(':amount', $amount);
+                    $stmt->bindParam(':message', $message);
+                    $stmt->bindParam(':created_at', $timenow);
+                    if ($stmt->execute()) {
+                        //Get Product post details
+                        $getPost = "SELECT * FROM `ad_product` WHERE `id`=:id";
+                        $postData = $this->dbConn->prepare($getPost);
+                        $postData->bindValue(':id', $post_id, PDO::PARAM_STR);
+                        $postData->execute();
+                        $postData = $postData->fetch(PDO::FETCH_ASSOC);
+                        if (!empty($postData)) {
+                            $postUrl = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];
+                            $getuser = "SELECT * FROM `ad_user` WHERE `id`=:id";
+                            $userData = $this->dbConn->prepare($getuser);
+                            $userData->bindValue(':id', $postData['user_id'], PDO::PARAM_STR);
+                            $userData->execute();
+                            $userData = $userData->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($userData)) {
+                                /*SEND CONFIRMATION EMAIL*/
+                                $subject = 'Payaki - Quote received for the product ' . $postData['product_name'];
+                                $body = '<p>Click below link to see post :-</p><br />
+                                        <a href="' . $postUrl . '" target="_other" rel="nofollow">' . $postData['product_name'] . '</a>';
+                                $this->sendMail($userData['email'], $subject, $body);
+                            }
+                        }
+                        $response = ["status" => true, "code" => 200, "Message" => "Quote successfully placed."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "All field required."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                return false;
+            }
+        } else {
+            $response = ["status" => false, "code" => 400, "Message" => "Auth token not found!"];
+            $this->returnResponse($response);
+        }
     }
 
     public function uploadFile()
