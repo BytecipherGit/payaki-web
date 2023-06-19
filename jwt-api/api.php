@@ -36,8 +36,11 @@ class Api extends Rest
     {
         $email = $this->validateParameter('email', $this->param['email'], STRING);
         $password = $this->validateParameter('pass', $this->param['pass'], STRING);
-        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
-        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        // $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        // $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        $device_token = !empty($this->param['device_token']) ? $this->param['device_token'] : '';
+        $device_type = !empty($this->param['device_type']) ? $this->param['device_type'] : '';
+
         try {
             // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
             $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email");
@@ -106,8 +109,10 @@ class Api extends Rest
     {
         $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
         $phone = $this->validateParameter('phone', $this->param['phone'], STRING);
-        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
-        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        // $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        // $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        $device_token = !empty($this->param['device_token']) ? $this->param['device_token'] : '';
+        $device_type = !empty($this->param['device_type']) ? $this->param['device_type'] : '';
         try {
             $phoneWithCountryCode = $countryCode . $phone;
             // $stmt = $this->dbConn->prepare("SELECT * FROM ad_user WHERE email =:email OR username=:username");
@@ -207,9 +212,9 @@ class Api extends Rest
             $id_proof_number = $_POST['id_proof_number'];
             $id_proof_new_file_name = '';
 
-            $device_token = $_POST['device_token'];
-            $device_type = $_POST['device_type'];
-
+            $device_token = !empty($_POST['device_token']) ? $_POST['device_token'] : '';
+            $device_type = !empty($_POST['device_type']) ? $_POST['device_type'] : '';
+            
             // $address_proof_type = $_POST['address_proof_type'];
             // $address_proof_number = $_POST['address_proof_number'];
             // $address_proof_new_file_name = '';
@@ -691,8 +696,10 @@ class Api extends Rest
     {
         $oauthProvider = $this->validateParameter('oauth_provider', $this->param['oauth_provider'], STRING);
         $oauthUid = $this->validateParameter('oauth_uid', $this->param['oauth_uid'], STRING);
-        $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
-        $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        // $device_token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        // $device_type = $this->validateParameter('device_type', $this->param['device_type'], STRING);
+        $device_token = !empty($this->param['device_token']) ? $this->param['device_token'] : '';
+        $device_type = !empty($this->param['device_type']) ? $this->param['device_type'] : '';
 
         try {
             if (!empty($this->param['email'])) {
