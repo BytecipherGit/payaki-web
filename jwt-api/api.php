@@ -80,7 +80,7 @@ class Api extends Rest
             $stmt->bindValue(':device_token', $device_token, PDO::PARAM_STR);
             $stmt->bindValue(':device_type', $device_type, PDO::PARAM_STR);
             if ($stmt->execute()) {
-                $user['address_proof'] = $device_token;
+                $user['device_token'] = $device_token;
                 $user['device_type'] = $device_type;
             }
 
