@@ -94,10 +94,6 @@ $router->map('GET|POST','/webhook/[*:i]?/?', 'webhook.php');
 $router->map('GET|POST','/invoice/[i:id]?/?', 'invoice.php');
 // API Routes
 
-
-$router->map('GET|POST','/web_push_notification/?', 'webpushnotification.php');
-
-
 /* Match the current request */
 $match=$router->match();
 if($match) {
