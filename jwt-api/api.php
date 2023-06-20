@@ -23,6 +23,9 @@ class Api extends Rest
     protected $current_url;
     protected $display_image_url;
 
+    protected $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+    protected $fcmServerKey = 'AAAAcdsalcE:APA91bE-UusISpW-YJ6QKQAjAwC6O4pCP1AAIvfsR7Dul6-JL2yGh6qAi418dCBxYqy0DvMWp67d2rLmfHZ8EQVbM0ysKbyBlQIipPoATHuyfQTKkhYw9SLtUmJ--HegoumMFGJM6lJL';
+
     public function __construct()
     {
         parent::__construct();
@@ -30,6 +33,7 @@ class Api extends Rest
         $this->host_url = $_SERVER['HTTP_HOST'];
         $this->current_url = $this->protocol . "://" . $this->host_url . $_SERVER['REQUEST_URI'];
         $this->display_image_url = str_replace("jwt-api/", "", $this->current_url);
+
     }
 
     public function login()
@@ -214,7 +218,7 @@ class Api extends Rest
 
             $device_token = !empty($_POST['device_token']) ? $_POST['device_token'] : '';
             $device_type = !empty($_POST['device_type']) ? $_POST['device_type'] : '';
-            
+
             // $address_proof_type = $_POST['address_proof_type'];
             // $address_proof_number = $_POST['address_proof_number'];
             // $address_proof_new_file_name = '';
@@ -240,7 +244,7 @@ class Api extends Rest
             //         move_uploaded_file($address_proof_file_tmp, $addressProofNewMainFilePath);
             //     }
             // }
-            $phoneWithCountryCode = $countryCode.$phone;
+            $phoneWithCountryCode = $countryCode . $phone;
             $check_email = "SELECT `email` FROM `ad_user` WHERE `email`=:email OR `phone`=:phone";
             $check_email_stmt = $this->dbConn->prepare($check_email);
             $check_email_stmt->bindValue(':email', $email, PDO::PARAM_STR);
@@ -295,12 +299,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-								                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-								                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-								                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-								                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-								                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-								                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+									                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+									                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+									                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+									                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+									                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+									                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -950,6 +954,27 @@ class Api extends Rest
                     $stmt->execute();
                     // Fetch the row
                     $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if(!empty($product)){
+                        //Send Push notification to all user except logged in user id in request
+                        //Get Latest Post
+                        $getUsers = "SELECT device_token FROM ad_user WHERE device_token !='' AND id != :userId";
+                        $getUserData = $this->dbConn->prepare($getUsers);
+                        $getUserData->bindValue(':userId', $userId, PDO::PARAM_STR);
+                        $getUserData->execute();
+                        // echo "Last executed query: " . $getUserData->queryString;
+                        // exit;
+                        $getUserData = $getUserData->fetchAll(PDO::FETCH_ASSOC);
+                        if (count($getUserData) > 0) {
+                            foreach ($getUserData as $key => $user) {
+                                $title = 'New product '.$productName. 'has been posted on payaki';
+                                $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];
+                                $deviceToken = $user['device_token'];
+                                $this->pushNotificationForApp($deviceToken, $title, $message);
+                            }
+                        } 
+
+                    }
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement successfuly posted.", "data" => $product];
                     $this->returnResponse($response);
                 } else {
@@ -2108,5 +2133,109 @@ class Api extends Rest
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
         }
+    }
+
+    public function pushNotificationForApp($token, $title, $message)
+    {
+        // $token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        // $title = $this->validateParameter('title', $this->param['title'], STRING);
+        // $message = $this->validateParameter('message', $this->param['message'], STRING);
+        
+        $fields = array(
+            'to' => $token,
+            'priority' => "high",
+            'notification' => array(
+                "title" => $title,
+                "sound" => "default",
+                "body" => $message,
+            ),
+            'data' => array("message" => $message),
+        );
+
+        $headers = array(
+            $this->fcmUrl,
+            'Content-Type: application/json',
+            'Authorization: key=' . $this->fcmServerKey,
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+
+        $result = curl_exec($ch);
+        // dd($result);
+        if ($result === false) {
+            die('Problem occurred: ' . curl_error($ch));
+        }
+        curl_close($ch);
+        $decode_result = json_decode($result);
+
+        if (!empty($decode_result)) {
+            if ($decode_result->failure == 1) {
+                // $response = ["status" => false, "code" => 400, "Message" => "Notification not send.", "data" => $fields , "result" => $decode_result];
+                // $this->returnResponse($response);
+                return false;
+            }
+        }
+        return true;
+        // $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields , "result" => $decode_result];
+        // $this->returnResponse($response);
+        
+    }
+
+    public function sendPushNotificationToApp($token = '', $title = '', $message = '')
+    {
+        $token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
+        $title = $this->validateParameter('title', $this->param['title'], STRING);
+        $message = $this->validateParameter('message', $this->param['message'], STRING);
+        
+        $fields = array(
+            'to' => $token,
+            'priority' => "high",
+            'notification' => array(
+                "title" => $title,
+                "sound" => "default",
+                "body" => $message,
+            ),
+            'data' => array("message" => $message),
+        );
+
+        $headers = array(
+            $this->fcmUrl,
+            'Content-Type: application/json',
+            'Authorization: key=' . $this->fcmServerKey,
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+
+        $result = curl_exec($ch);
+        // dd($result);
+        if ($result === false) {
+            die('Problem occurred: ' . curl_error($ch));
+        }
+        curl_close($ch);
+        $decode_result = json_decode($result);
+
+        if (!empty($decode_result)) {
+            if ($decode_result->failure == 1) {
+                $response = ["status" => false, "code" => 400, "Message" => "Notification not send.", "data" => $fields , "result" => $decode_result];
+                $this->returnResponse($response);
+            }
+        }
+
+        $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields , "result" => $decode_result];
+        $this->returnResponse($response);
+
+        
     }
 }
