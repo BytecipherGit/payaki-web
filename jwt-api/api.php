@@ -1395,9 +1395,9 @@ class Api extends Rest
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc') {
                 $getpost .= " ORDER BY ap.created_at ASC";
             } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
-                $getpost .= " ORDER BY ap.updated_at DESC";
+                $getpost .= " ORDER BY ap.created_at DESC";
             } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
-                $getpost .= " ORDER BY ap.updated_at DESC";
+                $getpost .= " ORDER BY ap.created_at DESC";
             }
             $postData = $this->dbConn->prepare($getpost);
 
