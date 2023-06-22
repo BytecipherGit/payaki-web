@@ -47,6 +47,11 @@ if ($num_rows > 0) {
     $item_title_slug = create_slug($item_title);
     $item_link = $link['POST-DETAIL'].'/'.$item_id.'/'.$item_title_slug;
 
+
+    $post_id = $info['id'];
+    $post_user_id = $info['user_id'];
+    $quote_link = $link['POST-QUOTE'].'/'.$post_id.'/'.$post_user_id;
+
     $item_catlink = $link['SEARCH_CAT'].'/'.$get_main['slug'];
     $item_subcatlink = $link['SEARCH_CAT'].'/'.$get_main['slug'].'/'.$get_sub['slug'];
 
@@ -414,6 +419,7 @@ if(check_user_upgrades($item_author_id))
 $page->SetParameter ('ITEM_CATEGORY', $item_category);
 $page->SetParameter ('ITEM_SUB_CATEGORY', $item_sub_category);
 $page->SetParameter ('ITEM_LINK', $item_link);
+$page->SetParameter ('QUOTE_LINK', $quote_link);
 $page->SetParameter ('ITEM_CATLINK', $item_catlink);
 $page->SetParameter ('ITEM_SUBCATLINK', $item_subcatlink);
 $page->SetParameter ('ITEM_LOCATION', $item_location);

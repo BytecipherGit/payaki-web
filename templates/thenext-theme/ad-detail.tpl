@@ -284,6 +284,10 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                             ELSEIF({LOGGED_IN}){
                                 <a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>
                             {:IF}
+
+                            IF({LOGGED_IN}){
+                                <a href="{QUOTE_LINK}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
+                            {:IF}
                         </div>
                     </div>
                 </div>
