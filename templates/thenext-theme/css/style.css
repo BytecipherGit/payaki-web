@@ -31,7 +31,7 @@ ul {
   margin: 0;
   padding: 0;
 }
-.select-register{
+.select-register {
   padding: 12px 64px;
   cursor: pointer;
 }
@@ -514,6 +514,23 @@ h5.marker_head {
   border-radius: 50%;
   position: relative;
 }
+.header-notifications-dropdown-notification {
+  width: 360px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+  padding: 0;
+  position: absolute;
+  top: calc(100% - 10px);
+  right: -15px;
+  text-align: left;
+  z-index: 100;
+  transform: scale(0.95);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  pointer-events: none;
+}
 .header-notifications-dropdown {
   width: 360px;
   border-radius: 4px;
@@ -530,6 +547,24 @@ h5.marker_head {
   visibility: hidden;
   transition: 0.3s;
   pointer-events: none;
+}
+.header-notifications.active .header-notifications-dropdown-notification {
+  transform: scale(1);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+  width: 349px;
+}
+.header-notifications-dropdown-notification:before {
+  content: "";
+  position: absolute;
+  right: 43px;
+  top: -6px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #d7d7d7;
 }
 .header-notifications.active .header-notifications-dropdown {
   transform: scale(1);
@@ -713,7 +748,8 @@ a.header-notifications-button i {
   padding: 0;
 }
 .header-notifications.user-menu {
-  margin: 0 -5px;
+  /* margin: 0 -5px; */
+  margin: 0 0px;
 }
 .user-menu .header-notifications-trigger,
 .user-menu .header-notifications-trigger a {
@@ -769,6 +805,11 @@ a.header-notifications-button i {
   display: inline-block;
   border-radius: 50%;
   image-rendering: -webkit-optimize-contrast;
+}
+ul.user-menu-small-nav-notification {
+  list-style: none;
+  padding: 12px 18px;
+  margin: 0;
 }
 ul.user-menu-small-nav {
   list-style: none;
@@ -2269,6 +2310,20 @@ em.mm-counter + a.mm-fullsubopen + span {
   }
   .header-notifications-dropdown,
   .user-menu .header-notifications-dropdown {
+    width: calc(100vw - 45px);
+    right: -10px;
+    top: calc(100% + 15px);
+  }
+}
+@media (max-width: 768px) {
+  .header-notifications {
+    position: initial;
+  }
+  .header-notifications-dropdown-notification {
+    display: none;
+  }
+  .header-notifications-dropdown-notification,
+  .user-menu .header-notifications-dropdown-notification {
     width: calc(100vw - 45px);
     right: -10px;
     top: calc(100% + 15px);
