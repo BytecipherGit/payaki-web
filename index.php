@@ -92,6 +92,7 @@ $router->map('GET|POST','/blog/author/[*:keyword]/?', 'blog-author.php');
 $router->map('GET|POST','/blog/[i:id]?/[*:slug]?/?', 'blog-single.php');
 $router->map('GET|POST','/webhook/[*:i]?/?', 'webhook.php');
 $router->map('GET|POST','/invoice/[i:id]?/?', 'invoice.php');
+$router->map('GET|POST','/post-quote/[i:post_id]?/[*:post_user_id]?/?', 'quote.php');
 // API Routes
 
 /* Match the current request */

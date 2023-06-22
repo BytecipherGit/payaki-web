@@ -45,4 +45,5 @@ $link['BLOG-CAT']       = $config['site_url'] . 'blog/category';
 $link['BLOG-AUTHOR']    = $config['site_url'] . 'blog/author';
 $link['INVOICE']        = $config['site_url'] . 'invoice';
 $link['ADVERTISE_HERE'] = $config['site_url'] . 'advertise-here';
+$link['POST-QUOTE']     = $config['site_url'].'post-quote';
 ?>
