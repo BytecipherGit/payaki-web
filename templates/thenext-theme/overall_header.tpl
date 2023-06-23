@@ -77,6 +77,8 @@
                 });
                 return false;
             });
+
+
         });
     </script>
     <!-- ===External Code=== -->
@@ -204,19 +206,21 @@
                 </div>
                 <div class="right-side">
                     IF({LOGGED_IN}){
-                    <div class="header-widget padding-right-0 d-none d-lg-block">
-                      <div class="header-notifications user-menu">
-                            <div class="header-notifications-trigger">
-                                <a href="#"><i class="icon-feather-bell"></i>2 </a>
+                        <div class="mainNotification"> 
+                            <div class="toggleNotifi">        
+                                <div class="img-box">
+                                    <i class="icon-feather-bell"></i>
+                                    <span class="activePoint">02</span>
+                                </div>
                             </div>
-                            <div class="header-notifications-dropdown-notification">
-                                <ul class="user-menu-small-nav-notification">
-                                    <li><a href="{LINK_DASHBOARD}"> New Product has been posted</a></li>
-                                    <li><a href="{LINK_DASHBOARD}"> New Product has been posted 1</a></li>
+                            <div class="menuNotiDrop">
+                                <ul>
+                                    <li><a href="#">&nbsp;Profile</a></li>
+                                    <li><a href="#">&nbsp;Inbox</a></li>
                                 </ul>
                             </div>
                         </div>
-
+                    <div class="header-widget padding-right-0 d-none d-lg-block">
                         <div class="header-notifications user-menu">
                             <div class="header-notifications-trigger">
                                 <a href="#"><i class="icon-feather-user"></i> {USERNAME}<i

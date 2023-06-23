@@ -379,17 +379,48 @@ ELSEIF({LOGGED_IN} && '{ZECHAT_ON_OFF}'=='on'){
 <link href="{SITE_URL}plugins/banner-admanager/css/ubm.css?ver=2.50" rel="stylesheet">
 <script src="{SITE_URL}plugins/banner-admanager/js/ubm-jsonp.js?ver=2.50"></script>
 <script type="text/javascript">
-setInterval(function() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'ajax-handler.php', true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      // Process the response received from the server
-      console.log(xhr.responseText);
-    }
-  };
-  xhr.send();
+
+let toggleNotifi = document.querySelector('.toggleNotifi');
+let menuNotiDrop = document.querySelector('.menuNotiDrop');
+toggleNotifi.onclick = function () {
+    menuNotiDrop.classList.toggle('active');
+}
+
+/*setInterval(function() {
+    $.ajax({
+        type: "POST",
+        data: "action=get_notification",
+        url: ajaxurl,
+        success: function(data)
+        {
+            console.log(data);
+            $('#custom_notification').html(''); 
+            $('#custom_notification').html(data);
+        }
+    });
 }, 2000); // 5000 milliseconds = 5 seconds
+
+$('#toggleButton').click(function() {
+    $.ajax({
+        type: "POST",
+        data: "action=notification",
+        url: ajaxurl,
+        success: function(data)
+        {
+            $('#toggleButton').insertAfter(data);
+            //console.log(data);
+            //$('#custom_notification').html(''); 
+            //$('#custom_notification').html(data);
+            
+                $('#myDiv').toggle(); // Toggle the visibility of the div
+            
+        }
+    });
+  });*/
+
+  
+
+
 </script>
 </body>
 </html>

@@ -379,13 +379,23 @@ h5.marker_head {
   position: relative;
   flex: 1;
 }
-#header .right-side {
+/* #header .right-side {
   float: right;
   text-align: right;
   width: auto;
   display: inline-block;
   background-color: #fff;
   flex: 1;
+} */
+#header .right-side {
+  float: right;
+  text-align: right;
+  width: auto;
+  display: flex;
+  background-color: #fff;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 }
 .header-widget {
   display: inline-block;
@@ -15475,4 +15485,149 @@ ul.prop_details li {
 }
 .text-danger {
   color: #d9534f !important;
+}
+
+
+.menu-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  cursor: not-allowed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-toggle::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 4px;
+  background: #000;
+  box-shadow: 0 8px 0 #000,
+              0 -8px 0 #000;
+}
+
+
+.mainNotification {
+  position: relative;
+  width: 200px;
+  margin-left: 200px;
+}
+.toggleNotifi {
+  position: relative;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggleNotifi h3 {
+  text-align: end;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.toggleNotifi p {
+  line-height: 1;
+  font-size: 14px;
+  opacity: .6;
+}
+
+.toggleNotifi .img-box {
+  position: relative;
+}
+.toggleNotifi .img-box i {
+  position: relative;
+  /* width: 48px; */
+  /* height: 48px; */
+  border-radius: 50%;
+  overflow: hidden;
+  /* background: #404040; */
+  font-size: 18px;
+  margin-top: 2px;
+  display: block;
+}
+.toggleNotifi .activePoint {
+  background: red;
+  width: 20px;
+  height: 20px;
+  display: block;
+  border-radius: 50%;
+  position: absolute;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  top: -12px;
+  color: #fff;
+  font-size: 9px;
+  right: -10px;
+  /* display: none; */
+}
+
+
+
+.menuNotiDrop {
+  position: absolute;
+  top: calc(100% + 24px);
+  right: -14px;
+  width: 200px;
+  min-height: 100px;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .2);
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: 300ms;
+  top: 33px;
+}
+
+.menuNotiDrop::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+.menuNotiDrop.active {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+
+
+.menuNotiDrop ul {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.menuNotiDrop ul li {
+  list-style: none;
+}
+
+.menuNotiDrop ul li:hover {
+  background: #eee;
+}
+
+.menuNotiDrop ul li a {
+  text-decoration: none;
+  color: #000;
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  gap: 6px;
 }
