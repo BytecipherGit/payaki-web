@@ -299,14 +299,14 @@ IF("{POST_WATERMARK}"=="0"){
                                         <h5>{LANG_PHONE_NO}</h5>
                                         <div class="row">
                                             <div class="col-xl-6 col-md-12">
-                                                <!-- <div class="input-with-icon-left">
+                                                 <div class="input-with-icon-left">
                                                     <i class="flag-img"><img src="{SITE_URL}includes/assets/plugins/flags/images/{USER_COUNTRY}.png"></i>
                                                     <input type="text" class="with-border" name="phone">
-                                                </div> -->
-                                                <div>
+                                                </div>
+                                                <!-- <div>
                                                     <input type="phone" class="input-text with-border" placeholder="Enter valid phone number" id="verify-mobile" name="phone" required/>
                                                     <input type="hidden" id="country_code" name="country_code"/>
-                                                </div>
+                                                </div> -->
                                             </div>
                                             <div class="col-xl-6 col-md-12">
                                                 <div class="checkbox margin-top-12">
