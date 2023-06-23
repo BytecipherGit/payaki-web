@@ -1703,9 +1703,11 @@ function get_items($userid=null,$status=null,$premium=false,$page=null,$limit=nu
     if($premium){
         $grqry = "u.group_id in ('".implode("','",$listing_search_array)."')";
         if($where == '')
-            $where .= "where ($grqry or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
+            // $where .= "where ($grqry or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
+            $where .= "where (p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
         else
-            $where .= " AND ($grqry or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
+            // $where .= " AND ($grqry or p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
+            $where .= " AND (p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
     }
 
     if($location){
@@ -1739,12 +1741,8 @@ function get_items($userid=null,$status=null,$premium=false,$page=null,$limit=nu
         $pagelimit = "LIMIT  ".($page-1)*$limit.",".$limit;
     }
 
-    $query = "SELECT p.id,p.product_name,p.description,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_days,p.expired_date,p.is_verified,p.expire_date,p.view,
-u.group_id
-FROM `".$config['db']['pre']."product` as p
-INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id
-$where ORDER BY $order_by $pagelimit";
-
+    $query = "SELECT p.id,p.product_name,p.description,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_days,p.expired_date,p.is_verified,p.expire_date,p.view, u.group_id FROM `".$config['db']['pre']."product` as p INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id $where ORDER BY $order_by $pagelimit";
+    
     $result = ORM::for_table($config['db']['pre'].'product')->raw_query($query)->find_many();
 
     if ($result) {
