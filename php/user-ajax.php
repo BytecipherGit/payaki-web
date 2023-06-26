@@ -651,7 +651,16 @@ function get_notification()
             $html .= '<div class="menuNotiDrop">
             <ul>';
             foreach ($rows as $info) {
-                $html .= '<li><a href="#">&nbsp;Profile</a></li>';
+                $slug = '';
+                $productId = '';
+                if(!empty($info['notification_id'])){
+                    $product = ORM::for_table($config['db']['pre'] . 'product')->select(['id','slug'])->find_one($info['notification_id']);
+                    if(!empty($product['slug'])){
+                        $productId = $product['id'];
+                        $slug = $product['slug'];
+                    }
+                }
+                $html .= '<li><a href="'.$config['site_url'].'ad/'.$productId.'/'.$slug.'">&nbsp;'.$info['title'].'</a></li>';
             }
             $html .= '</ul>
             </div>';

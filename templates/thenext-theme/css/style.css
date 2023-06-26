@@ -15583,6 +15583,7 @@ ul.prop_details li {
   visibility: hidden;
   transition: 300ms;
   top: 33px;
+  min-width: 319px;
 }
 
 .menuNotiDrop::before {
@@ -15628,6 +15629,6 @@ ul.prop_details li {
   color: #000;
   display: flex;
   align-items: center;
-  padding: 15px 20px;
+  padding: 10px 9px;
   gap: 6px;
 }
