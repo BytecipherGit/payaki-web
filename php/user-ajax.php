@@ -626,21 +626,21 @@ function get_notification()
     if (checkloggedin()) {
         // Check previous entry
         $html = '';
-        $getTotalNotificationCount = ORM::for_table($config['db']['pre'] . 'notifications')
+        $getTotalNotificationCount = ORM::for_table($config['db']['pre'] . 'custom_notification')
             ->where('user_id', $_SESSION['user']['id'])
             ->where('status', false)
             ->count();
+
         if (!empty($getTotalNotificationCount)) {
-            $html .= '<div id="toggleButton" class="header-notifications-trigger">
-                            <a class="notification_count" href="javascript:void(0);" id="' . $_SESSION['user']['id'] . '"><i class="icon-feather-bell"></i> ' . $getTotalNotificationCount . '</a>
+            $html .= '<div class="toggleNotifi">
+                        <div class="img-box">
+                            <i class="icon-feather-bell"></i>
+                            <span class="activePoint">' . $getTotalNotificationCount . '</span>
+                        </div>
                     </div>';
-        } else {
-            $html .= '<div class="header-notifications-trigger">
-                    <a class="notification_count" href="javascript:void(0);" id="' . $_SESSION['user']['id'] . '"><i class="icon-feather-bell"></i> 0</a>
-                </div>';
         }
-        /*$rows = ORM::for_table($config['db']['pre'] . 'notifications')
-            ->select_many('id', 'user_id', 'post_id', 'title', 'slug')
+        $rows = ORM::for_table($config['db']['pre'] . 'custom_notification')
+            ->select_many('id', 'notification_id', 'type', 'title', 'user_id', 'status')
             ->where(array(
                 'user_id' => $_SESSION['user']['id'],
                 'status' => false,
@@ -648,42 +648,10 @@ function get_notification()
             ->order_by_desc('id')
             ->find_many();
         if (count($rows) > 0) {
-            $html .= '<div id="myDiv" style="display: none;" class="custom-header-notifications-dropdown-notification">
-            <ul class="user-menu-small-nav-notification">';
+            $html .= '<div class="menuNotiDrop">
+            <ul>';
             foreach ($rows as $info) {
-                $html .= '<li><a href="http://localhost/payaki-web/ad/13/i-want-sell-my-bike-less-price"> New Product has been posted</a></li>';
-            }
-            $html .= '</ul>
-            </div>';
-        }*/
-        echo $html;
-        die();
-    } else {
-        header("Location: " . $config['site_url'] . "login");
-        exit;
-    }
-}
-
-function notification()
-{
-    global $config, $lang;
-
-    if (checkloggedin()) {
-        // Check previous entry
-        $html = '';
-        $rows = ORM::for_table($config['db']['pre'] . 'notifications')
-            ->select_many('id', 'user_id', 'post_id', 'title', 'slug')
-            ->where(array(
-                'user_id' => $_SESSION['user']['id'],
-                'status' => false,
-            ))
-            ->order_by_desc('id')
-            ->find_many();
-        if (count($rows) > 0) {
-            $html .= '<div id="myDiv" style="display: none;" class="custom-header-notifications-dropdown-notification">
-            <ul class="user-menu-small-nav-notification">';
-            foreach ($rows as $info) {
-                $html .= '<li><a href="http://localhost/payaki-web/ad/13/i-want-sell-my-bike-less-price"> New Product has been posted</a></li>';
+                $html .= '<li><a href="#">&nbsp;Profile</a></li>';
             }
             $html .= '</ul>
             </div>';

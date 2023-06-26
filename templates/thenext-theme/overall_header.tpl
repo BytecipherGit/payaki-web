@@ -206,8 +206,8 @@
                 </div>
                 <div class="right-side">
                     IF({LOGGED_IN}){
-                        <div class="mainNotification"> 
-                            <div class="toggleNotifi">        
+                        <div class="mainNotification" id="mainNotification"> 
+                            <!--<div class="toggleNotifi">        
                                 <div class="img-box">
                                     <i class="icon-feather-bell"></i>
                                     <span class="activePoint">02</span>
@@ -218,7 +218,7 @@
                                     <li><a href="#">&nbsp;Profile</a></li>
                                     <li><a href="#">&nbsp;Inbox</a></li>
                                 </ul>
-                            </div>
+                            </div>-->
                         </div>
                     <div class="header-widget padding-right-0 d-none d-lg-block">
                         <div class="header-notifications user-menu">
