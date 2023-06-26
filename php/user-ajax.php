@@ -656,7 +656,7 @@ function get_notification()
             ->find_many();
         if (count($rows) > 0) {
             $html .= '<div class="menuNotiDrop">
-            <ul>';
+            <ul class="scrollable-list-notification">';
             foreach ($rows as $info) {
                 $slug = '';
                 $productId = '';

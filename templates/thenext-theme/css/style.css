@@ -15632,3 +15632,8 @@ ul.prop_details li {
   padding: 10px 9px;
   gap: 6px;
 }
+
+.scrollable-list-notification {
+  height: 200px; /* Set the desired height */
+  overflow: auto; /* Enable the scroll behavior */
+}
