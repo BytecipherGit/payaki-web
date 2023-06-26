@@ -378,5 +378,27 @@ ELSEIF({LOGGED_IN} && '{ZECHAT_ON_OFF}'=='on'){
 <!-- footer -->
 <link href="{SITE_URL}plugins/banner-admanager/css/ubm.css?ver=2.50" rel="stylesheet">
 <script src="{SITE_URL}plugins/banner-admanager/js/ubm-jsonp.js?ver=2.50"></script>
+<script type="text/javascript">
+
+var intervalId = setInterval(function() {
+    $.ajax({
+        type: "POST",
+        data: "action=get_notification",
+        url: ajaxurl,
+        success: function(data)
+        {
+            console.log(data);
+            $('#mainNotification').html(''); 
+            $('#mainNotification').html(data);
+            let toggleNotifi = document.querySelector('.toggleNotifi');
+            let menuNotiDrop = document.querySelector('.menuNotiDrop');
+            toggleNotifi.onclick = function () {
+                menuNotiDrop.classList.toggle('active');
+                clearInterval(intervalId);
+            }
+        }
+    });
+}, 2000); // 5000 milliseconds = 5 seconds
+</script>
 </body>
 </html>
