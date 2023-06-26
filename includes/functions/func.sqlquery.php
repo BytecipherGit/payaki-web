@@ -2149,6 +2149,13 @@ function update_itemview($product_id)
 
 }
 
+function update_notification_status($notificationId){
+    global $config;
+    $notification = ORM::for_table($config['db']['pre'] . 'custom_notification')->find_one($notificationId);
+    $notification->set_expr('status', true);
+    $notification->save();
+}
+
 /**
  * Get user membership settings
  *

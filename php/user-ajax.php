@@ -660,7 +660,7 @@ function get_notification()
                         $slug = $product['slug'];
                     }
                 }
-                $html .= '<li><a href="'.$config['site_url'].'ad/'.$productId.'/'.$slug.'">&nbsp;'.$info['title'].'</a></li>';
+                $html .= '<li><a href="'.$config['site_url'].'ad/'.$productId.'/'.$slug.'/'.$info['id'].'">&nbsp;'.$info['title'].'</a></li>';
             }
             $html .= '</ul>
             </div>';

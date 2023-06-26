@@ -9,6 +9,10 @@ if(!isset($_GET['id']))
     exit;
 }
 
+if(!empty($_GET['notification_id'])){
+    update_notification_status($_GET['notification_id']);
+}
+
 $num_rows = ORM::for_table($config['db']['pre'].'product')
     ->where('id',$_GET['id'])
     ->count();
