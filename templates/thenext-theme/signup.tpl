@@ -63,6 +63,13 @@
                         </div>
                         <span id="email-availability-status">IF("{EMAIL_ERROR}"!=""){ {EMAIL_ERROR} {:IF}</span>
                     </div>
+                    <!--<div class="form-group">
+                        <div>
+                            <input type="phone" class="input-text with-border" placeholder="{LANG_PHONE_NO}" value="{PHONE_FIELD}" id="verify-mobile" name="phone" onBlur="checkAvailabilityPhone()" required/>
+                            <input type="hidden" id="country_code" name="country_code"/>
+                        </div>
+                        <span id="phone-availability-status">IF("{PHONE_ERROR}"!=""){ {PHONE_ERROR} {:IF}</span>
+                    </div>-->
                     <div class="form-group">
                         <div>
                             <input type="phone" class="input-text with-border" placeholder="{LANG_PHONE_NO}" value="{PHONE_FIELD}" id="verify-mobile" name="phone" onBlur="checkAvailabilityPhone()" required/>
@@ -70,13 +77,13 @@
                         </div>
                         <span id="phone-availability-status">IF("{PHONE_ERROR}"!=""){ {PHONE_ERROR} {:IF}</span>
                     </div>
-                    IF("{SMS_VERIFY_MODE}"=="1"){
-                    [*<div class="form-group">
+                    IF("{SMS_VERIFY_MODE}"!="1"){
+                    <!--<div class="form-group">
                         <div>
                             <input type="phone" class="input-text with-border" placeholder="{LANG_PHONE_NO}" value="{PHONE_FIELD}" id="verify-mobile" name="phone" onBlur="checkAvailabilityPhone()" required/>
                         </div>
                         <span id="phone-availability-status">IF("{PHONE_ERROR}"!=""){ {PHONE_ERROR} {:IF}</span>
-                    </div>*}
+                    </div>-->
                     {:IF}
                     <div class="form-group">
                         <div class="input-with-icon-left">
