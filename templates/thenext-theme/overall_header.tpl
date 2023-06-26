@@ -166,14 +166,14 @@
                     <nav class="navigation">
                         <ul>
                             IF('{COUNTRY_TYPE}'=="multi"){
-                            <li>
+                            <!--<li>
                                 <a href="#countryModal" class="country-flag popup-with-zoom-anim"
                                    title="{LANG_CHANGE_COUNTRY}"
                                    data-tippy-placement="right">
 
                                     <img src="{SITE_URL}includes/assets/plugins/flags/images/{USER_COUNTRY}.png"/>
                                 </a>
-                            </li>
+                            </li>-->
                             {:IF}
                             <li class="d-none d-lg-block">
                                 <a href="{LINK_LISTING}"><i class="icon-feather-list"></i> {LANG_FIND_ADS}</a>
