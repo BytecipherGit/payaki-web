@@ -72,7 +72,7 @@ $router->map('GET|POST','/test/?', 'test.php');
 // Special (GET processing, etc)
 
 $router->map('GET|POST','/profile/[*:username]?/[*:page]?/?','profile.php');
-$router->map('GET|POST','/ad/[i:id]?/[*:slug]?/?', 'ad-detail.php');
+$router->map('GET|POST','/ad/[i:id]?/[*:slug]?/[*:notification_id]?/?', 'ad-detail.php');
 $router->map('GET|POST','/post-ad/[a:lang]?/[a:country]?/[a:action]?/?', 'ad-post.php');
 $router->map('GET|POST','/edit-ad/[i:id]?/[a:lang]?/[a:country]?/[a:action]?/?', 'ad-edit.php');
 $router->map('GET|POST','/listing/?', 'listing.php');
