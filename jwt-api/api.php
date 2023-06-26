@@ -948,6 +948,39 @@ class Api extends Rest
                 if ($stmt->execute()) {
                     // Get the last insert ID
                     $last_id = $this->dbConn->lastInsertId();
+                    //Send Custom Notification to user
+                    if(!empty($last_id)){
+                        $notification_id = $last_id;
+                        $title = $productName;
+                        //Fetch all active user who's status = 1
+                        $status = '1';
+                        $getUsers = "SELECT id FROM ad_user WHERE id != :userId and status != '0'";
+                        $getUserData = $this->dbConn->prepare($getUsers);
+                        $getUserData->bindValue(':userId', $userId, PDO::PARAM_STR);
+                        $getUserData->execute();
+                        // echo "Last executed query: " . $getUserData->queryString;
+                        // exit;
+                        $getUserData = $getUserData->fetchAll(PDO::FETCH_ASSOC);
+                        if (count($getUserData) > 0) {
+                            foreach ($getUserData as $key => $user) {
+                                $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :user_id, :status, :created_at)';
+                                $type = 'post';
+                                $user_id = $user['id'];
+                                $nStatus = 0;
+                                $createdDate = date('Y-m-d H:i:s');
+                                $notifivationStmt = $this->dbConn->prepare($notificationSql);
+                                $notifivationStmt->bindParam(':notification_id', $notification_id);
+                                $notifivationStmt->bindParam(':type', $type);
+                                $notifivationStmt->bindParam(':title', $title);
+                                $notifivationStmt->bindParam(':user_id', $user_id);
+                                $notifivationStmt->bindParam(':status', $nStatus);
+                                $notifivationStmt->bindParam(':created_at', $createdDate);
+                                $notifivationStmt->execute();
+                                
+                            }
+                        } 
+                    }
+
                     // Select the last insert row
                     $stmt = $this->dbConn->prepare("SELECT * FROM ad_product WHERE id=:id");
                     $stmt->bindParam(':id', $last_id);

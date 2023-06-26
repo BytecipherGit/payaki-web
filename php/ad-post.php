@@ -362,6 +362,22 @@ function ajax_post_advertise(){
                 $item_insrt->save();
 
                 $product_id = $item_insrt->id();
+                //Send Custom Notification to user
+                if(!empty($product_id)){
+                    $users = ORM::for_table($config['db']['pre'].'user')->where('status', '1')->whereNotEqual('id', $_SESSION['user']['id'])->find_many();
+                    if (count($users) > 0) {
+                        foreach ($users as $user){
+                            $insert_notification = ORM::for_table($config['db']['pre'].'custom_notification')->create();
+                            $insert_notification->notification_id = $product_id;
+                            $insert_notification->type = 'post';
+                            $insert_notification->title = validate_input($post_title);
+                            $insert_notification->user_id = $user['id'];
+                            $insert_notification->status = 0;
+                            $insert_notification->created_at = date("Y-m-d H:i:s");
+                            $insert_notification->save();
+                        }
+                    }
+                }
                 add_post_customField_data($_POST['catid'], $_POST['subcatid'],$product_id);
 
                 $amount = 0;

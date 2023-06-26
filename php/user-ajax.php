@@ -638,6 +638,13 @@ function get_notification()
                             <span class="activePoint">' . $getTotalNotificationCount . '</span>
                         </div>
                     </div>';
+        }else {
+            $html .= '<div class="toggleNotifi">
+                        <div class="img-box">
+                            <i class="icon-feather-bell"></i>
+                            <span class="activePoint">0</span>
+                        </div>
+                    </div>';
         }
         $rows = ORM::for_table($config['db']['pre'] . 'custom_notification')
             ->select_many('id', 'notification_id', 'type', 'title', 'user_id', 'status')
