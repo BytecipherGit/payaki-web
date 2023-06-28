@@ -115,7 +115,25 @@ if (!isset($_POST['Submit'])) {
                 $email_body = '<p>Click below link to see post :-</p><br /><a href="' . $postUrl . '" target="_other" rel="nofollow">' . $postInfo['product_name'] . '</a>';
                 $headers = 'From: payaki@example.com' . "\r\n" . 'Reply-To: payaki@example.com' . "\r\n" . 'Content-Type: text/html; charset=UTF-8' . "\r\n" . 'X-Mailer: PHP/' . phpversion();
                 mail($email_to, $email_subject, $email_body, $headers);
+
+                //Insert custom notification
+                $productDetails = ORM::for_table($config['db']['pre'] . 'product')
+                    ->select(['id', 'user_id', 'product_name', 'slug'])
+                    ->where('id', $postID)
+                    ->find_one();
+                if (!empty($productDetails['id'])) {
+                    $insert_notification = ORM::for_table($config['db']['pre'] . 'custom_notification')->create();
+                    $insert_notification->notification_id = $productDetails['id'];
+                    $insert_notification->type = 'quote';
+                    $insert_notification->title = $productDetails['product_name'];
+                    $insert_notification->redirect_url = $config['site_url'] . 'ad/' . $productDetails['id'] . '/' . $productDetails['slug'];
+                    $insert_notification->user_id = $productDetails['user_id'];
+                    $insert_notification->status = 0;
+                    $insert_notification->created_at = date("Y-m-d H:i:s");
+                    $insert_notification->save();
+                }
             }
+
         }
         message($lang['THANKS'], $lang['QUOTE_THANKS']);
     }
