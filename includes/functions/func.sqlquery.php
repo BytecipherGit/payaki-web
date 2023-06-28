@@ -1702,19 +1702,19 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
     }*/
 
     if ($order) {
-        $order_by = "
-      (CASE
-        WHEN $grqry and p.featured = '1' and p.urgent = '1' and p.highlight = '1' THEN 1
-        WHEN $grqry and p.urgent = '1' and p.featured = '1' THEN 2
-        WHEN $grqry and p.urgent = '1' and p.highlight = '1' THEN 3
-        WHEN $grqry and p.featured = '1' and p.highlight = '1' THEN 4
-        WHEN $grqry and p.urgent = '1' THEN 5
-        WHEN $grqry and p.featured = '1' THEN 6
-        WHEN $grqry and p.highlight = '1' THEN 7
-        WHEN $grqry THEN 8
-        ELSE 9
-      END), " . $sort . " " . $sort_order;
-        //$order_by = $sort." ".$sort_order;
+    //     $order_by = "
+    //   (CASE
+    //     WHEN $grqry and p.featured = '1' and p.urgent = '1' and p.highlight = '1' THEN 1
+    //     WHEN $grqry and p.urgent = '1' and p.featured = '1' THEN 2
+    //     WHEN $grqry and p.urgent = '1' and p.highlight = '1' THEN 3
+    //     WHEN $grqry and p.featured = '1' and p.highlight = '1' THEN 4
+    //     WHEN $grqry and p.urgent = '1' THEN 5
+    //     WHEN $grqry and p.featured = '1' THEN 6
+    //     WHEN $grqry and p.highlight = '1' THEN 7
+    //     WHEN $grqry THEN 8
+    //     ELSE 9
+    //   END), " . $sort . " " . $sort_order;
+        $order_by = $sort." ".$sort_order;
     } else {
         $order_by = $sort . " " . $sort_order;
     }
