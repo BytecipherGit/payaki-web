@@ -1060,7 +1060,7 @@ class Api extends Rest
                         }
                     }
 
-                    $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID AND publish=1";
+                    $get s = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID AND publish=1";
                     $getReviewAndRatings = $this->dbConn->prepare($getReviewAndRatings);
                     $getReviewAndRatings->bindValue(':productID', $postId, PDO::PARAM_STR);
                     $getReviewAndRatings->execute();
@@ -1990,6 +1990,22 @@ class Api extends Rest
                                     $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];
                                     $deviceToken = $getUserData['device_token'];
                                     $this->pushNotificationForApp($deviceToken, $title, $message);
+
+                                    $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, redirect_url, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :redirect_url, :user_id, :status, :created_at)';
+                                    $type = 'review';
+                                    $user_id = $product['user_id'];
+                                    $nStatus = 0;
+                                    $createdDate = date('Y-m-d H:i:s');
+                                    $redirect_url = $message;
+                                    $notifivationStmt = $this->dbConn->prepare($notificationSql);
+                                    $notifivationStmt->bindParam(':notification_id', $product['id']);
+                                    $notifivationStmt->bindParam(':type', $type);
+                                    $notifivationStmt->bindParam(':title', $title);
+                                    $notifivationStmt->bindParam(':redirect_url', $redirect_url);
+                                    $notifivationStmt->bindParam(':user_id', $user_id);
+                                    $notifivationStmt->bindParam(':status', $nStatus);
+                                    $notifivationStmt->bindParam(':created_at', $createdDate);
+                                    $notifivationStmt->execute();
                                 }
                             }
                             $response = ["status" => true, "code" => 200, "Message" => "Review and rating successfully submitted."];
@@ -2056,10 +2072,29 @@ class Api extends Rest
                                 $this->sendMail($userData['email'], $subject, $body);
 
                                 //Send push notification to user
-                                $title = 'One of the user has added review & rating on your payaki product ' . $postData['product_name'] . '. Once review approved by admin then it will show on websites.';
+                                $title = $subject;
                                 $message = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];
                                 $deviceToken = $userData['device_token'];
                                 $this->pushNotificationForApp($deviceToken, $title, $message);
+
+
+                                $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, redirect_url, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :redirect_url, :user_id, :status, :created_at)';
+                                $type = 'quote';
+                                $user_id = $postData['user_id'];
+                                $nStatus = 0;
+                                $createdDate = date('Y-m-d H:i:s');
+                                $redirect_url = $message;
+                                $notifivationStmt = $this->dbConn->prepare($notificationSql);
+                                $notifivationStmt->bindParam(':notification_id', $postData['id']);
+                                $notifivationStmt->bindParam(':type', $type);
+                                $notifivationStmt->bindParam(':title', $title);
+                                $notifivationStmt->bindParam(':redirect_url', $redirect_url);
+                                $notifivationStmt->bindParam(':user_id', $user_id);
+                                $notifivationStmt->bindParam(':status', $nStatus);
+                                $notifivationStmt->bindParam(':created_at', $createdDate);
+                                $notifivationStmt->execute();
+
+                                
                             }
                         }
                         $response = ["status" => true, "code" => 200, "Message" => "Quote successfully placed."];
