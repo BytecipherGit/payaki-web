@@ -854,57 +854,11 @@ class Api extends Rest
                     }
                 }
                 $screenShot = rtrim($screenShot, ",");
-
-                /*if(checkloggedin()) {
-                $group_id = get_user_group();
-                // Get usergroup details
-                switch ($group_id)
-                {
-                case 'free':
-                $plan = json_decode(get_option('free_membership_plan'), true);
-                $group_get_info = $plan['settings'];
-
-                break;
-                case 'trial':
-                $plan = json_decode(get_option('trial_membership_plan'), true);
-                $group_get_info = $plan['settings'];
-
-                break;
-                default:
-                $plan = ORM::for_table($config['db']['pre'] . 'plans')
-                ->select('settings')
-                ->where('id', $group_id)
-                ->find_one();
-                if(!isset($plan['settings'])){
-                $plan = json_decode(get_option('free_membership_plan'), true);
-                $group_get_info = $plan['settings'];
-
-                }else{
-                $group_get_info = json_decode($plan['settings'],true);
-
-                }
-                break;
-                }
-                }else{
-                $plan = json_decode(get_option('free_membership_plan'), true);
-                $group_get_info = $plan['settings'];
-                }
-
-                $urgent_project_fee = $group_get_info['urgent_project_fee'];
-                $featured_project_fee = $group_get_info['featured_project_fee'];
-                $highlight_project_fee = $group_get_info['highlight_project_fee'];
-
-                $ad_duration = $group_get_info['ad_duration'];
-                $timenow = date('Y-m-d H:i:s');
-                $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$ad_duration.' day'));
-                $expire_timestamp = strtotime($expire_time);*/
                 $ad_duration = 7;
                 $timenow = date('Y-m-d H:i:s');
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
-
                 $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
-
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
                 $createdDate = date('Y-m-d H:i:s');
@@ -912,7 +866,6 @@ class Api extends Rest
                 $stmt = $this->dbConn->prepare($sql);
                 $stmt->bindParam(':status', $status);
                 $stmt->bindParam(':user_id', $userId);
-                // $stmt->bindParam(':featured', !empty($featured) ? $featured : 0);
                 $stmt->bindParam(':featured', $featured);
                 $stmt->bindParam(':urgent', $urgent);
                 $stmt->bindParam(':highlight', $highlight);
@@ -2018,6 +1971,25 @@ class Api extends Rest
                         $stmt->bindParam(':date', $timenow);
                         $stmt->bindParam(':publish', $publish);
                         if ($stmt->execute()) {
+                            // Select the last insert row
+                            $stmt = $this->dbConn->prepare("SELECT * FROM ad_product WHERE id=:id");
+                            $stmt->bindParam(':id', $product_id);
+                            $stmt->execute();
+                            // Fetch the row
+                            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+                            if(!empty($product['user_id'])){
+                                $getUser = "SELECT device_token FROM ad_user WHERE device_token !='' AND id != :userId";
+                                $getUserData = $this->dbConn->prepare($getUser);
+                                $getUserData->bindValue(':userId', $product['user_id'], PDO::PARAM_STR);
+                                $getUserData->execute();
+                                $getUserData = $getUserData->fetch(PDO::FETCH_ASSOC);
+                                if(!empty($getUserData['device_token'])){
+                                    $title = 'One of the user has added review & rating on your payaki product '.$product['product_name'].'. Once review approved by admin then it will show on websites.';
+                                    $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];    
+                                    $deviceToken = $getUserData['device_token'];
+                                    $this->pushNotificationForApp($deviceToken, $title, $message);
+                                }
+                            }
                             $response = ["status" => true, "code" => 200, "Message" => "Review and rating successfully submitted."];
                             $this->returnResponse($response);
                         } else {
@@ -2080,6 +2052,12 @@ class Api extends Rest
                                 $body = '<p>Click below link to see post :-</p><br />
                                         <a href="' . $postUrl . '" target="_other" rel="nofollow">' . $postData['product_name'] . '</a>';
                                 $this->sendMail($userData['email'], $subject, $body);
+
+                                //Send push notification to user
+                                $title = 'One of the user has added review & rating on your payaki product '.$postData['product_name'].'. Once review approved by admin then it will show on websites.';
+                                $message = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];    
+                                $deviceToken = $userData['device_token'];
+                                $this->pushNotificationForApp($deviceToken, $title, $message);
                             }
                         }
                         $response = ["status" => true, "code" => 200, "Message" => "Quote successfully placed."];
