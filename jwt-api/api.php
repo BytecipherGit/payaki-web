@@ -1105,7 +1105,7 @@ class Api extends Rest
                         }
                     }
 
-                    $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID";
+                    $getReviewAndRatings = "SELECT ar.rating,ar.comments,ar.date,au.username FROM ad_reviews AS ar LEFT JOIN ad_user AS au ON au.id = ar.user_id WHERE ar.productID=:productID AND publish=1";
                     $getReviewAndRatings = $this->dbConn->prepare($getReviewAndRatings);
                     $getReviewAndRatings->bindValue(':productID', $postId, PDO::PARAM_STR);
                     $getReviewAndRatings->execute();
