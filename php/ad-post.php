@@ -1,15 +1,15 @@
 <?php
-require_once('plugins/watermark/watermark.php');
+require_once 'plugins/watermark/watermark.php';
 
-if(isset($match['params']['country'])) {
-    if ($match['params']['country'] != ""){
+if (isset($match['params']['country'])) {
+    if ($match['params']['country'] != "") {
         change_user_country($match['params']['country']);
     }
 }
 
-if(get_option("post_without_login") == '0'){
+if (get_option("post_without_login") == '0') {
     if (!checkloggedin()) {
-        headerRedirect($link['LOGIN']."?ref=post-ad");
+        headerRedirect($link['LOGIN'] . "?ref=post-ad");
         exit();
     }
 }
@@ -21,44 +21,42 @@ if (isset($_GET['action'])) {
 }
 
 if (checkloggedin()) {
-    if(!$config['non_active_allow']){
-        $user_data = get_user_data(null,$_SESSION['user']['id']);
-        if($user_data['status'] == 0){
-            message($lang['NOTIFY'],$lang['EMAIL_VERIFY_MSG']);
+    if (!$config['non_active_allow']) {
+        $user_data = get_user_data(null, $_SESSION['user']['id']);
+        if ($user_data['status'] == 0) {
+            message($lang['NOTIFY'], $lang['EMAIL_VERIFY_MSG']);
             exit();
         }
     }
     check_user_post_limit();
 }
 
-
-function check_user_post_limit(){
-    global $config,$lang;
+function check_user_post_limit()
+{
+    global $config, $lang;
 
     // Get usergroup details
     $group_id = get_user_group();
     $sub_info = get_usergroup_settings($group_id);
     $ad_limit = $sub_info['ad_limit'];
 
-    if($ad_limit != "999"){
-        $total_user_post = ORM::for_table($config['db']['pre'].'product')
+    if ($ad_limit != "999") {
+        $total_user_post = ORM::for_table($config['db']['pre'] . 'product')
             ->where('user_id', $_SESSION['user']['id'])
             ->count();
 
-        if($total_user_post >= $ad_limit){
-            message($lang['NOTIFY'],$lang['POST_LIMIT_EXCEED']);
+        if ($total_user_post >= $ad_limit) {
+            message($lang['NOTIFY'], $lang['POST_LIMIT_EXCEED']);
             exit();
         }
     }
 }
 
-
-
-
-function ajax_post_advertise(){
+function ajax_post_advertise()
+{
 
     global $config, $lang, $link;
-    if(isset($_POST['submit'])) {
+    if (isset($_POST['submit'])) {
 
         $errors = array();
         $item_screen = "";
@@ -82,22 +80,22 @@ function ajax_post_advertise(){
         }
         /*IF : USER NOT LOGIN THEN CHECK SELLER INFORMATION*/
         if (!checkloggedin()) {
-            if(isset($_POST['seller_name'])){
+            if (isset($_POST['seller_name'])) {
                 $seller_name = $_POST['seller_name'];
                 if (empty($seller_name)) {
                     $errors[]['message'] = $lang['SELLER_NAME_REQ'];
                 } /*else {
-                    if (preg_match('/^\p{L}[\p{L} _.-]+$/u', $seller_name)) {
-                        $errors[]['message'] = $lang['SELLER_NAME'] . " : " . $lang['ONLY_LETTER_SPACE'];
-                    } elseif ((strlen($seller_name) < 4) OR (strlen($seller_name) > 21)) {
-                        $errors[]['message'] = $lang['SELLER_NAME'] . " : " . $lang['NAMELEN'];
-                    }
-                }*/
-            }else{
+            if (preg_match('/^\p{L}[\p{L} _.-]+$/u', $seller_name)) {
+            $errors[]['message'] = $lang['SELLER_NAME'] . " : " . $lang['ONLY_LETTER_SPACE'];
+            } elseif ((strlen($seller_name) < 4) OR (strlen($seller_name) > 21)) {
+            $errors[]['message'] = $lang['SELLER_NAME'] . " : " . $lang['NAMELEN'];
+            }
+            }*/
+            } else {
                 $errors[]['message'] = $lang['SELLER_NAME_REQ'];
             }
 
-            if(isset($_POST['seller_email'])){
+            if (isset($_POST['seller_email'])) {
                 $seller_email = $_POST['seller_email'];
 
                 if (empty($seller_email)) {
@@ -108,18 +106,18 @@ function ajax_post_advertise(){
                         $errors[]['message'] = $lang['SELLER_EMAIL'] . " : " . $lang['EMAILINV'];
                     }
                 }
-            }else{
+            } else {
                 $errors[]['message'] = $lang['SELLER_EMAIL_REQ'];
             }
         }
         /*IF : USER NOT LOGIN THEN CHECK SELLER INFORMATION*/
 
         /*IF : USER GO TO PEMIUM POST*/
-        if($_POST['make_premium']){
+        if ($_POST['make_premium']) {
             $urgent = isset($_POST['urgent']) ? 1 : 0;
             $featured = isset($_POST['featured']) ? 1 : 0;
             $highlight = isset($_POST['highlight']) ? 1 : 0;
-        }else{
+        } else {
             $urgent = 0;
             $featured = 0;
             $highlight = 0;
@@ -127,22 +125,22 @@ function ajax_post_advertise(){
 
         /*$payment_req = "";
         if (isset($_POST['urgent'])) {
-            if (!isset($_POST['payment_id'])) {
-                $payment_req = $lang['PAYMENT_METHOD_REQ'];
-            }
+        if (!isset($_POST['payment_id'])) {
+        $payment_req = $lang['PAYMENT_METHOD_REQ'];
+        }
         }
         if (isset($_POST['featured'])) {
-            if (!isset($_POST['payment_id'])) {
-                $payment_req = $lang['PAYMENT_METHOD_REQ'];
-            }
+        if (!isset($_POST['payment_id'])) {
+        $payment_req = $lang['PAYMENT_METHOD_REQ'];
+        }
         }
         if (isset($_POST['highlight'])) {
-            if (!isset($_POST['payment_id'])) {
-                $payment_req = $lang['PAYMENT_METHOD_REQ'];
-            }
+        if (!isset($_POST['payment_id'])) {
+        $payment_req = $lang['PAYMENT_METHOD_REQ'];
+        }
         }
         if (!empty($payment_req))
-            $errors[]['message'] = $payment_req;*/
+        $errors[]['message'] = $payment_req;*/
 
         /*IF : USER GO TO PEMIUM POST*/
 
@@ -162,16 +160,17 @@ function ajax_post_advertise(){
                         } else {
                             $errors[]['message'] = $lang['ONLY_JPG_ALLOW'];
                         }
-                        if ($countScreen == 0)
+                        if ($countScreen == 0) {
                             $item_screen = $filename;
-                        elseif ($countScreen >= 1)
+                        } elseif ($countScreen >= 1) {
                             $item_screen = $item_screen . "," . $filename;
+                        }
+
                         $countScreen++;
                     }
                 }
             }
         }
-
 
         if (!count($errors) > 0) {
 
@@ -190,7 +189,7 @@ function ajax_post_advertise(){
                     /*Create user account with givern email id*/
                     $created_username = parse_name_from_email($seller_email);
                     //mysql query to select field username if it's equal to the username that we check '
-                    $check_username = ORM::for_table($config['db']['pre'].'user')
+                    $check_username = ORM::for_table($config['db']['pre'] . 'user')
                         ->select('username')
                         ->where('username', $created_username)
                         ->count();
@@ -207,7 +206,7 @@ function ajax_post_advertise(){
                     $pass_hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 13]);
                     $now = date("Y-m-d H:i:s");
 
-                    $insert_user = ORM::for_table($config['db']['pre'].'user')->create();
+                    $insert_user = ORM::for_table($config['db']['pre'] . 'user')->create();
                     $insert_user->status = '0';
                     $insert_user->name = $seller_name;
                     $insert_user->username = $username;
@@ -223,10 +222,10 @@ function ajax_post_advertise(){
                     $user_id = $insert_user->id();
 
                     /*CREATE ACCOUNT CONFIRMATION EMAIL*/
-                    email_template("signup_confirm",$user_id);
+                    email_template("signup_confirm", $user_id);
 
                     /*SEND ACCOUNT DETAILS EMAIL*/
-                    email_template("signup_details",$user_id,$password);
+                    email_template("signup_details", $user_id, $password);
 
                     $loggedin = userlogin($username, $password);
                     create_user_session($loggedin['id'], $loggedin['username'], $loggedin['password']);
@@ -241,27 +240,27 @@ function ajax_post_advertise(){
                 $price = isset($_POST['price']) ? $_POST['price'] : '0';
                 $phone = isset($_POST['phone']) ? $_POST['phone'] : '0';
 
-                if(empty($_POST['price'])){
+                if (empty($_POST['price'])) {
                     $price = 0;
                 }
 
                 $negotiable = isset($_POST['negotiable']) ? '1' : '0';
                 $hide_phone = isset($_POST['hide_phone']) ? '1' : '0';
 
-
-                if($config['post_desc_editor'] == 1)
-                    $description = validate_input($_POST['content'],true);
-                else
+                if ($config['post_desc_editor'] == 1) {
+                    $description = validate_input($_POST['content'], true);
+                } else {
                     $description = validate_input($_POST['content']);
+                }
 
                 $cityid = $_POST['city'];
                 $citydata = get_cityDetail_by_id($cityid);
                 $country = $citydata['country_code'];
                 $state = $citydata['subadmin1_code'];
 
-                if(isset($_POST['location'])){
+                if (isset($_POST['location'])) {
                     $location = $_POST['location'];
-                }else{
+                } else {
                     $location = '';
                 }
                 $mapLat = $_POST['latitude'];
@@ -271,23 +270,22 @@ function ajax_post_advertise(){
                 $post_title = removeEmailAndPhoneFromString($_POST['title']);
                 $slug = create_post_slug($post_title);
 
-                if(isset($_POST['tags'])){
+                if (isset($_POST['tags'])) {
                     $tags = $_POST['tags'];
-                }else{
+                } else {
                     $tags = '';
                 }
 
-                if($config['post_auto_approve'] == 1){
+                if ($config['post_auto_approve'] == 1) {
                     $status = "active";
-                }else{
+                } else {
                     $status = "pending";
                 }
 
-                if(checkloggedin()) {
+                if (checkloggedin()) {
                     $group_id = get_user_group();
                     // Get usergroup details
-                    switch ($group_id)
-                    {
+                    switch ($group_id) {
                         case 'free':
                             $plan = json_decode(get_option('free_membership_plan'), true);
                             $group_get_info = $plan['settings'];
@@ -303,21 +301,20 @@ function ajax_post_advertise(){
                                 ->select('settings')
                                 ->where('id', $group_id)
                                 ->find_one();
-                            if(!isset($plan['settings'])){
+                            if (!isset($plan['settings'])) {
                                 $plan = json_decode(get_option('free_membership_plan'), true);
                                 $group_get_info = $plan['settings'];
 
-                            }else{
-                                $group_get_info = json_decode($plan['settings'],true);
+                            } else {
+                                $group_get_info = json_decode($plan['settings'], true);
 
                             }
                             break;
                     }
-                }else{
+                } else {
                     $plan = json_decode(get_option('free_membership_plan'), true);
                     $group_get_info = $plan['settings'];
                 }
-
 
                 $urgent_project_fee = $group_get_info['urgent_project_fee'];
                 $featured_project_fee = $group_get_info['featured_project_fee'];
@@ -325,17 +322,16 @@ function ajax_post_advertise(){
 
                 $ad_duration = $group_get_info['ad_duration'];
                 $timenow = date('Y-m-d H:i:s');
-                $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$ad_duration.' day'));
+                $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
 
-
-                if(isset($_POST['available_days'])){
-                    $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +'.$_POST['available_days'].' day'));
+                if (isset($_POST['available_days'])) {
+                    $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $_POST['available_days'] . ' day'));
                 } else {
                     $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +7 day'));
                 }
 
-                $item_insrt = ORM::for_table($config['db']['pre'].'product')->create();
+                $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->product_name = validate_input($post_title);
                 $item_insrt->slug = $slug;
@@ -363,14 +359,15 @@ function ajax_post_advertise(){
 
                 $product_id = $item_insrt->id();
                 //Send Custom Notification to user
-                if(!empty($product_id)){
-                    $users = ORM::for_table($config['db']['pre'].'user')->where('status', '1')->whereNotEqual('id', $_SESSION['user']['id'])->find_many();
+                if (!empty($product_id)) {
+                    $users = ORM::for_table($config['db']['pre'] . 'user')->where('status', '1')->whereNotEqual('id', $_SESSION['user']['id'])->find_many();
                     if (count($users) > 0) {
-                        foreach ($users as $user){
-                            $insert_notification = ORM::for_table($config['db']['pre'].'custom_notification')->create();
+                        foreach ($users as $user) {
+                            $insert_notification = ORM::for_table($config['db']['pre'] . 'custom_notification')->create();
                             $insert_notification->notification_id = $product_id;
                             $insert_notification->type = 'post';
                             $insert_notification->title = validate_input($post_title);
+                            $insert_notification->redirect_url = $config['site_url'] . 'ad/' . $product_id . '/' . $slug;
                             $insert_notification->user_id = $user['id'];
                             $insert_notification->status = 0;
                             $insert_notification->created_at = date("Y-m-d H:i:s");
@@ -378,7 +375,7 @@ function ajax_post_advertise(){
                         }
                     }
                 }
-                add_post_customField_data($_POST['catid'], $_POST['subcatid'],$product_id);
+                add_post_customField_data($_POST['catid'], $_POST['subcatid'], $product_id);
 
                 $amount = 0;
                 $trans_desc = $lang['PACKAGE'];
@@ -387,39 +384,39 @@ function ajax_post_advertise(){
 
                 if ($featured == 1) {
                     $amount = $featured_project_fee;
-                    $trans_desc = $trans_desc ." ". $lang['FEATURED'];
+                    $trans_desc = $trans_desc . " " . $lang['FEATURED'];
                     $premium_tpl .= ' <div class="ModalPayment-paymentDetails">
-                                            <div class="ModalPayment-label">'.$lang['FEATURED'].'</div>
+                                            <div class="ModalPayment-label">' . $lang['FEATURED'] . '</div>
                                             <div class="ModalPayment-price">
-                                                <span class="ModalPayment-totalCost-price">'.$config['currency_sign'].$featured_project_fee.'</span>
+                                                <span class="ModalPayment-totalCost-price">' . $config['currency_sign'] . $featured_project_fee . '</span>
                                             </div>
                                         </div>';
                 }
                 if ($urgent == 1) {
                     $amount = $amount + $urgent_project_fee;
-                    $trans_desc = $trans_desc ." ". $lang['URGENT'];
+                    $trans_desc = $trans_desc . " " . $lang['URGENT'];
                     $premium_tpl .= ' <div class="ModalPayment-paymentDetails">
-                                            <div class="ModalPayment-label">'.$lang['URGENT'].'</div>
+                                            <div class="ModalPayment-label">' . $lang['URGENT'] . '</div>
                                             <div class="ModalPayment-price">
-                                                <span class="ModalPayment-totalCost-price">'.$config['currency_sign'].$urgent_project_fee.'</span>
+                                                <span class="ModalPayment-totalCost-price">' . $config['currency_sign'] . $urgent_project_fee . '</span>
                                             </div>
                                         </div>';
                 }
                 if ($highlight == 1) {
                     $amount = $amount + $highlight_project_fee;
-                    $trans_desc = $trans_desc ." ". $lang['HIGHLIGHT'];
+                    $trans_desc = $trans_desc . " " . $lang['HIGHLIGHT'];
                     $premium_tpl .= ' <div class="ModalPayment-paymentDetails">
-                                            <div class="ModalPayment-label">'.$lang['HIGHLIGHT'].'</div>
+                                            <div class="ModalPayment-label">' . $lang['HIGHLIGHT'] . '</div>
                                             <div class="ModalPayment-price">
-                                                <span class="ModalPayment-totalCost-price">'.$config['currency_sign'].$highlight_project_fee.'</span>
+                                                <span class="ModalPayment-totalCost-price">' . $config['currency_sign'] . $highlight_project_fee . '</span>
                                             </div>
                                         </div>';
                 }
 
                 if ($amount > 0) {
                     $premium_tpl .= '<div class="ModalPayment-totalCost">
-                                            <span class="ModalPayment-totalCost-label">'.$lang['TOTAL'].': </span>
-                                            <span class="ModalPayment-totalCost-price">'.$config['currency_sign'].$amount." ".$config['currency_code'].'</span>
+                                            <span class="ModalPayment-totalCost-label">' . $lang['TOTAL'] . ': </span>
+                                            <span class="ModalPayment-totalCost-price">' . $config['currency_sign'] . $amount . " " . $config['currency_code'] . '</span>
                                         </div>';
 
                     /*These details save in session and get on payment sucecess*/
@@ -437,7 +434,7 @@ function ajax_post_advertise(){
                     $_SESSION['quickad'][$access_token]['highlight'] = $highlight;
                     /*End These details save in session and get on payment sucecess*/
 
-                    $url = $link['PAYMENT']."/" . $access_token;
+                    $url = $link['PAYMENT'] . "/" . $access_token;
                     $response = array();
                     $response['status'] = "success";
                     $response['ad_type'] = "package";
@@ -454,12 +451,10 @@ function ajax_post_advertise(){
                     echo $json;
                     die();
                 }
-            }
-            else {
+            } else {
                 $status = "error";
                 $errors[]['message'] = $lang['POST_SAVE_ERROR'];
             }
-
 
         } else {
             $status = "error";
@@ -471,9 +466,8 @@ function ajax_post_advertise(){
     }
 }
 
-
-if(isset($_GET['country'])) {
-    if ($_GET['country'] != ""){
+if (isset($_GET['country'])) {
+    if ($_GET['country'] != "") {
         change_user_country($_GET['country']);
     }
 }
@@ -482,65 +476,63 @@ $country_code = check_user_country();
 $currency_info = set_user_currency($country_code);
 $currency_sign = $currency_info['html_entity'];
 
-if($latlong = get_lat_long_of_country($country_code)){
-    $mapLat     =  $latlong['lat'];
-    $mapLong    =  $latlong['lng'];
-}else{
-    $mapLat     =  get_option("home_map_latitude");
-    $mapLong    =  get_option("home_map_longitude");
+if ($latlong = get_lat_long_of_country($country_code)) {
+    $mapLat = $latlong['lat'];
+    $mapLong = $latlong['lng'];
+} else {
+    $mapLat = get_option("home_map_latitude");
+    $mapLong = get_option("home_map_longitude");
 }
 
 $custom_fields = get_customFields_by_catid();
 
-
 // Output to template
-$page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-post.tpl');
-$page->SetParameter ('OVERALL_HEADER', create_header($lang['POST_AD']));
-$page->SetLoop ('HTMLPAGE', get_html_pages());
-$page->SetLoop ('COUNTRYLIST',get_country_list());
-$page->SetLoop ('CATEGORY',get_maincategory());
-$page->SetLoop ('CUSTOMFIELDS',$custom_fields);
-$page->SetParameter ('SHOWCUSTOMFIELD', (count($custom_fields) > 0) ? 1 : 0);
-$page->SetParameter ('LATITUDE', $mapLat);
-$page->SetParameter ('LONGITUDE', $mapLong);
-$page->SetParameter ('USER_COUNTRY', strtolower($country_code));
-$page->SetParameter ('USER_CURRENCY_SIGN', $currency_sign);
-$page->SetParameter ('PAGE_TITLE', $lang['POST_AD']);
+$page = new HtmlTemplate('templates/' . $config['tpl_name'] . '/ad-post.tpl');
+$page->SetParameter('OVERALL_HEADER', create_header($lang['POST_AD']));
+$page->SetLoop('HTMLPAGE', get_html_pages());
+$page->SetLoop('COUNTRYLIST', get_country_list());
+$page->SetLoop('CATEGORY', get_maincategory());
+$page->SetLoop('CUSTOMFIELDS', $custom_fields);
+$page->SetParameter('SHOWCUSTOMFIELD', (count($custom_fields) > 0) ? 1 : 0);
+$page->SetParameter('LATITUDE', $mapLat);
+$page->SetParameter('LONGITUDE', $mapLong);
+$page->SetParameter('USER_COUNTRY', strtolower($country_code));
+$page->SetParameter('USER_CURRENCY_SIGN', $currency_sign);
+$page->SetParameter('PAGE_TITLE', $lang['POST_AD']);
 
-if(checkloggedin()) {
-	$group_id = get_user_group();
+if (checkloggedin()) {
+    $group_id = get_user_group();
     // Get usergroup details
-    switch ($group_id){
-            case 'free':
+    switch ($group_id) {
+        case 'free':
+            $plan = json_decode(get_option('free_membership_plan'), true);
+            $group_get_info = $plan['settings'];
+
+            break;
+        case 'trial':
+            $plan = json_decode(get_option('trial_membership_plan'), true);
+            $group_get_info = $plan['settings'];
+
+            break;
+        default:
+            $plan = ORM::for_table($config['db']['pre'] . 'plans')
+                ->select('settings')
+                ->where('id', $group_id)
+                ->find_one();
+            if (!isset($plan['settings'])) {
                 $plan = json_decode(get_option('free_membership_plan'), true);
                 $group_get_info = $plan['settings'];
-                
-                break;
-            case 'trial':
-                $plan = json_decode(get_option('trial_membership_plan'), true);
-                $group_get_info = $plan['settings'];
-               
-                break;
-            default:
-                $plan = ORM::for_table($config['db']['pre'] . 'plans')
-                    ->select('settings')
-                    ->where('id', $group_id)
-                    ->find_one();
-                if(!isset($plan['settings'])){
-                    $plan = json_decode(get_option('free_membership_plan'), true);
-                    $group_get_info = $plan['settings'];
-                    
-                }else{
-                    $group_get_info = json_decode($plan['settings'],true);
-                   
-                }
-                break;
-        }
-}else{
-	
-	
+
+            } else {
+                $group_get_info = json_decode($plan['settings'], true);
+
+            }
+            break;
+    }
+} else {
+
     $plan = json_decode(get_option('free_membership_plan'), true);
-                $group_get_info = $plan['settings'];
+    $group_get_info = $plan['settings'];
 }
 
 $urgent_project_fee = $group_get_info['urgent_project_fee'];
@@ -550,9 +542,9 @@ $urgent_duration = $group_get_info['urgent_duration'];
 $featured_duration = $group_get_info['featured_duration'];
 $highlight_duration = $group_get_info['highlight_duration'];
 
-$page->SetParameter('FEATURED_FEE', price_format($featured_project_fee,$config['currency_code']));
-$page->SetParameter('URGENT_FEE', price_format($urgent_project_fee,$config['currency_code']));
-$page->SetParameter('HIGHLIGHT_FEE', price_format($highlight_project_fee,$config['currency_code']));
+$page->SetParameter('FEATURED_FEE', price_format($featured_project_fee, $config['currency_code']));
+$page->SetParameter('URGENT_FEE', price_format($urgent_project_fee, $config['currency_code']));
+$page->SetParameter('HIGHLIGHT_FEE', price_format($highlight_project_fee, $config['currency_code']));
 $page->SetParameter('FEATURED_PRICE', $featured_project_fee);
 $page->SetParameter('URGENT_PRICE', $urgent_project_fee);
 $page->SetParameter('HIGHLIGHT_PRICE', $urgent_project_fee);
@@ -560,6 +552,5 @@ $page->SetParameter('FEATURED_DURATION', $featured_duration);
 $page->SetParameter('URGENT_DURATION', $urgent_duration);
 $page->SetParameter('HIGHLIGHT_DURATION', $highlight_duration);
 $page->SetParameter('LANGUAGE_DIRECTION', get_current_lang_direction());
-$page->SetParameter ('OVERALL_FOOTER', create_footer());
+$page->SetParameter('OVERALL_FOOTER', create_footer());
 $page->CreatePageEcho();
-?>
