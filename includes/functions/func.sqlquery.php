@@ -1728,9 +1728,9 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
     
     $result = ORM::for_table($config['db']['pre'].'product')->raw_query($query)->find_many();
     // Print last executed query
-    $lastQuery = ORM::getLastQuery();
-    echo $lastQuery;
-    die;
+    // $lastQuery = ORM::getLastQuery();
+    // echo $lastQuery;
+    // die;
     if ($result) {
         foreach ($result as $info) {
             $currentDateTime = new DateTime(); // Current date and time
