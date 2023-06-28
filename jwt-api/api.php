@@ -299,12 +299,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-									                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-									                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-									                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-									                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-									                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-									                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+										                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+										                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+										                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+										                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+										                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+										                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -902,7 +902,7 @@ class Api extends Rest
                     // Get the last insert ID
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
-                    if(!empty($last_id)){
+                    if (!empty($last_id)) {
                         $notification_id = $last_id;
                         $title = $productName;
                         //Fetch all active user who's status = 1
@@ -929,9 +929,9 @@ class Api extends Rest
                                 $notifivationStmt->bindParam(':status', $nStatus);
                                 $notifivationStmt->bindParam(':created_at', $createdDate);
                                 $notifivationStmt->execute();
-                                
+
                             }
-                        } 
+                        }
                     }
 
                     // Select the last insert row
@@ -941,7 +941,7 @@ class Api extends Rest
                     // Fetch the row
                     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    if(!empty($product)){
+                    if (!empty($product)) {
                         //Send Push notification to all user except logged in user id in request
                         //Get Latest Post
                         $getUsers = "SELECT device_token FROM ad_user WHERE device_token !='' AND id != :userId";
@@ -953,12 +953,12 @@ class Api extends Rest
                         $getUserData = $getUserData->fetchAll(PDO::FETCH_ASSOC);
                         if (count($getUserData) > 0) {
                             foreach ($getUserData as $key => $user) {
-                                $title = 'New product '.$productName. 'has been posted on payaki';
+                                $title = 'New product ' . $productName . 'has been posted on payaki';
                                 $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];
                                 $deviceToken = $user['device_token'];
                                 $this->pushNotificationForApp($deviceToken, $title, $message);
                             }
-                        } 
+                        }
 
                     }
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement successfuly posted.", "data" => $product];
@@ -1977,15 +1977,15 @@ class Api extends Rest
                             $stmt->execute();
                             // Fetch the row
                             $product = $stmt->fetch(PDO::FETCH_ASSOC);
-                            if(!empty($product['user_id'])){
+                            if (!empty($product['user_id'])) {
                                 $getUser = "SELECT device_token FROM ad_user WHERE device_token !='' AND id != :userId";
                                 $getUserData = $this->dbConn->prepare($getUser);
                                 $getUserData->bindValue(':userId', $product['user_id'], PDO::PARAM_STR);
                                 $getUserData->execute();
                                 $getUserData = $getUserData->fetch(PDO::FETCH_ASSOC);
-                                if(!empty($getUserData['device_token'])){
-                                    $title = 'One of the user has added review & rating on your payaki product '.$product['product_name'].'. Once review approved by admin then it will show on websites.';
-                                    $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];    
+                                if (!empty($getUserData['device_token'])) {
+                                    $title = 'One of the user has added review & rating on your payaki product ' . $product['product_name'] . '. Once review approved by admin then it will show on websites.';
+                                    $message = $this->display_image_url . 'ad/' . $product['id'] . '/' . $product['slug'];
                                     $deviceToken = $getUserData['device_token'];
                                     $this->pushNotificationForApp($deviceToken, $title, $message);
                                 }
@@ -2054,8 +2054,8 @@ class Api extends Rest
                                 $this->sendMail($userData['email'], $subject, $body);
 
                                 //Send push notification to user
-                                $title = 'One of the user has added review & rating on your payaki product '.$postData['product_name'].'. Once review approved by admin then it will show on websites.';
-                                $message = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];    
+                                $title = 'One of the user has added review & rating on your payaki product ' . $postData['product_name'] . '. Once review approved by admin then it will show on websites.';
+                                $message = $this->display_image_url . 'ad/' . $postData['id'] . '/' . $postData['slug'];
                                 $deviceToken = $userData['device_token'];
                                 $this->pushNotificationForApp($deviceToken, $title, $message);
                             }
@@ -2151,7 +2151,7 @@ class Api extends Rest
         // $token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
         // $title = $this->validateParameter('title', $this->param['title'], STRING);
         // $message = $this->validateParameter('message', $this->param['message'], STRING);
-        
+
         $fields = array(
             'to' => $token,
             'priority' => "high",
@@ -2195,7 +2195,7 @@ class Api extends Rest
         return true;
         // $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields , "result" => $decode_result];
         // $this->returnResponse($response);
-        
+
     }
 
     public function sendPushNotificationToApp($token = '', $title = '', $message = '')
@@ -2203,7 +2203,7 @@ class Api extends Rest
         $token = $this->validateParameter('device_token', $this->param['device_token'], STRING);
         $title = $this->validateParameter('title', $this->param['title'], STRING);
         $message = $this->validateParameter('message', $this->param['message'], STRING);
-        
+
         $fields = array(
             'to' => $token,
             'priority' => "high",
@@ -2239,14 +2239,13 @@ class Api extends Rest
 
         if (!empty($decode_result)) {
             if ($decode_result->failure == 1) {
-                $response = ["status" => false, "code" => 400, "Message" => "Notification not send.", "data" => $fields , "result" => $decode_result];
+                $response = ["status" => false, "code" => 400, "Message" => "Notification not send.", "data" => $fields, "result" => $decode_result];
                 $this->returnResponse($response);
             }
         }
 
-        $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields , "result" => $decode_result];
+        $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields, "result" => $decode_result];
         $this->returnResponse($response);
 
-        
     }
 }
