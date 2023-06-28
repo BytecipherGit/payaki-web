@@ -299,12 +299,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-										                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-										                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-										                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-										                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-										                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-										                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+											                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+											                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+											                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+											                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+											                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+											                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -916,15 +916,17 @@ class Api extends Rest
                         $getUserData = $getUserData->fetchAll(PDO::FETCH_ASSOC);
                         if (count($getUserData) > 0) {
                             foreach ($getUserData as $key => $user) {
-                                $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :user_id, :status, :created_at)';
+                                $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, redirect_url, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :redirect_url, :user_id, :status, :created_at)';
                                 $type = 'post';
                                 $user_id = $user['id'];
                                 $nStatus = 0;
                                 $createdDate = date('Y-m-d H:i:s');
+                                $redirect_url = $this->display_image_url . 'ad/' . $last_id . '/' . $slug;
                                 $notifivationStmt = $this->dbConn->prepare($notificationSql);
                                 $notifivationStmt->bindParam(':notification_id', $notification_id);
                                 $notifivationStmt->bindParam(':type', $type);
                                 $notifivationStmt->bindParam(':title', $title);
+                                $notifivationStmt->bindParam(':redirect_url', $redirect_url);
                                 $notifivationStmt->bindParam(':user_id', $user_id);
                                 $notifivationStmt->bindParam(':status', $nStatus);
                                 $notifivationStmt->bindParam(':created_at', $createdDate);

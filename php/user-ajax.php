@@ -638,7 +638,7 @@ function get_notification()
                             <span class="activePoint">' . $getTotalNotificationCount . '</span>
                         </div>
                     </div>';
-        }else {
+        } else {
             $html .= '<div class="toggleNotifi">
                         <div class="img-box">
                             <i class="icon-feather-bell"></i>
@@ -647,7 +647,7 @@ function get_notification()
                     </div>';
         }
         $rows = ORM::for_table($config['db']['pre'] . 'custom_notification')
-            ->select_many('id', 'notification_id', 'type', 'title', 'user_id', 'status')
+            ->select_many('id', 'notification_id', 'type', 'title', 'redirect_url', 'user_id', 'status')
             ->where(array(
                 'user_id' => $_SESSION['user']['id'],
                 'status' => false,
@@ -660,14 +660,15 @@ function get_notification()
             foreach ($rows as $info) {
                 $slug = '';
                 $productId = '';
-                if(!empty($info['notification_id'])){
-                    $product = ORM::for_table($config['db']['pre'] . 'product')->select(['id','slug'])->find_one($info['notification_id']);
-                    if(!empty($product['slug'])){
+                if (!empty($info['notification_id'])) {
+                    $product = ORM::for_table($config['db']['pre'] . 'product')->select(['id', 'slug'])->find_one($info['notification_id']);
+                    if (!empty($product['slug'])) {
                         $productId = $product['id'];
                         $slug = $product['slug'];
                     }
                 }
-                $html .= '<li><a href="'.$config['site_url'].'ad/'.$productId.'/'.$slug.'/'.$info['id'].'">&nbsp;'.$info['title'].'</a></li>';
+                // $html .= '<li><a href="'.$config['site_url'].'ad/'.$productId.'/'.$slug.'/'.$info['id'].'">&nbsp;'.$info['title'].'</a></li>';
+                $html .= '<li><a href="' . $info['redirect_url'] . '/' . $info['id'] . '">&nbsp;' . $info['title'] . '</a></li>';
             }
             $html .= '</ul>
             </div>';
