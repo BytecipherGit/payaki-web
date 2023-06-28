@@ -1691,15 +1691,15 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
             $where .= " AND (p.featured = '1' or p.urgent = '1' or p.highlight = '1')";
     }
 
-    if ($location) {
+    // Comment country check for getting post
+    /*if ($location) {
         $country_code = check_user_country();
         if ($where == '') {
             $where .= "where p.country = '" . $country_code . "'";
         } else {
             $where .= " AND p.country = '" . $country_code . "'";
         }
-
-    }
+    }*/
 
     if ($order) {
         $order_by = "
@@ -1727,7 +1727,10 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
     $query = "SELECT p.id,p.product_name,p.description,p.featured,p.urgent,p.highlight,p.price,p.category,p.sub_category,p.tag,p.screen_shot,p.user_id,p.city,p.country,p.status,p.hide,p.created_at,p.expire_days,p.expired_date,p.is_verified,p.expire_date,p.view, u.group_id FROM `".$config['db']['pre']."product` as p INNER JOIN `".$config['db']['pre']."user` as u ON u.id = p.user_id $where ORDER BY $order_by $pagelimit";
     
     $result = ORM::for_table($config['db']['pre'].'product')->raw_query($query)->find_many();
-
+    // Print last executed query
+    $lastQuery = ORM::getLastQuery();
+    echo $lastQuery;
+    die;
     if ($result) {
         foreach ($result as $info) {
             $currentDateTime = new DateTime(); // Current date and time
