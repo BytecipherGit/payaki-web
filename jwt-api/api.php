@@ -425,7 +425,7 @@ class Api extends Rest
                 $getuser = "SELECT `id` FROM `ad_user` WHERE `phone`=:phone";
                 $userData = $this->dbConn->prepare($getuser);
                 // $userData->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
-                $userData->bindValue(':phone', $mobile, PDO::PARAM_STR);
+                $userData->bindValue(':phone', $phone, PDO::PARAM_STR);
                 $userData->execute();
                 $userData = $userData->fetch(PDO::FETCH_ASSOC);
                 if (!empty($userData['id'])) {
