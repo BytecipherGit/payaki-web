@@ -420,10 +420,11 @@ class Api extends Rest
         try {
             $mobile = $this->validateParameter('mobile', $this->param['mobile'], STRING);
             $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
-            if (!empty($mobile)) {
-                $getuser = "SELECT `id` FROM `ad_user` WHERE `country_code`=:country_code AND `phone`=:phone";
+            if (!empty($mobile) && !empty($countryCode)) {
+                $phone = $countryCode.$mobile;
+                $getuser = "SELECT `id` FROM `ad_user` WHERE `phone`=:phone";
                 $userData = $this->dbConn->prepare($getuser);
-                $userData->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
+                // $userData->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
                 $userData->bindValue(':phone', $mobile, PDO::PARAM_STR);
                 $userData->execute();
                 $userData = $userData->fetch(PDO::FETCH_ASSOC);
