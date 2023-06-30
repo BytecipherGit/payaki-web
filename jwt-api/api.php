@@ -1981,7 +1981,7 @@ class Api extends Rest
                             // Fetch the row
                             $product = $stmt->fetch(PDO::FETCH_ASSOC);
                             if (!empty($product['user_id'])) {
-                                $getUser = "SELECT device_token FROM ad_user WHERE device_token !='' AND id != :userId";
+                                $getUser = "SELECT device_token FROM ad_user WHERE device_token !='' AND id == :userId";
                                 $getUserData = $this->dbConn->prepare($getUser);
                                 $getUserData->bindValue(':userId', $product['user_id'], PDO::PARAM_STR);
                                 $getUserData->execute();
