@@ -1959,7 +1959,7 @@ class Api extends Rest
                     // Check if there are any rows returned
                     if ($stmt->rowCount() > 0) {
                         // Write delete code
-                        $response = ["status" => true, "code" => 200, "Message" => "You have already submit rating and review."];
+                        $response = ["status" => true, "code" => 400, "Message" => "You have already submit rating and review."];
                         $this->returnResponse($response);
                     } else {
                         $timenow = date('Y-m-d H:i:s');
