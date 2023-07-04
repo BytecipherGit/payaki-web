@@ -3,8 +3,7 @@ if(checkloggedin())
 {
     update_lastactive();
     $ses_userdata = get_user_data($_SESSION['user']['username']);
-
-    if(!empty($ses_userdata['id'])){
+    /*if(!empty($ses_userdata['id'])){
         $checkIfTokenExist = ORM::for_table($config['db']['pre'].'login_tokens')
             ->where('user_id', $ses_userdata['id'])
             ->find_one();
@@ -19,7 +18,7 @@ if(checkloggedin())
             setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', NULL, NULL, TRUE);
             // End :: Generate token & saved in to login_tokens table for chat
         }
-    }
+    }*/
 
     $author_image = $ses_userdata['image'];
     $author_lastactive = $ses_userdata['lastactive'];
