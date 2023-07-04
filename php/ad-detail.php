@@ -373,9 +373,16 @@ if (isset($_POST['sendemail'])) {
     }
 
 }
+
+// Post Id
 $postid = base64_url_encode($item_id);
+// Post Owner Id jiski post hai
 $qcuserid = base64_url_encode($item_author_id);
+// Logged In User id
+$lcuserid = base64_url_encode($_SESSION['user']['id']);
 $quickchat_url = $link['MESSAGE']."/?postid=$postid&userid=$qcuserid";
+$customchat_url = $link['CUSTOM_CHAT']."?postid=$postid&userid=$qcuserid&loggedinuserid=$lcuserid";
+// $customchat_url = $link['CUSTOM_CHAT'];
 
 $GetCategory = get_maincategory();
 $cat_dropdown = get_categories_dropdown($lang);
@@ -396,6 +403,7 @@ $page->SetLoop ('ITEM_CUSTOM', $item_custom);
 $page->SetLoop ('ITEM_CUSTOM_TEXTAREA', $item_custom_textarea);
 $page->SetLoop ('ITEM_CUSTOM_CHECKBOX', $item_checkbox);
 $page->SetParameter ('QUICKCHAT_URL', $quickchat_url);
+$page->SetParameter ('CUSTOMCHAT_URL', $customchat_url);
 $page->SetParameter ('ITEM_FAVORITE', check_product_favorite($item_id));
 $page->SetParameter ('ITEM_ID', $item_id);
 $page->SetParameter ('ITEM_TITLE', $item_title);

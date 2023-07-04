@@ -20,7 +20,7 @@
 
             IF({LOGGED_IN}){
                 IF('{ZECHAT}'=='on' || '{QUICKCHAT}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
-                <div class="col-md-5 col-sm-12">
+                <!--<div class="col-md-5 col-sm-12">
                     <div class="right-side">
 
                         <button type="button" class="button ripple-effect popup-with-zoom-anim start_zechat hide-under-768px"
@@ -35,7 +35,7 @@
                         <a href="{QUICKCHAT_URL}" class="button ripple-effect show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
 
                     </div>
-                </div>
+                </div>-->
                 {:IF}
             {ELSE}
                 <div class="col-md-5 col-sm-12">
@@ -263,7 +263,7 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                             IF({LOGGED_IN}){
 
                                 IF('{ZECHAT}'=='on' || '{QUICKCHAT}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
-                                <button type="button" class="button ripple-effect full-width margin-top-10 start_zechat zechat-hide-under-768px"
+                                <!-- <button type="button" class="button ripple-effect full-width margin-top-10 start_zechat zechat-hide-under-768px"
                                         data-chatid="{ITEM_AUTHORID}_{ITEM_ID}"
                                         data-postid="{ITEM_ID}"
                                         data-userid="{ITEM_AUTHORID}"
@@ -273,8 +273,9 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                         data-userstatus="{ITEM_AUTHORONLINE}"
                                         data-posttitle="{ITEM_TITLE}"
                                         data-postlink="{ITEM_LINK}">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></button>
-                                <a href="{QUICKCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
+                                <a href="{QUICKCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>-->
                                 {:IF}
+                                <a href="{CUSTOMCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
                                 <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
                             {ELSE}
                                 <a href="#sign-in-dialog" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10">{LANG_LOGIN_CHAT} <i class="icon-feather-message-circle"></i></a>

@@ -5,6 +5,7 @@
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/jquery.min.js"></script>
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/orakuploader.js"></script>
+
 IF("{LANGUAGE_DIRECTION}"=="rtl"){
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader-rtl.css" rel="stylesheet"/>
 {:IF}
@@ -616,8 +617,97 @@ IF({POST_ADDRESS_MODE}){
     {:IF}
 {:IF}
 <!-- Verify Mobile Number popup / End -->
-<link href="{SITE_URL}includes/assets/plugins/intlTelInput/css/intlTelInput.css" media="all" rel="stylesheet" type="text/css"/>
+<!-- <link href="{SITE_URL}includes/assets/plugins/intlTelInput/css/intlTelInput.css" media="all" rel="stylesheet" type="text/css"/>
 <script src="{SITE_URL}includes/assets/plugins/intlTelInput/js/intlTelInput.min.js"></script>
 <script src="{SITE_URL}includes/assets/plugins/intlTelInput/js/intlTelInput.utils.js"></script>
-<script src="{SITE_URL}includes/assets/plugins/intlTelInput/js/custom.js"></script>
+<script src="{SITE_URL}includes/assets/plugins/intlTelInput/js/custom.js"></script>-->
+<script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-messaging-compat.js"></script>
+    <script>
+      //Lalit firebase account details
+      /*const firebaseConfig = {
+        apiKey: "AIzaSyC5hv4DXdOFyoHQLAaRsySF0nGCsjSAC8Y",
+        authDomain: "push-notification-abe7e.firebaseapp.com",
+        projectId: "push-notification-abe7e",
+        storageBucket: "push-notification-abe7e.appspot.com",
+        messagingSenderId: "1046216003879",
+        appId: "1:1046216003879:web:55770344d253d3fe975902",
+      };*/
+
+      //Ravindra Firebase account details
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBC1yxaLebLeCeMqMYM-Eby4IwjjcFyee0",
+        authDomain: "fir-333d8.firebaseapp.com",
+        projectId: "fir-333d8",
+        storageBucket: "fir-333d8.appspot.com",
+        messagingSenderId: "489007257025",
+        appId: "1:489007257025:web:d5119ec22775084d7e0b40",
+        measurementId: "G-48B35PL9YX"
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+      const messaging = firebase.messaging();
+
+      //generate device token using public id
+      messaging
+        .getToken({
+          vapidKey:
+            // Lalit firebase account vapidKey
+            // "BHrAaHM4dpNwjXOFgnyMwijQJVKshJ0ihS9GcSKUf3Zb-rzmCxYPsbo7MruG-s0yGgUTi3eGT7LGc32ULvdT_NM",
+            // Ravindra firebase account vapidKey
+            "BGPiokesxdQ1hHaTJ3e6nzEAEs5w2abc9dg2C35Tfeu_lfG-mD-rZPvVsX2GnnNWCLxE5GZezQ1du_4KXdS3jSo",
+        })
+        .then((currentToken) => {
+          if (currentToken) {
+            console.log(currentToken);
+            document.querySelector("body").append(currentToken);
+            sendTokenToServer(currentToken);
+            // saveTokenIntoDatabaseTableThroughAjaxCallHere();
+          } else {
+            setTokenSentToServer(false);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setTokenSentToServer(false);
+        });
+
+      messaging.onMessage((payload) => {
+        // if app is open & focus then notification data will receive here
+        //Keep in mind if message receive here, it will not notify in background
+        // so here, use the message data however you want
+        console.log("Message received", payload);
+        const messageElement = document.querySelector(".message");
+        const dataHeaderElement = document.createElement("h5");
+        const dataElement = document.createElement("pre");
+        dataElement.style = "overflow-x: hidden;";
+        dataHeaderElement.textContent = "Message Received:";
+        dataElement.textContent = JSON.stringify(payload, null, 2);
+        messageElement.appendChild(dataHeaderElement);
+        messageElement.appendChild(dataElement);
+      });
+
+      //sent token to server where it is used for sending notification
+      function sendTokenToServer(currentToken) {
+        //first check it if we already send it or not
+        if (!isTokenSentToServer()) {
+          console.log("Sending token to server ...");
+          //if token is successfully sent to the server
+          // then set setTokenSentToServer to true
+          setTokenSentToServer(true);
+        } else {
+          console.log("Token already available in the server");
+        }
+      }
+
+      function isTokenSentToServer() {
+        return window.localStorage.getItem("sentToServer") === "1";
+      }
+
+      //We need to set the value of "sentToServer" to true in the localStorage
+      //So if we are sending second time, we will check from localstorage
+      function setTokenSentToServer(sent) {
+        window.localStorage.setItem("sentToServer", sent ? "1" : "0");
+      }
+    </script>
 {OVERALL_FOOTER}
