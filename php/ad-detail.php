@@ -381,7 +381,8 @@ $qcuserid = base64_url_encode($item_author_id);
 // Logged In User id
 $lcuserid = base64_url_encode($_SESSION['user']['id']);
 $quickchat_url = $link['MESSAGE']."/?postid=$postid&userid=$qcuserid";
-$customChatUrl = $link['CUSTOM_CHAT']."?postid=$postid&userid=$qcuserid&loggedinuserid=$lcuserid";
+// $customChatUrl = $link['CUSTOM_CHAT']."?postid=$postid&userid=$qcuserid&loggedinuserid=$lcuserid";
+$customChatUrl = $link['CUSTOM_CHAT']."?senderId=$qcuserid&receiverId=$lcuserid";
 // $customchat_url = $link['CUSTOM_CHAT'];
 
 $GetCategory = get_maincategory();
