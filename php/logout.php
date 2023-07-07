@@ -1,4 +1,11 @@
 <?php
+global $config, $lang;
+// Start :: Destroy token from login_tokens table for chat
+if(isset($_SESSION['user']['id'])){
+    ORM::for_table($config['db']['pre'] . 'login_tokens')->where(array('user_id' => $_SESSION['user']['id']))->delete_many();
+}
+// End :: Destroy token from login_tokens table for chat
+
 // Unset all session values
 $_SESSION = array();
 
@@ -12,6 +19,7 @@ setcookie(session_name(),
     $params["domain"],
     $params["secure"],
     $params["httponly"]);
+    
 
 // Remove access token from session
 unset($_SESSION['facebook_access_token']);

@@ -191,8 +191,9 @@
                             <li><a href="{LINK_PROFILE}/{USERNAME}">{LANG_MY_PROFILE}</a></li>
                             <li><a href="{LINK_MEMBERSHIP}">{LANG_MEMBERSHIP}</a></li>
                             <li><a href="{LINK_TRANSACTION}">{LANG_TRANSACTION}</a></li>
+                            <li><a href="{CUSTOMCHAT_URL}" target="_blank"><i class="icon-feather-message-circle"></i> Chat</a></li>
                             IF('{WCHAT_ON_OFF}'=='on' || '{QUICKCHAT_AJAX_ON_OFF}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
-                            <li><a href="{LINK_MESSAGE}">{LANG_MESSAGE}</a></li>
+                            <!-- <li><a href="{LINK_MESSAGE}">{LANG_MESSAGE}</a></li>-->
                             {:IF}
                             <li><a href="{LINK_POST-AD}" class="button ripple-effect">{LANG_POST_FREE_AD}</a></li>
                             <li><a href="{LINK_LOGOUT}">{LANG_LOGOUT}</a></li>
@@ -231,8 +232,9 @@
                                     <li><a href="{LINK_DASHBOARD}"><i class="icon-feather-grid"></i> {LANG_DASHBOARD}</a></li>
                                     <li><a href="{LINK_PROFILE}/{USERNAME}"><i class="icon-feather-user"></i> {LANG_MY_PROFILE}</a></li>
                                     <li><a href="{LINK_MYADS}"><i class="icon-feather-briefcase"></i> {LANG_MY_ADS}</a></li>
+                                    <li><a href="{CUSTOMCHAT_URL}"><i class="icon-feather-message-circle"></i> Chat</a></li>
                                     IF('{WCHAT_ON_OFF}'=='on' || '{QUICKCHAT_AJAX_ON_OFF}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
-                                    <li><a href="{LINK_MESSAGE}"><i class="icon-feather-message-circle"></i> {LANG_MESSAGE}</a></li>
+                                    <!--<li><a href="{LINK_MESSAGE}"><i class="icon-feather-message-circle"></i> {LANG_MESSAGE}</a></li>-->
                                     {:IF}
                                     <li><a href="{LINK_MEMBERSHIP}"><i class="icon-feather-gift"></i> {LANG_MEMBERSHIP}</a></li>
                                     <li><a href="{LINK_TRANSACTION}"><i class="icon-feather-file-text"></i> {LANG_TRANSACTION}</a></li>

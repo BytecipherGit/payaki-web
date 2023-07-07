@@ -3,6 +3,22 @@ if(checkloggedin())
 {
     update_lastactive();
     $ses_userdata = get_user_data($_SESSION['user']['username']);
+    /*if(!empty($ses_userdata['id'])){
+        $checkIfTokenExist = ORM::for_table($config['db']['pre'].'login_tokens')
+            ->where('user_id', $ses_userdata['id'])
+            ->find_one();
+        if(empty($checkIfTokenExist['id'])){
+            // Start :: Generate token & saved in to login_tokens table for chat
+            $cstrong = TRUE;
+            $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
+            $insertToken = ORM::for_table($config['db']['pre'] . 'login_tokens')->create();
+            $insertToken->user_id = $ses_userdata['id'];
+            $insertToken->token = $token;
+            $insertToken->save();
+            setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', NULL, NULL, TRUE);
+            // End :: Generate token & saved in to login_tokens table for chat
+        }
+    }*/
 
     $author_image = $ses_userdata['image'];
     $author_lastactive = $ses_userdata['lastactive'];

@@ -6,6 +6,7 @@ $link['INDEX_PAGE']     = $config['site_url'].'index';
 $link['INDEX1']         = $config['site_url'].'index1';
 $link['INDEX2']         = $config['site_url'].'index2';
 $link['MESSAGE']        = $config['site_url'].'message';
+$link['CUSTOM_CHAT']    = $config['site_url'].'chat/chat.php';
 $link['LOGIN']          = $config['site_url'].'login';
 $link['LOGOUT']         = $config['site_url'].'logout';
 $link['SIGNUP']         = $config['site_url'].'signup';
