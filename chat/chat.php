@@ -1,8 +1,7 @@
 <?php
 
 namespace Main;
-
-
+error_reporting(0);
 use Classes\DB;
 use Classes\Login;
 
@@ -53,7 +52,7 @@ if (!empty($receiverId)) {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"
       style="background-color: #9C5FA3 !important;">
-      <a class="navbar-brand" href="conversations.php">Payaki Chat |
+      <a class="navbar-brand" href="chat.php">Payaki Chat |
         <?php echo ucfirst($username) ?>
       </a>
       <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -172,6 +171,27 @@ if (!empty($receiverId)) {
     header('Location: index.php');
   }
 } else {
+  $exists = DB::recordExists("ad_login_tokens", "user_id = '.$senderId.'");
+  if ($exists) {
+    // Delete the login cookies.
+    if (isset($_COOKIE['SNID'])) {
+      unset($_COOKIE['SNID']);
+      setcookie('SNID', null, -1, '/');
+    }
+    // Start :: Generate token & saved in to login_tokens table for chat
+    $cstrong = true;
+    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
+    DB::_query('UPDATE ad_login_tokens SET token=:token WHERE user_id=:user_id', ['token' => $token, 'user_id' => $senderId]);
+    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
+    // End :: Generate token & saved in to login_tokens table for chat
+  } else {
+    // Start :: Generate token & saved in to login_tokens table for chat
+    $cstrong = true;
+    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
+    DB::_query('INSERT INTO ad_login_tokens (user_id, token) VALUES (:user_id, :token)', ['user_id' => $senderId, 'token' => $token]);
+    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
+    // End :: Generate token & saved in to login_tokens table for chat
+  }
   $user_id = Login::isLogged();
   if (!empty($user_id)) {
     $username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $user_id])[0]['username'];
@@ -180,7 +200,7 @@ if (!empty($receiverId)) {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"
       style="background-color: #9C5FA3 !important;">
-      <a class="navbar-brand" href="conversations.php">Payaki Chat |
+      <a class="navbar-brand" href="chat.php">Payaki Chat |
         <?php echo ucfirst($username) ?>
       </a>
       <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
