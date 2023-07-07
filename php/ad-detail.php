@@ -374,12 +374,16 @@ if (isset($_POST['sendemail'])) {
 
 }
 
+$key="BYTECIPHERPAYAKI";
+
 // Post Id
-$postid = base64_url_encode($item_id);
+$postid = urlencode($item_id);
 // Post Owner Id jiski post hai
-$qcuserid = base64_url_encode($item_author_id);
+$qcuserid = base64_encode(openssl_encrypt($item_author_id, 'AES-256-CBC', $key, 0));
+// $qcuserid = urlencode($item_author_id);
 // Logged In User id
-$lcuserid = base64_url_encode($_SESSION['user']['id']);
+$lcuserid = base64_encode(openssl_encrypt($_SESSION['user']['id'], 'AES-256-CBC', $key, 0));
+// $lcuserid = urlencode($_SESSION['user']['id']);
 $quickchat_url = $link['MESSAGE']."/?postid=$postid&userid=$qcuserid";
 // $customChatUrl = $link['CUSTOM_CHAT']."?postid=$postid&userid=$qcuserid&loggedinuserid=$lcuserid";
 $customChatUrl = $link['CUSTOM_CHAT']."?senderId=$qcuserid&receiverId=$lcuserid";

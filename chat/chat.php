@@ -2,7 +2,7 @@
 
 namespace Main;
 
-error_reporting(0);
+
 use Classes\DB;
 use Classes\Login;
 
@@ -10,12 +10,16 @@ require_once 'classes/DB.php';
 require_once 'classes/Login.php';
 require_once 'classes/Image.php';
 require_once 'templates/header.php';
+$key="BYTECIPHERPAYAKI";
+
 if (!empty($_GET['senderId'])) {
-  $senderId = base64_decode($_GET['senderId']);
+  $senderId = openssl_decrypt(base64_decode($_GET['senderId']), 'AES-256-CBC', $key, 0);
+  // $senderId = urldecode($_GET['senderId']);
 }
 
 if (!empty($_GET['receiverId'])) {
-  $receiverId = base64_decode($_GET['receiverId']);
+  $receiverId = openssl_decrypt(base64_decode($_GET['receiverId']), 'AES-256-CBC', $key, 0);
+  // $receiverId = urldecode($_GET['receiverId']);
 }
 
 if (!empty($receiverId)) {
