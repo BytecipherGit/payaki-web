@@ -276,7 +276,7 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                 <a href="{QUICKCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>-->
                                 {:IF}
                                 IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}"){
-                                    <a href="{CUSTOMCHAT_URL}" target="_blank" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
+                                    <a href="{CUSTOMCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
                                 {:IF}
                                 <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
                             {ELSE}

@@ -232,7 +232,7 @@
                                     <li><a href="{LINK_DASHBOARD}"><i class="icon-feather-grid"></i> {LANG_DASHBOARD}</a></li>
                                     <li><a href="{LINK_PROFILE}/{USERNAME}"><i class="icon-feather-user"></i> {LANG_MY_PROFILE}</a></li>
                                     <li><a href="{LINK_MYADS}"><i class="icon-feather-briefcase"></i> {LANG_MY_ADS}</a></li>
-                                    <li><a href="{CUSTOMCHAT_URL}" target="_blank"><i class="icon-feather-message-circle"></i> Chat</a></li>
+                                    <li><a href="{CUSTOMCHAT_URL}"><i class="icon-feather-message-circle"></i> Chat</a></li>
                                     IF('{WCHAT_ON_OFF}'=='on' || '{QUICKCHAT_AJAX_ON_OFF}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
                                     <!--<li><a href="{LINK_MESSAGE}"><i class="icon-feather-message-circle"></i> {LANG_MESSAGE}</a></li>-->
                                     {:IF}
