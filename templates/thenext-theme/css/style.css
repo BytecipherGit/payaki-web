@@ -4794,7 +4794,7 @@ body .button i.icon-material-outline-arrow-right-alt {
   max-width: 100%;
   width: 100%;
   text-align: center;
-  display: block;
+  display: block !important;
 }
 .button.big {
   font-size: 18px;
