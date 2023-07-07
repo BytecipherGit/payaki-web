@@ -244,7 +244,7 @@ function ajaxlogin()
         echo $lang['ACCOUNTBAN'];
     } else {
         create_user_session($loggedin['id'], $loggedin['username'], $loggedin['password']);
-        if (!empty($loggedin['id'])) {
+        /*if (!empty($loggedin['id'])) {
             $checkIfTokenExist = ORM::for_table($config['db']['pre'] . 'login_tokens')
                 ->where('user_id', $loggedin['id'])
                 ->find_one();
@@ -259,7 +259,7 @@ function ajaxlogin()
                 setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
                 // End :: Generate token & saved in to login_tokens table for chat
             }
-        }
+        }*/
         if (isset($_POST["remember"]) && $_POST["remember"] == 1) {
             setcookie('quickad_remember_me', $loggedin['id'], time() + 3600 * 24 * 30, '/', null, null, true);
         } else {

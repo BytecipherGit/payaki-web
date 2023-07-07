@@ -73,7 +73,8 @@ function create_header($page_title='',$meta_desc = '',$meta_image = '',$meta_art
     }
 
     checkinstall();
-
+    $key="BYTECIPHERPAYAKI";
+    $senderId = base64_encode(openssl_encrypt($_SESSION['user']['id'], 'AES-256-CBC', $key, 0));
     $countries = new Country();
     $country_list = $countries->transAll(get_country_list());
     $page = new HtmlTemplate ("templates/" . $config['tpl_name'] . "/overall_header.tpl");
@@ -85,7 +86,7 @@ function create_header($page_title='',$meta_desc = '',$meta_image = '',$meta_art
     $page->SetParameter('PAGE_META_KEYWORDS', $config['meta_keywords']);
     $page->SetParameter('PAGE_META_DESCRIPTION', ($meta_desc == '')?$config['meta_description']:$meta_desc);
     $page->SetParameter('GMAP_KEY', $config['gmap_api_key']);
-    $page->SetParameter ('CUSTOMCHAT_URL', $link['CUSTOM_CHAT']);
+    $page->SetParameter ('CUSTOMCHAT_URL', $link['CUSTOM_CHAT'].'?senderId='.$senderId);
 
     if($meta_article){
         $page->SetParameter('META_CONTENT', 'article');
