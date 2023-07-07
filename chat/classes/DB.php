@@ -16,7 +16,7 @@ class DB
 	 */
 	private static function _connect()
 	{
-		$pdo = new PDO('mysql:host=127.0.0.1;dbname=payaki;charset=UTF8', 'root', '');
+		$pdo = new PDO('mysql:host=127.0.0.1;dbname=bytecipher_payaki;charset=UTF8', 'bytecipher_payaki', 'Gh7RhCZzZE');
 		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		return $pdo;
