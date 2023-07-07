@@ -1017,6 +1017,19 @@ class Api extends Rest
                         $postData['post_url'] = '';
                     }
 
+                    //$this->param['userId'] // Logged In User Id
+                    //$postData['user_id'] // Item AuthorId mean post owner id
+                    if (!empty($postData['user_id']) && !empty($this->param['userId']) && ($postData['user_id'] != $this->param['userId'])) {
+                        // Post Owner Id jiski post hai
+                        $qcuserid = base64_encode($postData['user_id']);
+                        // Logged In User id
+                        $lcuserid = base64_encode($this->param['userId']);
+                        $postData['chat_url'] = $this->display_image_url."chat/chat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                    } else {
+                        $postData['chat_url'] = null;
+                    }
+                    
+
                     if (!empty($this->param['userId'])) {
                         //Check Is favourite
                         $getFavourite = "SELECT af.* FROM ad_favads AS af WHERE af.user_id=:userId AND af.product_id=:postId";

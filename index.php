@@ -69,6 +69,7 @@ $router->map('GET|POST','/faq/?', 'faq.php');
 $router->map('GET|POST','/feedback/?', 'feedback.php');
 $router->map('GET|POST','/advertise-here/?', 'advertise.php');
 $router->map('GET|POST','/test/?', 'test.php');
+$router->map('GET|POST','/web-push-notification/?', 'web-push-notification.php');
 // Special (GET processing, etc)
 
 $router->map('GET|POST','/profile/[*:username]?/[*:page]?/?','profile.php');
