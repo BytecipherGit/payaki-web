@@ -92,6 +92,7 @@ if (Login::isLogged()) {
 				</section>
 				<?php
 			} else {
+				
 				?>
 				<!-- List of users who wrote you or you wrote them. -->
 				<section id="messages_container" class="col-md-4 conversations-section chat-box-left">
@@ -112,7 +113,7 @@ if (Login::isLogged()) {
 
 						// List of users who wrote you or you wrote them.
 						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $receiverId])) {
-							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY ad_user.id', ['user_id' => Login::isLogged()]);
+							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY ad_user.id', ['user_id' => Login::isLogged()]);
 
 							foreach ($usernames as $single_username) {
 								if ($single_username['id'] != Login::isLogged()) {
