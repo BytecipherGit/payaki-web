@@ -67,12 +67,13 @@ if (Login::isLogged()) {
 	</nav>
 
 	<div class="container conversations" style="padding-top: 80px;">
+	<div class="chat-page">
 		<div class="row">
 			<?php
 			if (!empty($senderId) && !empty($receiverId)) {
 				$postOwnderUser = DB::_query('SELECT id,username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId]);
 				?>
-				<section class="col-md-4 conversations-section">
+				<section id="messages_container" class="col-md-4 conversations-section">
 					<ul class="user-list">
 
 						<li class="user-who-wrote-you">
@@ -113,9 +114,9 @@ if (Login::isLogged()) {
 
 						// List of users who wrote you or you wrote them.
 						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $receiverId])) {
-							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY ad_user.id', ['user_id' => Login::isLogged()]);
-
-							foreach ($usernames as $single_username) {
+							
+							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['user_id' => Login::isLogged()]);
+							foreach (array_unique($usernames) as $single_username) {
 								if ($single_username['id'] != Login::isLogged()) {
 									echo '<li class="user-who-wrote-you" >
 									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item">
@@ -139,7 +140,16 @@ if (Login::isLogged()) {
 
 
 			<!-- Actual messages. -->
-			<section class="col-sm-12 col-md-8 clearfix messages">
+			<section id="messages_container_1" class="col-sm-12 col-md-8 clearfix messages">
+				<div class="msg-headar">
+              <i class="fa fa-arrow-left" id="back_arrow"></i>
+              <!-- <div class="uers-icon">
+                <img src="assets/avatars/profile-default.png" alt="Patient" />
+              </div>
+              <div class="uers-details">
+                <h2>Dr. Jessica Jane</h2>
+              </div> -->
+            </div>
 				<div class="messages-show" id="js-messagesContainer"></div>
 
 				<div class="write-your-message">
@@ -153,6 +163,8 @@ if (Login::isLogged()) {
 				</div>
 			</section>
 		</div>
+	
+	</div>
 	</div>
 
 	<script>
