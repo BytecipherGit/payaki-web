@@ -91,7 +91,7 @@ if (!empty($receiverId)) {
             <ul class="user-list">
 
               <li class="user-who-wrote-you">
-                <a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>" class="user-list-item"></a>
+                <a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>" data-senderid="<?php echo $receiverId; ?>" class="user-list-item"></a>
 
                 <span class="messager-name">
                   <div class="uers-icon">
