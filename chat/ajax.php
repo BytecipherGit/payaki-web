@@ -68,13 +68,13 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 
 if(isset($_POST['messageBody']) && isset($_POST['user_id'])) {
 	$body = htmlspecialchars($_POST['messageBody']);
-	
+	$date_time = date('Y-m-d H:i:s');
 	// The receiver passed from the AJAX request, it is related to the clicked user from the listed ones.
 	$receiver = htmlspecialchars($_POST['user_id']);
-	$sender = htmlspecialchars($_POST['sender_id']);
+	// $sender = htmlspecialchars($_POST['sender_id']);
 	
 	// The sender is you.
-	// $sender = Login::isLogged();
+	$sender = Login::isLogged();
 	
 	// Is the receiver an existing user...?
 	if(DB::_query('SELECT id from ad_user WHERE id = :receiver', [ 'receiver' => $receiver ])) {
