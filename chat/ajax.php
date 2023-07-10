@@ -47,7 +47,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 					<div class="box-main-top">
                     <div class="msg-box-bg right-msg ml-auto">
 					<h2 class="right-msg bubble-message-me">'.$message['body'].'</h2>
-					<p>'.date("h:i A", strtotime($dt)).'</p>
+					<!-- <p>'.date("h:i A", strtotime($dt)).'</p>-->
 					</div>
                     <div class="uers-bg-icon">
                       <img src="assets/avatars/profile-default.png" alt="Profile" />
@@ -61,7 +61,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
                     </div>
                     <div class="msg-box-bg">
 					  <h2 class="bubble-message-you">'.$message['body'].'</h2>
-					  <p>'.date("h:i A", strtotime($dt)).'</p>
+					 <!-- <p>'.date("h:i A", strtotime($dt)).'</p> -->
                     </div>
 				</div>';
 			}
@@ -95,7 +95,7 @@ if(isset($_POST['messageBody']) && isset($_POST['user_id'])) {
 			echo '<div class="box-main-top">
 			<div class="msg-box-bg right-msg ml-auto">
 			<h2 class="right-msg bubble-message-me">'.$body.'</h2>
-			<p>'.date("h:i A", strtotime($date_time)).'</p>
+			<!-- <p>'.date("h:i A", strtotime($date_time)).'</p> -->
 			</div>
 			<div class="uers-bg-icon">
 			  <img src="assets/avatars/profile-default.png" alt="Profile" />
