@@ -62,9 +62,10 @@ $(document).ready(function() {
 			$('.user-list').html($('.user-list').html() + `
 				<li class="user-who-wrote-you">
 					<a href="#" data-id="`+user_id+`" class='user-list-item'></a>
-					<span class="messager-name">`+username+`</span>
-				</li>
-			`);
+					<span class="messager-name"> <div class="uers-icon">
+				<img src="assets/avatars/profile-default.png" alt="Avatars">
+				</div> <p>`+username+`</p>
+				</span></li>`);
 
 			// Add the current user to the array... prevents duplicate listed user.
 			insertedUserListItem.push('profile-' + user_id);
@@ -93,8 +94,13 @@ $(document).ready(function() {
 		// When you click on a listed user, display the textbox to chat him/her.
 		$('#js-messageBody').show();
 
+		$('#js-messageSubmitButton').show();
 
-		t = setInterval(function() {
+		$('#messages_container').addClass('newClass1');
+		$('#messages_container_1').addClass('newClass2');
+
+
+		// t = setInterval(function() {
 			$.ajax({
 				type: 'POST',
 				url: 'ajax.php',
@@ -106,7 +112,7 @@ $(document).ready(function() {
 					messageContainer.scrollTop = messageContainer.scrollHeight;
 				}
 			});
-		}, 100);
+		// }, 100);
 	});
 
 	// Send AJAX request to send a message once you submit the related form.
@@ -163,5 +169,10 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	$('#back_arrow').click(function() {
+		$('#messages_container').removeClass('newClass1');
+		$('#messages_container_1').removeClass('newClass2');
+	  });
 
 });
