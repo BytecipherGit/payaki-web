@@ -86,7 +86,7 @@ function create_header($page_title='',$meta_desc = '',$meta_image = '',$meta_art
     $page->SetParameter('PAGE_META_KEYWORDS', $config['meta_keywords']);
     $page->SetParameter('PAGE_META_DESCRIPTION', ($meta_desc == '')?$config['meta_description']:$meta_desc);
     $page->SetParameter('GMAP_KEY', $config['gmap_api_key']);
-    $page->SetParameter ('CUSTOMCHAT_URL', $link['CUSTOM_CHAT'].'?senderId='.$senderId);
+    $page->SetParameter ('CUSTOMCHAT_URL', $link['CUSTOM_CHAT'].'?receiverId='.$senderId);
 
     if($meta_article){
         $page->SetParameter('META_CONTENT', 'article');
