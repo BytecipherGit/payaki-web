@@ -62,10 +62,8 @@ $(document).ready(function() {
 			$('.user-list').html($('.user-list').html() + `
 				<li class="user-who-wrote-you">
 					<a href="#" data-id="`+user_id+`" class='user-list-item'></a>
-					<span class="messager-name"> <div class="uers-icon">
-        <img src="assets/avatars/profile-default.png" alt="Avatars">
-        </div> <p>`+username+`</p>
-        </span></li>
+					<span class="messager-name">`+username+`</span>
+				</li>
 			`);
 
 			// Add the current user to the array... prevents duplicate listed user.
@@ -85,11 +83,9 @@ $(document).ready(function() {
 
 		// The id of the clicked user.
 		let receiver = $(e.target).attr('data-id');
-		let sender = $(e.target).attr('data-senderid');
 
 		// Pass the id of the clicked user to the form, it will be the receiver of your messages.
 		$('#js-sendMessage').attr('data-id', receiver);
-		$('#js-sendMessage').attr('data-senderid', sender);
 
 		// When you click on a listed user, empty the textbox value.
 		$('#js-messageBody').val('');
@@ -127,12 +123,11 @@ $(document).ready(function() {
 		
 		// The receiver, hence the clicked user you are writing to.
 		let user_id = $(e.target).attr('data-id');
-		let sender_id = $(e.target).attr('data-senderid');
 
 		$.ajax({
 			type: 'POST',
 			url: 'ajax.php',
-			data: { messageBody, user_id, sender_id },
+			data: { messageBody, user_id },
 			success: function(data) {
 				$('.messages-show').html($('.messages-show').html() + data);
 
