@@ -31,6 +31,13 @@ unset($_SESSION['chatHistory']);
 unset($_SESSION['openChatBoxes']);
 // will delete just the name data
 session_destroy();
+
+// Delete the login cookies.
+if (isset($_COOKIE['SNID'])) {
+    unset($_COOKIE['SNID']);
+    setcookie('SNID', null, -1, '/');
+  }
+  
 // Destroy session will delete ALL data associated with that user.
 
 if (isset($_COOKIE['qurm'])) {
