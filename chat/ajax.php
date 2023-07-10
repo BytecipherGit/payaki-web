@@ -68,6 +68,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 
 if(isset($_POST['messageBody']) && isset($_POST['user_id'])) {
 	$body = htmlspecialchars($_POST['messageBody']);
+	$date_time = date('Y-m-d H:i:s');
 	
 	// The receiver passed from the AJAX request, it is related to the clicked user from the listed ones.
 	$receiver = htmlspecialchars($_POST['user_id']);
@@ -79,15 +80,24 @@ if(isset($_POST['messageBody']) && isset($_POST['user_id'])) {
 	if(DB::_query('SELECT id from ad_user WHERE id = :receiver', [ 'receiver' => $receiver ])) {
 		if($body != "") {
 			// If yes, Update DB.
-			DB::_query('INSERT INTO ad_custom_messages (receiver, sender, body) VALUES (:r, :s, :body)', [
+			DB::_query('INSERT INTO ad_custom_messages (receiver, sender, body, date_time) VALUES (:r, :s, :body, :date_time)', [
 				'r' 	=> $receiver,
 				's' 	=> $sender,
 				'body' 	=> $body,
-				'date_time'	=> date('Y-m-d H:i:s')
+				'date_time'	=> $date_time
 			]);
 
 			// Returns to the client-side the body of your message.
-			echo '<div class="bubble-message bubble-message-me"><p>'.$body.'</p></div>';
+			// echo '<div class="bubble-message bubble-message-me"><p>'.$body.'</p></div>';
+			echo '<div class="box-main-top">
+			<div class="msg-box-bg right-msg ml-auto">
+			<h2 class="right-msg bubble-message-me">'.$body.'</h2>
+			<p>'.date("h:i A", strtotime($date_time)).'</p>
+			</div>
+			<div class="uers-bg-icon">
+			  <img src="assets/avatars/profile-default.png" alt="Profile" />
+			</div>
+		  </div>';
 		}
 	}
 }

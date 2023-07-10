@@ -226,7 +226,7 @@ if (!isset($_POST['submit'])) {
         create_user_session($loggedin['id'], $loggedin['username'], $loggedin['password'], $remember_me);
         update_lastactive();
 
-        /*if (!empty($loggedin['id'])) {
+        if (!empty($loggedin['id'])) {
             $checkIfTokenExist = ORM::for_table($config['db']['pre'] . 'login_tokens')
                 ->where('user_id', $loggedin['id'])
                 ->find_one();
@@ -241,7 +241,7 @@ if (!isset($_POST['submit'])) {
                 setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
                 // End :: Generate token & saved in to login_tokens table for chat
             }
-        }*/
+        }
 
         if (!isset($_GET['ref'])) {
             $_GET['ref'] = $link['DASHBOARD'];
