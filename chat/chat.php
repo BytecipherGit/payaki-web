@@ -2,6 +2,7 @@
 
 namespace Main;
 error_reporting(0);
+session_start();
 use Classes\DB;
 use Classes\Login;
 
@@ -9,7 +10,7 @@ require_once 'classes/DB.php';
 require_once 'classes/Login.php';
 require_once 'classes/Image.php';
 require_once 'templates/header.php';
-$key="BYTECIPHERPAYAKI";
+$key = "BYTECIPHERPAYAKI";
 
 if (!empty($_GET['senderId'])) {
   $senderId = openssl_decrypt(base64_decode($_GET['senderId']), 'AES-256-CBC', $key, 0);
@@ -68,9 +69,9 @@ if (!empty($receiverId)) {
           $domain = $_SERVER['HTTP_HOST'];
           $base_url = $protocol . $domain . '/payaki-web';
           ?>
-        <a href="<?php echo $base_url ?>" class="btn btn-phchat-logout btn-sm"><i
+          <a href="<?php echo $base_url ?>" class="btn btn-phchat-logout btn-sm"><i
               class="icon-feather-log-out"></i>Dashboard</a>
-           <!--  <a href="<?php // echo $base_url . '/logout' ?>" class="btn btn-phchat-logout btn-sm"><i
+          <!--  <a href="<?php // echo $base_url . '/logout' ?>" class="btn btn-phchat-logout btn-sm"><i
               class="icon-feather-log-out"></i>Logout</a>
           <div class="account-box">
 
@@ -158,8 +159,8 @@ if (!empty($receiverId)) {
             <form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
               <input type="text" class="input-phchat" id="js-messageBody" name="message" placeholder="Write your message"
                 style="display:none" />
-              <input type="submit" id="js-messageSubmitButton" name="submit"
-                style="display:none; background-color: #9C5FA3; color: #FFFFFF;" />
+              <button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
+                    src="assets/avatars/send.png" alt="send" /></button>
             </form>
 
           </div>
@@ -330,7 +331,6 @@ if (!empty($receiverId)) {
               <form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
                 <input type="text" class="input-phchat" id="js-messageBody" name="message" placeholder="Write your message"
                   style="display:none" />
-                <!-- <input type="submit" id="js-messageSubmitButton" name="submit" style="display:none; background-color: #9C5FA3; color: #FFFFFF;" /> -->
                 <button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
                     src="assets/avatars/send.png" alt="send" /></button>
               </form>

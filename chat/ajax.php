@@ -30,19 +30,20 @@ if(isset($_POST['searchVal'])) {
 
 if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 	$receiver = htmlspecialchars($_POST['receiver']);
-
+	$dt = '';
 	if($receiver != Login::isLogged()) {
-		if(DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => Login::isLogged(), 'receiver' => $receiver ])) {
-			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => Login::isLogged(), 'receiver' => $receiver ]);
+		if(DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.date_time, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => Login::isLogged(), 'receiver' => $receiver ])) {
+			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.date_time, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => Login::isLogged(), 'receiver' => $receiver ]);
 			// if(!empty($messages)){}
 			foreach ($messages as $message) {
 				
 				if($message['sender'] === Login::isLogged()) {
+					$dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
 					echo '
 					<div class="box-main-top">
                     <div class="msg-box-bg right-msg ml-auto">
 					<h2 class="right-msg bubble-message-me">'.$message['body'].'</h2>
-					<p>8:00 AM</p>
+					<p>'.date("h:i A", strtotime($dt)).'</p>
 					</div>
                     <div class="uers-bg-icon">
                       <img src="assets/avatars/profile-default.png" alt="Profile" />
@@ -56,7 +57,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
                     </div>
                     <div class="msg-box-bg">
 					  <h2 class="bubble-message-you">'.$message['body'].'</h2>
-					  <p>8:00 AM</p>
+					  <p>'.date("h:i A", strtotime($dt)).'</p>
                     </div>
 				</div>';
 			}
@@ -81,7 +82,8 @@ if(isset($_POST['messageBody']) && isset($_POST['user_id'])) {
 			DB::_query('INSERT INTO ad_custom_messages (receiver, sender, body) VALUES (:r, :s, :body)', [
 				'r' 	=> $receiver,
 				's' 	=> $sender,
-				'body' 	=> $body
+				'body' 	=> $body,
+				'date_time'	=> date('Y-m-d H:i:s')
 			]);
 
 			// Returns to the client-side the body of your message.

@@ -62,8 +62,10 @@ $(document).ready(function() {
 			$('.user-list').html($('.user-list').html() + `
 				<li class="user-who-wrote-you">
 					<a href="#" data-id="`+user_id+`" class='user-list-item'></a>
-					<span class="messager-name">`+username+`</span>
-				</li>
+					<span class="messager-name"> <div class="uers-icon">
+        <img src="assets/avatars/profile-default.png" alt="Avatars">
+        </div> <p>`+username+`</p>
+        </span></li>
 			`);
 
 			// Add the current user to the array... prevents duplicate listed user.
