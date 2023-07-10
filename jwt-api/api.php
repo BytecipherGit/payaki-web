@@ -1026,7 +1026,7 @@ class Api extends Rest
                         // Logged In User id
                         $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $key, 0));
                         // $lcuserid = base64_encode($this->param['userId']);
-                        $postData['chat_url'] = $this->display_image_url."mchat/chat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                        $postData['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
                     } else {
                         $postData['chat_url'] = null;
                     }
