@@ -58,6 +58,6 @@ if(!Login::isLogged()) {
 	</div>
 </div>
 
-<?php } else header('Location: chat.php'); ?>
+<?php } else header('Location: conversations.php'); ?>
 
 <?php require_once('templates/footer.php'); ?>

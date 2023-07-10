@@ -1,8 +1,8 @@
 <?php
 
 namespace Main;
+
 error_reporting(0);
-session_start();
 use Classes\DB;
 use Classes\Login;
 
@@ -14,36 +14,11 @@ $key = "BYTECIPHERPAYAKI";
 
 if (!empty($_GET['senderId'])) {
   $senderId = openssl_decrypt(base64_decode($_GET['senderId']), 'AES-256-CBC', $key, 0);
-  // $senderId = urldecode($_GET['senderId']);
 }
 
 if (!empty($_GET['receiverId'])) {
   $receiverId = openssl_decrypt(base64_decode($_GET['receiverId']), 'AES-256-CBC', $key, 0);
-  // $receiverId = urldecode($_GET['receiverId']);
 }
-
-if (!empty($receiverId)) {
-  $loginTokenId = DB::_query('SELECT user_id FROM ad_login_tokens WHERE user_id=:user_id', ['user_id' => $receiverId])[0]['user_id'];
-  if (!empty($loginTokenId)) {
-    // Delete the login cookies.
-    if (isset($_COOKIE['SNID'])) {
-      unset($_COOKIE['SNID']);
-      setcookie('SNID', null, -1, '/');
-    }
-    // Start :: Generate token & saved in to login_tokens table for chat
-    $cstrong = true;
-    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
-    DB::_query('UPDATE ad_login_tokens SET token=:token WHERE user_id=:user_id', ['token' => $token, 'user_id' => $receiverId]);
-    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
-    // End :: Generate token & saved in to login_tokens table for chat
-  } else {
-    // Start :: Generate token & saved in to login_tokens table for chat
-    $cstrong = true;
-    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
-    DB::_query('INSERT INTO ad_login_tokens (user_id, token) VALUES (:user_id, :token)', ['user_id' => $receiverId, 'token' => $token]);
-    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
-    // End :: Generate token & saved in to login_tokens table for chat
-  }
 
   // $receiverId = Login::isLogged();
   if (!empty($receiverId)) {
@@ -53,7 +28,7 @@ if (!empty($receiverId)) {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"
       style="background-color: #9C5FA3 !important;">
-      <a class="navbar-brand" href="chat.php">Payaki Chat |
+      <a class="navbar-brand" href="conversations.php">Payaki Chat |
         <?php echo ucfirst($username) ?>
       </a>
       <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -69,9 +44,9 @@ if (!empty($receiverId)) {
           $domain = $_SERVER['HTTP_HOST'];
           $base_url = $protocol . $domain . '/payaki-web';
           ?>
-          <a href="<?php echo $base_url ?>" class="btn btn-phchat-logout btn-sm"><i
+        <a href="<?php echo $base_url ?>" class="btn btn-phchat-logout btn-sm"><i
               class="icon-feather-log-out"></i>Dashboard</a>
-          <!--  <a href="<?php // echo $base_url . '/logout' ?>" class="btn btn-phchat-logout btn-sm"><i
+           <!--  <a href="<?php // echo $base_url . '/logout' ?>" class="btn btn-phchat-logout btn-sm"><i
               class="icon-feather-log-out"></i>Logout</a>
           <div class="account-box">
 
@@ -91,7 +66,7 @@ if (!empty($receiverId)) {
             <ul class="user-list">
 
               <li class="user-who-wrote-you">
-                <a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>" data-senderid="<?php echo $receiverId; ?>" class="user-list-item"></a>
+                <a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>" class="user-list-item"></a>
 
                 <span class="messager-name">
                   <div class="uers-icon">
@@ -159,8 +134,8 @@ if (!empty($receiverId)) {
             <form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
               <input type="text" class="input-phchat" id="js-messageBody" name="message" placeholder="Write your message"
                 style="display:none" />
-              <button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
-                    src="assets/avatars/send.png" alt="send" /></button>
+              <input type="submit" id="js-messageSubmitButton" name="submit"
+                style="display:none; background-color: #9C5FA3; color: #FFFFFF;" />
             </form>
 
           </div>
@@ -168,31 +143,8 @@ if (!empty($receiverId)) {
       </div>
     </div>
 
-  <?php } else {
-    header('Location: index.php');
-  }
+  <?php 
 } else {
-  $exists = DB::recordExists("ad_login_tokens", "user_id = '.$senderId.'");
-  if ($exists) {
-    // Delete the login cookies.
-    if (isset($_COOKIE['SNID'])) {
-      unset($_COOKIE['SNID']);
-      setcookie('SNID', null, -1, '/');
-    }
-    // Start :: Generate token & saved in to login_tokens table for chat
-    $cstrong = true;
-    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
-    DB::_query('UPDATE ad_login_tokens SET token=:token WHERE user_id=:user_id', ['token' => $token, 'user_id' => $senderId]);
-    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
-    // End :: Generate token & saved in to login_tokens table for chat
-  } else {
-    // Start :: Generate token & saved in to login_tokens table for chat
-    $cstrong = true;
-    $token = bin2hex(openssl_random_pseudo_bytes(64, $cstrong));
-    DB::_query('INSERT INTO ad_login_tokens (user_id, token) VALUES (:user_id, :token)', ['user_id' => $senderId, 'token' => $token]);
-    setcookie('SNID', $token, time() + 60 * 60 * 24 * 7, '/', null, null, true);
-    // End :: Generate token & saved in to login_tokens table for chat
-  }
   $user_id = Login::isLogged();
   if (!empty($user_id)) {
     $username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $user_id])[0]['username'];
@@ -201,7 +153,7 @@ if (!empty($receiverId)) {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"
       style="background-color: #9C5FA3 !important;">
-      <a class="navbar-brand" href="chat.php">Payaki Chat |
+      <a class="navbar-brand" href="conversations.php">Payaki Chat |
         <?php echo ucfirst($username) ?>
       </a>
       <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -331,6 +283,7 @@ if (!empty($receiverId)) {
               <form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
                 <input type="text" class="input-phchat" id="js-messageBody" name="message" placeholder="Write your message"
                   style="display:none" />
+                <!-- <input type="submit" id="js-messageSubmitButton" name="submit" style="display:none; background-color: #9C5FA3; color: #FFFFFF;" /> -->
                 <button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
                     src="assets/avatars/send.png" alt="send" /></button>
               </form>
