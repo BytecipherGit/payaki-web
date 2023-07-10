@@ -85,9 +85,11 @@ $(document).ready(function() {
 
 		// The id of the clicked user.
 		let receiver = $(e.target).attr('data-id');
+		let sender = $(e.target).attr('data-senderid');
 
 		// Pass the id of the clicked user to the form, it will be the receiver of your messages.
 		$('#js-sendMessage').attr('data-id', receiver);
+		$('#js-sendMessage').attr('data-senderid', sender);
 
 		// When you click on a listed user, empty the textbox value.
 		$('#js-messageBody').val('');
@@ -125,11 +127,12 @@ $(document).ready(function() {
 		
 		// The receiver, hence the clicked user you are writing to.
 		let user_id = $(e.target).attr('data-id');
+		let sender_id = $(e.target).attr('data-senderid');
 
 		$.ajax({
 			type: 'POST',
 			url: 'ajax.php',
-			data: { messageBody, user_id },
+			data: { messageBody, user_id, sender_id },
 			success: function(data) {
 				$('.messages-show').html($('.messages-show').html() + data);
 
