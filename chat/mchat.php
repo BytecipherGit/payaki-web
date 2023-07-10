@@ -44,7 +44,7 @@ if (!empty($_GET['receiverId'])) {
 // echo 3_2
 // echo $senderId.'_'.$receiverId;
 // exit;
-// $user_id = Login::isLogged();
+// $user_id = $senderId;
 
 if (!empty($senderId)) {
 	$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId])[0]['username'];
@@ -118,9 +118,9 @@ if (!empty($senderId)) {
 						// List of users who wrote you or you wrote them.
 						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $receiverId])) {
 							
-							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['user_id' => Login::isLogged()]);
+							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['user_id' => $senderId]);
 							foreach (array_unique($usernames) as $single_username) {
-								if ($single_username['id'] != Login::isLogged()) {
+								if ($single_username['id'] != $senderId) {
 									echo '<li class="user-who-wrote-you" >
 									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item">
 
