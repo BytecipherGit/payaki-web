@@ -122,7 +122,7 @@ $(document).ready(function () {
     $("#messages_container").addClass("newClass1");
     $("#messages_container_1").addClass("newClass2");
 
-    // t = setInterval(function () {
+    t = setInterval(function () {
       $.ajax({
         type: "POST",
         url: "majax.php",
@@ -136,7 +136,7 @@ $(document).ready(function () {
           messageContainer.scrollTop = messageContainer.scrollHeight;
         },
       });
-    // }, 100);
+    }, 100);
   });
 
   // Send AJAX request to send a message once you submit the related form.
