@@ -114,19 +114,16 @@ if (Login::isLogged()) {
 
 						// List of users who wrote you or you wrote them.
 						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $receiverId])) {
-							
-							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['user_id' => Login::isLogged()]);
-							foreach (array_unique($usernames) as $single_username) {
+							// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
+							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => Login::isLogged() ]);
+							foreach ($usernames as $single_username) {
 								if ($single_username['id'] != Login::isLogged()) {
 									echo '<li class="user-who-wrote-you" >
-									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item">
-
-                  </a>';
+									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item"></a>';
 									echo '<span class="messager-name"> <div class="uers-icon">
-                        <img src="assets/avatars/profile-default.png" alt="Avatars" />
-
-                      </div> <p>' . $single_username['username'] . '</p>
-                      </span></li>';
+									<img src="assets/avatars/profile-default.png" alt="Avatars" />
+                      				</div> <p>' . $single_username['username'] . '</p>
+                      				</span></li>';
 								}
 							}
 						}
