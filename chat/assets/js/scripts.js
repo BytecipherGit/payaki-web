@@ -191,9 +191,9 @@ $(document).ready(function () {
 		});
 	});
 
-	$('#back_arrow').click(function() {
+	$(document).on('click', '#back_arrow', (e) => {
 		$('#messages_container').removeClass('newClass1');
 		$('#messages_container_1').removeClass('newClass2');
-	  });
+	});
 
 });
