@@ -127,6 +127,7 @@ $(document).ready(function () {
         type: "POST",
         url: "majax.php",
         data: { receiver, sender },
+        dataType: 'json',
         success: function (data) {
           $('.msg-headar').html(data.rsp_header);
 					$('.messages-show').html(data.rsp_message);
