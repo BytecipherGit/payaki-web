@@ -138,15 +138,18 @@ if ($user_id) {
 
 			<!-- Actual messages. -->
 			<section id="messages_container_1" class="col-sm-12 col-md-8 clearfix messages">
-				<div class="msg-headar">
-              <i class="fa fa-arrow-left" id="back_arrow"></i>
-              <!-- <div class="uers-icon">
-                <img src="assets/avatars/profile-default.png" alt="Patient" />
-              </div>
-              <div class="uers-details">
-                <h2>Dr. Jessica Jane</h2>
-              </div> -->
-            </div>
+					<div class="msg-headar" id="msg-headar">
+					
+					</div>
+				<!--<div class="msg-headar">
+				<i class="fa fa-arrow-left" id="back_arrow"></i>
+				<div class="uers-icon">
+					<img src="assets/avatars/profile-default.png" alt="Patient" />
+				</div>
+				<div class="uers-details">
+					<h2>Dr. Jessica Jane</h2>
+				</div>
+				</div> -->
 				<div class="messages-show" id="js-messagesContainer"></div>
 
 				<div class="write-your-message">

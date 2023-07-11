@@ -128,7 +128,8 @@ $(document).ready(function () {
         url: "majax.php",
         data: { receiver, sender },
         success: function (data) {
-          $(".messages-show").html(data);
+          $('.msg-headar').html(data.rsp_header);
+					$('.messages-show').html(data.rsp_message);
 
           let messageContainer = document.getElementById(
             "js-messagesContainer"
