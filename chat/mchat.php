@@ -41,13 +41,10 @@ if (!empty($_GET['receiverId'])) {
 	// 	// End :: Generate token & saved in to login_tokens table for chat
 	// }
 }
-// echo 3_2
-// echo $senderId.'_'.$receiverId;
-// exit;
-// $user_id = $senderId;
 
-if (!empty($senderId)) {
-	$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId])[0]['username'];
+$user_id = $receiverId;
+$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $user_id])[0]['username'];
+if ($user_id) {
 	?>
 
 	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"
@@ -116,20 +113,17 @@ if (!empty($senderId)) {
 						$display_chat_image_url = str_replace("chat.php", "", $current_url);
 
 						// List of users who wrote you or you wrote them.
-						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $receiverId])) {
-							
-							$usernames = DB::_query('SELECT * FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['user_id' => $senderId]);
-							foreach (array_unique($usernames) as $single_username) {
-								if ($single_username['id'] != $senderId) {
+						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $senderId])) {
+							// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
+							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => $receiverId ]);
+							foreach ($usernames as $single_username) {
+								if ($single_username['id'] != Login::isLogged()) {
 									echo '<li class="user-who-wrote-you" >
-									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item">
-
-                  </a>';
+									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item"></a>';
 									echo '<span class="messager-name"> <div class="uers-icon">
-                        <img src="assets/avatars/profile-default.png" alt="Avatars" />
-
-                      </div> <p>' . $single_username['username'] . '</p>
-                      </span></li>';
+									<img src="assets/avatars/profile-default.png" alt="Avatars" />
+                      				</div> <p>' . $single_username['username'] . '</p>
+                      				</span></li>';
 								}
 							}
 						}
@@ -176,7 +170,11 @@ if (!empty($senderId)) {
 		};
 	</script>
 
-<?php } else
-	header('Location: index.php'); ?>
+<?php }  ?>
 
-<?php require('templates/footer.php'); ?>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="assets/js/mscripts.js"></script>
+	
+	</body>
+</html>
