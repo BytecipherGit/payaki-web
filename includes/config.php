@@ -1,8 +1,8 @@
 <?php
 $config['db']['host'] = 'localhost';
-$config['db']['name'] = 'payaki';
-$config['db']['user'] = 'root';
-$config['db']['pass'] = '';
+$config['db']['name'] = 'bytecipher_payaki';
+$config['db']['user'] = 'bytecipher_payaki';
+$config['db']['pass'] = 'Gh7RhCZzZE';
 $config['db']['pre'] = 'ad_';
 
 $config['admin_folder'] = 'admin';

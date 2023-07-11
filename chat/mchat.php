@@ -46,8 +46,8 @@ if (!empty($_GET['receiverId'])) {
 // exit;
 // $user_id = $senderId;
 
-if (!empty($senderId)) {
-	$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId])[0]['username'];
+if (!empty($senderId) && !empty($receiverId)) {
+	$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $receiverId])[0]['username'];
 	?>
 
 	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top header-top"

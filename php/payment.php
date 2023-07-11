@@ -40,6 +40,7 @@ if(isset($_GET['status']) && $_GET['status'] == 'cancel') {
 if(isset($_GET['i']) && isset($_GET['access_token']))
 {
     $access_token = $_GET['access_token'];
+    
     if(isset($_SESSION['quickad'][$access_token])){
         $payment_settings = ORM::for_table($config['db']['pre'].'payments')
             ->select('payment_folder')
