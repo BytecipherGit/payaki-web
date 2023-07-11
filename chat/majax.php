@@ -43,10 +43,11 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 			</div>';
 		if(DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ])) {
 			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ]);
+			$msgResponse = '';
 			foreach ($messages as $message) {
 				$dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
 				if($message['sender'] === $sender) {
-					$msgResponse = '
+					$msgResponse .= '
 						<div class="box-main-top">
 						<div class="msg-box-bg right-msg ml-auto">
 						<h2 class="right-msg bubble-message-me">' . $message['body'] . '</h2>
@@ -59,7 +60,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 
 				} else {
                     
-                    $msgResponse = '
+                    $msgResponse .= '
 						<div class="box-main-top">
 						<div class="uers-bg-icon">
 						<img src="assets/avatars/profile-default.png" alt="Patient" />
