@@ -118,19 +118,22 @@ $(document).ready(function () {
 		$('#messages_container_1').addClass('newClass2');
 
 
-		t = setInterval(function() {
+		// t = setInterval(function() {
 			$.ajax({
 				type: 'POST',
 				url: 'ajax.php',
 				data: { receiver },
+				dataType: 'json',
 				success: function(data) {
-					$('.messages-show').html(data);
+					// console.log(data);
+					$('.msg-headar').html(data.rsp_header);
+					$('.messages-show').html(data.rsp_message);
 
 					let messageContainer = document.getElementById('js-messagesContainer');
 					messageContainer.scrollTop = messageContainer.scrollHeight;
 				}
 			});
-		}, 100);
+		// }, 100);
 	});
 
 	// Send AJAX request to send a message once you submit the related form.

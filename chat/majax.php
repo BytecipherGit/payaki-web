@@ -33,40 +33,47 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 	$sender = htmlspecialchars($_POST['sender']);
 
 	if($receiver != $sender) {
+		$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $receiver])[0]['username'];
+		$header = '<i class="fa fa-arrow-left" id="back_arrow"></i>
+			<div class="uers-icon">
+				<img src="assets/avatars/profile-default.png" alt="Patient" />
+			</div>
+			<div class="uers-details">
+				<h2>'.ucfirst($username).'</h2>
+			</div>';
 		if(DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ])) {
 			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ]);
-			/*foreach ($messages as $message) {
-				if($message['sender'] === Login::isLogged()) {
-					echo '<div class="bubble-message bubble-message-me"><p>'.$message['body'].'</p>&#9745;</div>';
-
-				} else echo '<div class="bubble-message bubble-message-you"><p>'.$message['body'].'</p>&#9745;</div>';
-			}*/
 			foreach ($messages as $message) {
 				$dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
 				if($message['sender'] === $sender) {
-					echo '
-					<div class="box-main-top">
-                    <div class="msg-box-bg right-msg ml-auto">
-					<h2 class="right-msg bubble-message-me">'.$message['body'].'</h2>
-					<!-- <p>'.date("h:i A", strtotime($dt)).'</p>-->
-					</div>
-                    <div class="uers-bg-icon">
-                      <img src="assets/avatars/profile-default.png" alt="Profile" />
-                    </div>
-                  </div>';
+					$msgResponse = '
+						<div class="box-main-top">
+						<div class="msg-box-bg right-msg ml-auto">
+						<h2 class="right-msg bubble-message-me">' . $message['body'] . '</h2>
+						<!-- <p>' . date("h:i A", strtotime($dt)) . '</p>-->
+						</div>
+						<div class="uers-bg-icon">
+						<img src="assets/avatars/profile-default.png" alt="Profile" />
+						</div>
+					</div>';
 
-				} else echo '
-				<div class="box-main-top">
-                    <div class="uers-bg-icon">
-                      <img src="assets/avatars/profile-default.png" alt="Patient" />
-                    </div>
-                    <div class="msg-box-bg">
-					  <h2 class="bubble-message-you">'.$message['body'].'</h2>
-					 <!-- <p>'.date("h:i A", strtotime($dt)).'</p> -->
-                    </div>
-				</div>';
+				} else {
+                    
+                    $msgResponse = '
+						<div class="box-main-top">
+						<div class="uers-bg-icon">
+						<img src="assets/avatars/profile-default.png" alt="Patient" />
+						</div>
+						<div class="msg-box-bg">
+						<h2 class="bubble-message-you">' . $message['body'] . '</h2>
+						<!-- <p>' . date("h:i A", strtotime($dt)) . '</p> -->
+						</div>
+					</div>';
+                    
+                }
 			}
-
+			$response = ['rsp_header' => $header, 'rsp_message' => $msgResponse];
+            echo json_encode($response);
 		}
 	}
 }
