@@ -117,9 +117,9 @@ if ($user_id) {
 							// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
 							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => $receiverId ]);
 							foreach ($usernames as $single_username) {
-								if ($single_username['id'] != Login::isLogged()) {
+								if ($single_username['id'] != $receiverId) {
 									echo '<li class="user-who-wrote-you" >
-									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item"></a>';
+									<a href="#" data-id="' . $single_username['id'] . '" data-senderid="'.$receiverId.'" class="user-list-item"></a>';
 									echo '<span class="messager-name"> <div class="uers-icon">
 									<img src="assets/avatars/profile-default.png" alt="Avatars" />
                       				</div> <p>' . $single_username['username'] . '</p>
