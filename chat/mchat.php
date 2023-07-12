@@ -86,7 +86,6 @@ if ($user_id) {
 								data-senderid="<?php echo $receiverId; ?>" class="user-list-item"></a>
 
 							<span class="messager-name">
-								<div class="uers-icon">
 									<?php
 									if(!empty($postOwnderUser[0]['image'])){
 										$image = $profile_image_url.$postOwnderUser[0]['image'];
@@ -95,7 +94,6 @@ if ($user_id) {
 									}
 									?>
 									<img src="<?php echo $image;?>" alt="Avatars" />
-								</div>
 								<p>
 									<?php echo ucfirst($postOwnderUser[0]['username']); ?>
 								</p>
@@ -158,7 +156,17 @@ if ($user_id) {
 					<div class="msg-headar" id="msg-headar">
 					
 					</div>
+				<!--<div class="msg-headar">
+				<i class="fa fa-arrow-left" id="back_arrow"></i>
+				<div class="uers-icon">
+					<img src="assets/avatars/profile-default.png" alt="Patient" />
+				</div>
+				<div class="uers-details">
+					<h2>Dr. Jessica Jane</h2>
+				</div>
+				</div> -->
 				<div class="messages-show" id="js-messagesContainer"></div>
+
 				<div class="write-your-message">
 					<form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
 						<input type="text" class="input-phchat" id="js-messageBody" name="message"
