@@ -2161,7 +2161,7 @@ class Api extends Rest
                             // receiver id $payload->userId
                             // Sender id $user['id']
                             // Need to fetch last record order by desc id from ad_custom_messages
-                            $getUserLastChat = "SELECT body,date_time FROM `ad_custom_messages` WHERE `receiver`=:receiver AND `sender`=:sender ORDER BY id DESC";
+                            $getUserLastChat = "SELECT body,date_time FROM `ad_custom_messages` WHERE (`receiver`=:receiver OR `receiver`=:sender) AND (`sender`=:sender or `sender`=:receiver)  ORDER BY id DESC";
                             $getUserLastChatData = $this->dbConn->prepare($getUserLastChat);
                             $getUserLastChatData->bindValue(':receiver', $payload->userId, PDO::PARAM_STR);
                             $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
