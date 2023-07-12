@@ -2167,18 +2167,18 @@ class Api extends Rest
                             $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
                             $getUserLastChatData->execute();
                             $getUserLastChatData = $getUserLastChatData->fetch(PDO::FETCH_ASSOC);
-                            if (!empty($getUserLastChatData)) {
-                                if(!empty($getUserLastChatData['body'])){
-                                    $listUserArr['last_message'] = $getUserLastChatData['body'];
-                                } else {
-                                    $listUserArr['last_message'] = '';
-                                }
-                                if(!empty($getUserLastChatData['date_time'])){
-                                    $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
-                                } else {
-                                    $listUserArr['last_message_time'] = '';
-                                }
+                            
+                            if(!empty($getUserLastChatData['body'])){
+                                $listUserArr['last_message'] = $getUserLastChatData['body'];
+                            } else {
+                                $listUserArr['last_message'] = '';
                             }
+                            if(!empty($getUserLastChatData['date_time'])){
+                                $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
+                            } else {
+                                $listUserArr['last_message_time'] = '';
+                            }
+                            
                             
                             $returnArr[] = $listUserArr;
                         }
