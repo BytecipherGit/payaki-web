@@ -81,7 +81,7 @@ $(document).ready(function () {
           user_id +
           `" class='user-list-item'></a>
 					<span class="messager-name"> <div class="uers-icon">
-				<img src="`+hasProfilePic+`" alt="Avatars">
+				<img src="assets/avatars/profile-default.png" alt="Avatars">
 				</div> <p>` +
           username +
           `</p>
