@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(0);
 use JWT as GlobalJWT;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -2130,6 +2130,73 @@ class Api extends Rest
         } else {
             $response = ["status" => false, "code" => 400, "Message" => "Auth token not found!"];
             $this->returnResponse($response);
+        }
+    }
+
+    public function chatUserListing()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $listUserArr = array();
+                $getChatUserList = "SELECT DISTINCT ad_user.id,ad_user.username,ad_user.image FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)";
+                $getChatUserListData = $this->dbConn->prepare($getChatUserList);
+                $getChatUserListData->bindValue(':userid', $payload->userId, PDO::PARAM_STR);
+                $getChatUserListData->execute();
+                $getChatUserListData = $getChatUserListData->fetchAll(PDO::FETCH_ASSOC);
+                
+                if (count($getChatUserListData) > 0) {
+                    $returnArr = array();
+                    
+                    foreach ($getChatUserListData as $user) {
+                        if ($user['id'] != $payload->userId) {
+                            $listUserArr['id'] = $user['id'];
+                            $listUserArr['username'] = $user['username'];
+                            $key="BYTECIPHERPAYAKI";
+                            // Post Owner Id jiski post hai
+                            $qcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $key, 0));
+                            // $qcuserid = base64_encode($postData['user_id']);
+                            // Logged In User id
+                            $lcuserid = base64_encode(openssl_encrypt($payload->userId, 'AES-256-CBC', $key, 0));
+                            // $lcuserid = base64_encode($this->param['userId']);
+                            $listUserArr['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                            // $listUserArr['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=".$payload->userId."&receiverId=".$user['id'];
+                            // $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+                            // receiver id $payload->userId
+                            // Sender id $user['id']
+                            // Need to fetch last record order by desc id from ad_custom_messages
+                            $getUserLastChat = "SELECT body,date_time FROM `ad_custom_messages` WHERE `receiver`=:receiver AND `sender`=:sender ORDER BY id DESC";
+                            $getUserLastChatData = $this->dbConn->prepare($getUserLastChat);
+                            $getUserLastChatData->bindValue(':receiver', $payload->userId, PDO::PARAM_STR);
+                            $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
+                            $getUserLastChatData->execute();
+                            $getUserLastChatData = $getUserLastChatData->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($getUserLastChatData)) {
+                                if(!empty($getUserLastChatData['body'])){
+                                    $listUserArr['last_message'] = $getUserLastChatData['body'];
+                                } else {
+                                    $listUserArr['last_message'] = '';
+                                }
+                                if(!empty($getUserLastChatData['date_time'])){
+                                    $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
+                                } else {
+                                    $listUserArr['last_message_time'] = '';
+                                }
+                            }
+                            
+                            $returnArr[] = $listUserArr;
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "Chat user list successfully fetched.", "data" => $returnArr];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => true, "code" => 200, "Message" => "No user listing found", "data" => $listUserArr];
+                    $this->returnResponse($response);
+                }
+            } else {
+                return false;
+            }
         }
     }
 
