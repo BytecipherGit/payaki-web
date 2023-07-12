@@ -61,36 +61,40 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ]);
 			$msgResponse = '';
 			foreach ($messages as $message) {
-				$dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
-				if($message['sender'] === $sender) {
-					$userImage = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['sender']])[0]['image'];
-                    if(!empty($userImage)){
-                        $image = $profile_image_url.$userImage;
-                    } else {
-                        $image = 'assets/avatars/profile-default.png';
-                    } 
-					$msgResponse .= '
+                $getSenderImg = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['receiver']])[0]['image'];
+                if(!empty($getSenderImg)){
+                    $senderImg = $profile_image_url.$getSenderImg;
+                } else {
+                    $senderImg = 'assets/avatars/profile-default.png';
+                }
+                
+                $getReceiverImg = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['sender']])[0]['image'];
+                if(!empty($getReceiverImg)){
+                    $receiverImg = $profile_image_url.$getReceiverImg;
+                } else {
+                    $receiverImg = 'assets/avatars/profile-default.png';
+                }  
+
+                $dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
+                if ($message['sender'] === Login::isLogged()) {
+                    
+                    $msgResponse .= '
 						<div class="box-main-top">
 						<div class="msg-box-bg right-msg ml-auto">
 						<h2 class="right-msg bubble-message-me">' . $message['body'] . '</h2>
 						<!-- <p>' . date("h:i A", strtotime($dt)) . '</p>-->
 						</div>
 						<div class="uers-bg-icon">
-						<img src="'.$image.'" alt="Profile" />
+						<img src="'.$senderImg.'" alt="Profile" />
 						</div>
 					</div>';
 
-				} else {
-                    $userImage = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['receiver']])[0]['image'];
-                    if(!empty($userImage)){
-                        $image = $profile_image_url.$userImage;
-                    } else {
-                        $image = 'assets/avatars/profile-default.png';
-                    } 
+                } else {
+                    
                     $msgResponse .= '
 						<div class="box-main-top">
 						<div class="uers-bg-icon">
-						<img src="'.$image.'" alt="Patient" />
+						<img src="'.$receiverImg.'" alt="Patient" />
 						</div>
 						<div class="msg-box-bg">
 						<h2 class="bubble-message-you">' . $message['body'] . '</h2>
@@ -99,7 +103,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 					</div>';
                     
                 }
-			}
+            }
 			$response = ['rsp_header' => $header, 'rsp_message' => $msgResponse];
             echo json_encode($response);
 		}

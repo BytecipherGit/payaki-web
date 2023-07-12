@@ -120,7 +120,7 @@ $(document).ready(function () {
 		$('#messages_container_1').addClass('newClass2');
 
 
-		// t = setInterval(function() {
+		t = setInterval(function() {
 			$.ajax({
 				type: 'POST',
 				url: 'ajax.php',
@@ -135,7 +135,7 @@ $(document).ready(function () {
 					messageContainer.scrollTop = messageContainer.scrollHeight;
 				}
 			});
-		// }, 100);
+		}, 500);
 	});
 
 	// Send AJAX request to send a message once you submit the related form.
