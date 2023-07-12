@@ -50,6 +50,8 @@ $(document).ready(function () {
     // The id of the searched user and his/her username.
     let user_id = $(e.target).attr("data-id");
 
+	
+
     // Data passed from the PHP AJAX call that determines whether a user has a profile pic setted or not.
     let hasProfilePic = $(e.target).attr("data-image");
 
@@ -81,7 +83,7 @@ $(document).ready(function () {
           user_id +
           `" class='user-list-item'></a>
 					<span class="messager-name"> <div class="uers-icon">
-				<img src="assets/avatars/profile-default.png" alt="Avatars">
+				<img src="`+hasProfilePic+`" alt="Avatars">
 				</div> <p>`+username+`</p>
 				</span></li>`);
 
@@ -118,7 +120,7 @@ $(document).ready(function () {
 		$('#messages_container_1').addClass('newClass2');
 
 
-		t = setInterval(function() {
+		// t = setInterval(function() {
 			$.ajax({
 				type: 'POST',
 				url: 'ajax.php',
@@ -133,7 +135,7 @@ $(document).ready(function () {
 					messageContainer.scrollTop = messageContainer.scrollHeight;
 				}
 			});
-		}, 100);
+		// }, 100);
 	});
 
 	// Send AJAX request to send a message once you submit the related form.

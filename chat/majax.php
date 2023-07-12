@@ -8,6 +8,11 @@ require_once('classes/DB.php');
 require_once('classes/Login.php');
 require_once('classes/Image.php');
 
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$domain = $_SERVER['HTTP_HOST'];
+$base_url = $protocol . $domain . '/payaki-web';
+$profile_image_url = $protocol . $domain . '/payaki-web/storage/profile/';
+
 if(isset($_POST['searchVal'])) {
 	$value = htmlspecialchars($_POST['searchVal']);
 
@@ -17,9 +22,15 @@ if(isset($_POST['searchVal'])) {
 			$address = htmlentities($_SERVER['PHP_SELF']);
 
 			foreach ($usernames as $username) {
-				$receiver =  DB::_query('SELECT ad_user.id FROM ad_user WHERE ad_user.username = :username', [ 'username' => $username['username'] ])[0]['id'];
+
+				$receiver =  DB::_query('SELECT ad_user.id,ad_user.image FROM ad_user WHERE ad_user.username = :username', [ 'username' => $username['username'] ]);
 				if(Login::isLogged() != $receiver) {
-					echo '<a href="#" data-id='.$receiver.' data-image="yep" class="list-group-item list-group-item-action searched-user">' . $username['username'] . '</a>';
+					if(!empty($receiver[0]['image'])){
+                        $image = $profile_image_url.$receiver[0]['image'];
+                    } else {
+                        $image = 'assets/avatars/profile-default.png';
+                    }
+					echo '<a href="#" data-id='.$receiver.' data-image="'.$image.'" class="list-group-item list-group-item-action searched-user">' . $username['username'] . '</a>';
 				}
 			}
 		}
@@ -33,10 +44,15 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 	$sender = htmlspecialchars($_POST['sender']);
 
 	if($receiver != $sender) {
-		$username = DB::_query('SELECT username FROM ad_user WHERE id=:user_id', ['user_id' => $receiver])[0]['username'];
+		$username = DB::_query('SELECT username,image FROM ad_user WHERE id=:user_id', ['user_id' => $receiver]);
+		if(!empty($username[0]['image'])){
+            $image = $profile_image_url.$username[0]['image'];
+        } else {
+            $image = 'assets/avatars/profile-default.png';
+        }
 		$header = '<i class="fa fa-arrow-left" id="back_arrow"></i>
 			<div class="uers-icon">
-				<img src="assets/avatars/profile-default.png" alt="Patient" />
+				<img src="'.$image.'" alt="Patient" />
 			</div>
 			<div class="uers-details">
 				<h2>'.ucfirst($username).'</h2>
@@ -47,6 +63,12 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 			foreach ($messages as $message) {
 				$dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
 				if($message['sender'] === $sender) {
+					$userImage = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['sender']])[0]['image'];
+                    if(!empty($userImage)){
+                        $image = $profile_image_url.$userImage;
+                    } else {
+                        $image = 'assets/avatars/profile-default.png';
+                    } 
 					$msgResponse .= '
 						<div class="box-main-top">
 						<div class="msg-box-bg right-msg ml-auto">
@@ -54,16 +76,21 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 						<!-- <p>' . date("h:i A", strtotime($dt)) . '</p>-->
 						</div>
 						<div class="uers-bg-icon">
-						<img src="assets/avatars/profile-default.png" alt="Profile" />
+						<img src="'.$image.'" alt="Profile" />
 						</div>
 					</div>';
 
 				} else {
-                    
+                    $userImage = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['receiver']])[0]['image'];
+                    if(!empty($userImage)){
+                        $image = $profile_image_url.$userImage;
+                    } else {
+                        $image = 'assets/avatars/profile-default.png';
+                    } 
                     $msgResponse .= '
 						<div class="box-main-top">
 						<div class="uers-bg-icon">
-						<img src="assets/avatars/profile-default.png" alt="Patient" />
+						<img src="'.$image.'" alt="Patient" />
 						</div>
 						<div class="msg-box-bg">
 						<h2 class="bubble-message-you">' . $message['body'] . '</h2>
@@ -93,6 +120,13 @@ if(isset($_POST['messageBody']) && isset($_POST['user_id']) && isset($_POST['sen
 	// Is the receiver an existing user...?
 	if(DB::_query('SELECT id from ad_user WHERE id = :receiver', [ 'receiver' => $receiver ])) {
 		if($body != "") {
+			$userImage = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $sender])[0]['image'];
+            if(!empty($userImage)){
+                $image = $profile_image_url.$userImage;
+            } else {
+                $image = 'assets/avatars/profile-default.png';
+            }
+
 			// If yes, Update DB.
 			DB::_query('INSERT INTO ad_custom_messages (receiver, sender, body, date_time) VALUES (:r, :s, :body, :date_time)', [
 				'r' 	=> $receiver,
@@ -109,7 +143,7 @@ if(isset($_POST['messageBody']) && isset($_POST['user_id']) && isset($_POST['sen
 			<!-- <p>'.date("h:i A", strtotime($date_time)).'</p> -->
 			</div>
 			<div class="uers-bg-icon">
-			  <img src="assets/avatars/profile-default.png" alt="Profile" />
+			  <img src="'.$image.'" alt="Profile" />
 			</div>
 		  </div>';
 		}

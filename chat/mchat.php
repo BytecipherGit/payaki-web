@@ -12,6 +12,11 @@ require_once('classes/Login.php');
 require_once('classes/Image.php');
 require_once('templates/header.php');
 
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$domain = $_SERVER['HTTP_HOST'];
+$base_url = $protocol . $domain . '/payaki-web';
+$profile_image_url = $protocol . $domain . '/payaki-web/storage/profile/';
+
 $key = "BYTECIPHERPAYAKI";
 
 //Sender id jiska post hai
@@ -71,7 +76,7 @@ if ($user_id) {
 		<div class="row">
 			<?php
 			if (!empty($senderId) && !empty($receiverId)) {
-				$postOwnderUser = DB::_query('SELECT id,username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId]);
+				$postOwnderUser = DB::_query('SELECT id,username,image FROM ad_user WHERE id=:user_id', ['user_id' => $senderId]);
 				?>
 				<section id="messages_container" class="col-md-4 conversations-section">
 					<ul class="user-list">
@@ -82,7 +87,14 @@ if ($user_id) {
 
 							<span class="messager-name">
 								<div class="uers-icon">
-									<img src="assets/avatars/profile-default.png" alt="Avatars" />
+									<?php
+									if(!empty($postOwnderUser[0]['image'])){
+										$image = $profile_image_url.$postOwnderUser[0]['image'];
+									} else {
+										$image = 'assets/avatars/profile-default.png';
+									}
+									?>
+									<img src="<?php echo $image;?>" alt="Avatars" />
 								</div>
 								<p>
 									<?php echo ucfirst($postOwnderUser[0]['username']); ?>
@@ -115,13 +127,18 @@ if ($user_id) {
 						// List of users who wrote you or you wrote them.
 						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $senderId])) {
 							// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
-							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => $receiverId ]);
+							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username,ad_user.image FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => $receiverId ]);
 							foreach ($usernames as $single_username) {
 								if ($single_username['id'] != $receiverId) {
+									if(!empty($single_username['image'])){
+										$image = $profile_image_url.$single_username['image'];
+									} else {
+										$image = 'assets/avatars/profile-default.png';
+									}
 									echo '<li class="user-who-wrote-you" >
 									<a href="#" data-id="' . $single_username['id'] . '" data-senderid="'.$receiverId.'" class="user-list-item"></a>';
 									echo '<span class="messager-name"> <div class="uers-icon">
-									<img src="assets/avatars/profile-default.png" alt="Avatars" />
+									<img src="'.$image.'" alt="Avatars" />
                       				</div> <p>' . $single_username['username'] . '</p>
                       				</span></li>';
 								}
@@ -141,17 +158,7 @@ if ($user_id) {
 					<div class="msg-headar" id="msg-headar">
 					
 					</div>
-				<!--<div class="msg-headar">
-				<i class="fa fa-arrow-left" id="back_arrow"></i>
-				<div class="uers-icon">
-					<img src="assets/avatars/profile-default.png" alt="Patient" />
-				</div>
-				<div class="uers-details">
-					<h2>Dr. Jessica Jane</h2>
-				</div>
-				</div> -->
 				<div class="messages-show" id="js-messagesContainer"></div>
-
 				<div class="write-your-message">
 					<form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
 						<input type="text" class="input-phchat" id="js-messageBody" name="message"
