@@ -76,7 +76,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
                 }  
 
                 $dt = !empty($message['date_time']) ? $message['date_time'] : date('Y-m-d H:i:s');
-                if ($message['sender'] === Login::isLogged()) {
+                if ($message['sender'] === $sender) {
                     
                     $msgResponse .= '
 						<div class="box-main-top">
