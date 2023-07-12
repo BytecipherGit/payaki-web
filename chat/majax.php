@@ -61,7 +61,7 @@ if(isset($_POST['receiver']) && !isset($_POST['messageBody'])) {
 			$messages = DB::_query('SELECT ad_custom_messages.body, ad_custom_messages.receiver, ad_custom_messages.sender FROM ad_custom_messages WHERE (ad_custom_messages.receiver = :user_id OR ad_custom_messages.sender = :user_id) AND (ad_custom_messages.receiver = :receiver OR ad_custom_messages.sender = :receiver)', [ 'user_id' => $sender, 'receiver' => $receiver ]);
 			$msgResponse = '';
 			foreach ($messages as $message) {
-                $getSenderImg = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $message['receiver']])[0]['image'];
+                $getSenderImg = DB::_query('SELECT image FROM ad_user WHERE id=:user_id', ['user_id' => $sender])[0]['image'];
                 if(!empty($getSenderImg)){
                     $senderImg = $profile_image_url.$getSenderImg;
                 } else {
