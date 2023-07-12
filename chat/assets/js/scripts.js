@@ -135,7 +135,7 @@ $(document).ready(function () {
 					messageContainer.scrollTop = messageContainer.scrollHeight;
 				}
 			});
-		}, 500);
+		}, 100);
 	});
 
 	// Send AJAX request to send a message once you submit the related form.
