@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(0);
 use JWT as GlobalJWT;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -2148,12 +2148,21 @@ class Api extends Rest
                 
                 if (count($getChatUserListData) > 0) {
                     $returnArr = array();
+                    
                     foreach ($getChatUserListData as $user) {
                         if ($user['id'] != $payload->userId) {
                             $listUserArr['id'] = $user['id'];
                             $listUserArr['username'] = $user['username'];
-                            $listUserArr['chat_url'] = 'http://www.google.com';
-                            $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+                            $key="BYTECIPHERPAYAKI";
+                            // Post Owner Id jiski post hai
+                            $qcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $key, 0));
+                            // $qcuserid = base64_encode($postData['user_id']);
+                            // Logged In User id
+                            $lcuserid = base64_encode(openssl_encrypt($payload->userId, 'AES-256-CBC', $key, 0));
+                            // $lcuserid = base64_encode($this->param['userId']);
+                            $listUserArr['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                            // $listUserArr['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=".$payload->userId."&receiverId=".$user['id'];
+                            // $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
                             // receiver id $payload->userId
                             // Sender id $user['id']
                             // Need to fetch last record order by desc id from ad_custom_messages
