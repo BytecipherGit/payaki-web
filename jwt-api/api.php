@@ -2133,6 +2133,64 @@ class Api extends Rest
         }
     }
 
+    public function chatUserListing()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $listUserArr = array();
+                $getChatUserList = "SELECT DISTINCT ad_user.id,ad_user.username,ad_user.image FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)";
+                $getChatUserListData = $this->dbConn->prepare($getChatUserList);
+                $getChatUserListData->bindValue(':userid', $payload->userId, PDO::PARAM_STR);
+                $getChatUserListData->execute();
+                $getChatUserListData = $getChatUserListData->fetchAll(PDO::FETCH_ASSOC);
+                
+                if (count($getChatUserListData) > 0) {
+                    $returnArr = array();
+                    foreach ($getChatUserListData as $user) {
+                        if ($user['id'] != $payload->userId) {
+                            $listUserArr['id'] = $user['id'];
+                            $listUserArr['username'] = $user['username'];
+                            $listUserArr['chat_url'] = 'http://www.google.com';
+                            $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+                            // receiver id $payload->userId
+                            // Sender id $user['id']
+                            // Need to fetch last record order by desc id from ad_custom_messages
+                            $getUserLastChat = "SELECT body,date_time FROM `ad_custom_messages` WHERE `receiver`=:receiver AND `sender`=:sender ORDER BY id DESC";
+                            $getUserLastChatData = $this->dbConn->prepare($getUserLastChat);
+                            $getUserLastChatData->bindValue(':receiver', $payload->userId, PDO::PARAM_STR);
+                            $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
+                            $getUserLastChatData->execute();
+                            $getUserLastChatData = $getUserLastChatData->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($getUserLastChatData)) {
+                                if(!empty($getUserLastChatData['body'])){
+                                    $listUserArr['last_message'] = $getUserLastChatData['body'];
+                                } else {
+                                    $listUserArr['last_message'] = '';
+                                }
+                                if(!empty($getUserLastChatData['date_time'])){
+                                    $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
+                                } else {
+                                    $listUserArr['last_message_time'] = '';
+                                }
+                            }
+                            
+                            $returnArr[] = $listUserArr;
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "Chat user list successfully fetched.", "data" => $returnArr];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => true, "code" => 200, "Message" => "No user listing found", "data" => $listUserArr];
+                    $this->returnResponse($response);
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
     public function uploadFile()
     {
         try {
