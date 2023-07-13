@@ -1035,10 +1035,10 @@ class Api extends Rest
                     //$postData['user_id'] // Item AuthorId mean post owner id
                     if (!empty($postData['user_id']) && !empty($this->param['userId']) && ($postData['user_id'] != $this->param['userId'])) {
                         // Post Owner Id jiski post hai
-                        $qcuserid = base64_encode(openssl_encrypt($postData['user_id'], 'AES-256-CBC', $key, 0));
+                        $qcuserid = base64_encode(openssl_encrypt($postData['user_id'], 'AES-256-CBC', $this->key, 0));
                         // $qcuserid = base64_encode($postData['user_id']);
                         // Logged In User id
-                        $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $key, 0));
+                        $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $this->key, 0));
                         // $lcuserid = base64_encode($this->param['userId']);
                         $postData['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
                     } else {
