@@ -749,6 +749,10 @@ class Api extends Rest
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+                $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+
+
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
