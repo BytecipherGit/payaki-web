@@ -26,6 +26,8 @@ class Api extends Rest
     protected $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
     protected $fcmServerKey = 'AAAAcdsalcE:APA91bE-UusISpW-YJ6QKQAjAwC6O4pCP1AAIvfsR7Dul6-JL2yGh6qAi418dCBxYqy0DvMWp67d2rLmfHZ8EQVbM0ysKbyBlQIipPoATHuyfQTKkhYw9SLtUmJ--HegoumMFGJM6lJL';
 
+    protected $key="BYTECIPHERPAYAKI";
+
     public function __construct()
     {
         parent::__construct();
@@ -87,7 +89,8 @@ class Api extends Rest
                 $user['device_token'] = $device_token;
                 $user['device_type'] = $device_type;
             }
-
+            $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+            $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
             $paylod = [
                 'iat' => time(),
                 'iss' => 'localhost',
@@ -174,6 +177,10 @@ class Api extends Rest
                         'userId' => $user['id'],
                     ];
                     $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+                    
+                    $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                    $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+
                     $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                     $this->returnResponse($response);
                 } else {
@@ -295,16 +302,19 @@ class Api extends Rest
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user_id];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
+                $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+
                 /*SEND CONFIRMATION EMAIL*/
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-											                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-											                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-											                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-											                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-											                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-											                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -1016,7 +1026,7 @@ class Api extends Rest
                     } else {
                         $postData['post_url'] = '';
                     }
-                    $key="BYTECIPHERPAYAKI";
+                    
                     //$this->param['userId'] // Logged In User Id
                     //$postData['user_id'] // Item AuthorId mean post owner id
                     if (!empty($postData['user_id']) && !empty($this->param['userId']) && ($postData['user_id'] != $this->param['userId'])) {
