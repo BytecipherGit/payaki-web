@@ -107,14 +107,14 @@ if ($user_id) {
 				?>
 				<!-- List of users who wrote you or you wrote them. -->
 				<section id="messages_container" class="col-md-4 conversations-section chat-box-left">
-					<h2 class="chatheadingleft">Chat</h2>
+					<!-- <h2 class="chatheadingleft">Chat</h2> -->
 					<!-- Search users -->
-					<div class="search-user">
+					<!-- <div class="search-user">
 
 						<input class="form-control mr-sm-2 ph-searchbar" id="js-searchUser" type="search" placeholder="Search"
 							aria-label="Search">
 						<div class="list-group list-results"></div>
-					</div>
+					</div> -->
 					<ul class="user-list">
 						<?php
 						$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
@@ -169,8 +169,10 @@ if ($user_id) {
 
 				<div class="write-your-message">
 					<form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
-						<input type="text" class="input-phchat" id="js-messageBody" name="message"
-							placeholder="Write your message" style="display:none" />
+						<!-- <input type="text" class="input-phchat" id="js-messageBody" name="message"
+							placeholder="Write your message" style="display:none" /> -->
+							<textarea type="text" class="input-phchat textInputBx" id="js-messageBody" name="message"
+							placeholder="Write your message" style="display:none" ></textarea>
 						<button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
 								src="assets/avatars/send.png" alt="send" /></button>
 					</form>
