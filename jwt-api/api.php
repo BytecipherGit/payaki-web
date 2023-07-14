@@ -994,7 +994,7 @@ class Api extends Rest
                         $status = !empty($_POST['status']) ? $_POST['status'] : '';
                         $paymentId = !empty($_POST['paymentId']) ? $_POST['paymentId'] : '';
                         $paymentGatway = !empty($_POST['payment_method']) ? $_POST['payment_method'] : 'paypal';
-                        $transactionIpAddress = !empty($_POST['transaction_ip_address']) ? $_POST['transaction_ip_address'] : '';
+                        $transactionIpAddress = !empty($_POST['transaction_ip_address']) ? $_POST['transaction_ip_address'] : null;
 
                         // Package Featured Urgent Highlight
                         $transactionDescription = 'Package';
