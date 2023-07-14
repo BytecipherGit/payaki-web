@@ -8,6 +8,7 @@ require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 
+
 class Api extends Rest
 {
     protected $Host = 'smtp.gmail.com';
@@ -26,7 +27,7 @@ class Api extends Rest
     protected $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
     protected $fcmServerKey = 'AAAAcdsalcE:APA91bE-UusISpW-YJ6QKQAjAwC6O4pCP1AAIvfsR7Dul6-JL2yGh6qAi418dCBxYqy0DvMWp67d2rLmfHZ8EQVbM0ysKbyBlQIipPoATHuyfQTKkhYw9SLtUmJ--HegoumMFGJM6lJL';
 
-    protected $key="BYTECIPHERPAYAKI";
+    protected $key = "BYTECIPHERPAYAKI";
 
     public function __construct()
     {
@@ -90,7 +91,7 @@ class Api extends Rest
                 $user['device_type'] = $device_type;
             }
             $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
-            $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+            $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
             $paylod = [
                 'iat' => time(),
                 'iss' => 'localhost',
@@ -177,9 +178,9 @@ class Api extends Rest
                         'userId' => $user['id'],
                     ];
                     $token = GlobalJWT::encode($paylod, SECRETE_KEY);
-                    
+
                     $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
-                    $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+                    $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
                     $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                     $this->returnResponse($response);
@@ -303,7 +304,7 @@ class Api extends Rest
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
                 $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
-                $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+                $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
                 /*SEND CONFIRMATION EMAIL*/
 
@@ -431,7 +432,7 @@ class Api extends Rest
             $mobile = $this->validateParameter('mobile', $this->param['mobile'], STRING);
             $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
             if (!empty($mobile) && !empty($countryCode)) {
-                $phone = $countryCode.$mobile;
+                $phone = $countryCode . $mobile;
                 $getuser = "SELECT `id` FROM `ad_user` WHERE `phone`=:phone";
                 $userData = $this->dbConn->prepare($getuser);
                 // $userData->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
@@ -750,7 +751,7 @@ class Api extends Rest
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
-                $user['chat_url'] = $this->display_image_url."chat/mchat.php?receiverId=$lcuserid";
+                $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
 
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
@@ -807,6 +808,7 @@ class Api extends Rest
     }
     public function addPost()
     {
+
         try {
             $userId = $_POST['user_id'];
             if (!empty($userId)) {
@@ -978,6 +980,74 @@ class Api extends Rest
                         }
 
                     }
+
+                    // Add record into transaction table
+                    if ($featured == 1 || $urgent == 1 || $highlight == 1) {
+                        $productName = !empty($productName) ? $productName : '';
+                        $productId = !empty($last_id) ? $last_id : '';
+                        $userId = !empty($userId) ? $userId : '';
+                        $amount = !empty($_POST['amount']) ? $_POST['amount'] : '';
+                        $currencyCode = !empty($_POST['currency']) ? $_POST['currency'] : 'USD';
+                        $baseAmount = !empty($_POST['amount']) ? $_POST['amount'] : '';
+                        $transactionTime = time();
+                        // Status should be enum('pending', 'success', 'failed', 'cancel')
+                        $status = !empty($_POST['status']) ? $_POST['status'] : '';
+                        $paymentId = !empty($_POST['paymentId']) ? $_POST['paymentId'] : '';
+                        $paymentGatway = !empty($_POST['payment_method']) ? $_POST['payment_method'] : 'paypal';
+                        $transactionIpAddress = !empty($_POST['transaction_ip_address']) ? $_POST['transaction_ip_address'] : '';
+
+                        // Package Featured Urgent Highlight
+                        $transactionDescription = 'Package';
+                        if($featured == 1){ $transactionDescription .= ' Featured'; }
+                        if($urgent == 1){ $transactionDescription .= ' Urgent'; }
+                        if($highlight == 1){ $transactionDescription .= ' Highlight'; }
+
+                        // $transactionDescription = !empty($_POST['transaction_description']) ? $_POST['transaction_description'] : '';
+                        // Premium Ad
+                        $transactionMethod = 'Premium Ad';
+                        // Frequency enum('MONTHLY', 'YEARLY', 'LIFETIME')
+                        // $frequency = !empty($_POST['frequency']) ? $_POST['frequency'] : null;
+                        $frequency = null;
+                        
+
+                        $billing = array(
+                            'type' => $this->getUserOptions($userId, 'billing_details_type'),
+                            'tax_id' => $this->getUserOptions($userId, 'billing_tax_id'),
+                            'name' => $this->getUserOptions($userId, 'billing_name'),
+                            'address' => $this->getUserOptions($userId, 'billing_address'),
+                            'city' => $this->getUserOptions($userId, 'billing_city'),
+                            'state' => $this->getUserOptions($userId, 'billing_state'),
+                            'zipcode' => $this->getUserOptions($userId, 'billing_zipcode'),
+                            'country' => $this->getUserOptions($userId, 'billing_country'),
+                        );
+                        $billing = !empty($billing) ? json_encode($billing) : '';
+                        // $taxesIds = !empty($_POST['taxes_ids']) ? $_POST['taxes_ids'] : '';
+                        $taxesIds = null;
+
+                        $insert_query = "INSERT INTO `ad_transaction` (`product_name`,`product_id`,`seller_id`,`amount`,`currency_code`,`base_amount`,`featured`,`urgent`,`highlight`,`transaction_time`,`status`,`payment_id`,`transaction_gatway`,`transaction_ip`,`transaction_description`,`transaction_method`,`frequency`,`billing`,`taxes_ids`) VALUES(:product_name,:product_id,:seller_id,:amount,:currency_code,:base_amount,:featured,:urgent,:highlight,:transaction_time,:status,:payment_id,:transaction_gatway,:transaction_ip,:transaction_description,:transaction_method,:frequency,:billing,:taxes_ids)";
+                        $stmt = $this->dbConn->prepare($insert_query);
+                        $stmt->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                        $stmt->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                        $stmt->bindValue(':seller_id', $userId, PDO::PARAM_STR);
+                        $stmt->bindValue(':amount', $amount, PDO::PARAM_STR);
+                        $stmt->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
+                        $stmt->bindValue(':base_amount', $baseAmount, PDO::PARAM_STR);
+                        $stmt->bindValue(':featured', $featured, PDO::PARAM_STR);
+                        $stmt->bindValue(':urgent', $urgent, PDO::PARAM_STR);
+                        $stmt->bindValue(':highlight', $highlight, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_time', $transactionTime, PDO::PARAM_STR);
+                        $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+                        $stmt->bindValue(':payment_id', $paymentId, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_gatway', $paymentGatway, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_ip', $transactionIpAddress, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_description', $transactionDescription, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_method', $transactionMethod, PDO::PARAM_STR);
+                        $stmt->bindValue(':frequency', $frequency, PDO::PARAM_STR);
+                        $stmt->bindValue(':billing', $billing, PDO::PARAM_STR);
+                        $stmt->bindValue(':taxes_ids', $taxesIds, PDO::PARAM_STR);
+                        $stmt->execute();
+                    }
+
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement successfuly posted.", "data" => $product];
                     $this->returnResponse($response);
                 } else {
@@ -1030,7 +1100,7 @@ class Api extends Rest
                     } else {
                         $postData['post_url'] = '';
                     }
-                    
+
                     //$this->param['userId'] // Logged In User Id
                     //$postData['user_id'] // Item AuthorId mean post owner id
                     if (!empty($postData['user_id']) && !empty($this->param['userId']) && ($postData['user_id'] != $this->param['userId'])) {
@@ -1040,11 +1110,11 @@ class Api extends Rest
                         // Logged In User id
                         $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $this->key, 0));
                         // $lcuserid = base64_encode($this->param['userId']);
-                        $postData['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                        $postData['chat_url'] = $this->display_image_url . "chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
                     } else {
                         $postData['chat_url'] = null;
                     }
-                    
+
 
                     if (!empty($this->param['userId'])) {
                         //Check Is favourite
@@ -2124,7 +2194,7 @@ class Api extends Rest
                                 $notifivationStmt->bindParam(':created_at', $createdDate);
                                 $notifivationStmt->execute();
 
-                                
+
                             }
                         }
                         $response = ["status" => true, "code" => 200, "Message" => "Quote successfully placed."];
@@ -2159,18 +2229,18 @@ class Api extends Rest
                 $getChatUserListData->bindValue(':userid', $payload->userId, PDO::PARAM_STR);
                 $getChatUserListData->execute();
                 $getChatUserListData = $getChatUserListData->fetchAll(PDO::FETCH_ASSOC);
-                
+
                 if (count($getChatUserListData) > 0) {
                     $returnArr = array();
-                    
+
                     foreach ($getChatUserListData as $user) {
                         if ($user['id'] != $payload->userId) {
                             $listUserArr['id'] = $user['id'];
                             $listUserArr['username'] = $user['username'];
-                            $key="BYTECIPHERPAYAKI";
+                            $key = "BYTECIPHERPAYAKI";
                             $qcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $key, 0));
                             $lcuserid = base64_encode(openssl_encrypt($payload->userId, 'AES-256-CBC', $key, 0));
-                            $listUserArr['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                            $listUserArr['chat_url'] = $this->display_image_url . "chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
                             $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
                             // receiver id $payload->userId
                             // Sender id $user['id']
@@ -2181,19 +2251,19 @@ class Api extends Rest
                             $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
                             $getUserLastChatData->execute();
                             $getUserLastChatData = $getUserLastChatData->fetch(PDO::FETCH_ASSOC);
-                            
-                            if(!empty($getUserLastChatData['body'])){
+
+                            if (!empty($getUserLastChatData['body'])) {
                                 $listUserArr['last_message'] = $getUserLastChatData['body'];
                             } else {
                                 $listUserArr['last_message'] = '';
                             }
-                            if(!empty($getUserLastChatData['date_time'])){
+                            if (!empty($getUserLastChatData['date_time'])) {
                                 $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
                             } else {
                                 $listUserArr['last_message_time'] = '';
                             }
-                            
-                            
+
+
                             $returnArr[] = $listUserArr;
                         }
                     }
@@ -2206,6 +2276,109 @@ class Api extends Rest
             } else {
                 return false;
             }
+        }
+    }
+
+    public function getUserOptions($userId, $userOptions)
+    {
+        $stmt = $this->dbConn->prepare("SELECT * FROM ad_user_options WHERE user_id =:user_id AND option_name LIKE CONCAT( '%', :option_name, '%') ");
+        $stmt->bindParam(":user_id", $userId);
+        $stmt->bindParam(":option_name", $userOptions);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!empty($user["option_value"])) {
+            return $user["option_value"];
+        } else {
+            return '';
+        }
+    }
+
+    //We are not using this api
+    public function payment()
+    {
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $productName = !empty($this->param['product_name']) ? $this->param['product_name'] : '';
+                    $productId = !empty($this->param['product_id']) ? $this->param['product_id'] : '';
+                    $userId = !empty($this->param['seller_id']) ? $this->param['seller_id'] : '';
+                    $amount = !empty($this->param['amount']) ? $this->param['amount'] : '';
+                    $currencyCode = !empty($this->param['currency_code']) ? $this->param['currency_code'] : 'USD';
+                    $baseAmount = !empty($this->param['amount']) ? $this->param['amount'] : '';
+                    $featured = !empty($this->param['featured']) ? $this->param['featured'] : 0;
+                    $urgent = !empty($this->param['urgent']) ? $this->param['urgent'] : 0;
+                    $highlight = !empty($this->param['highlight']) ? $this->param['highlight'] : 0;
+                    $transactionTime = !empty($this->param['transaction_time']) ? $this->param['transaction_time'] : time();
+                    // Status should be enum('pending', 'success', 'failed', 'cancel')
+                    $status = !empty($this->param['status']) ? $this->param['status'] : '';
+                    $paymentId = !empty($this->param['payment_id']) ? $this->param['payment_id'] : '';
+                    $paymentGatway = !empty($this->param['payment_gatway']) ? $this->param['payment_gatway'] : 'paypal';
+                    $transactionIpAddress = !empty($this->param['transaction_ip_address']) ? $this->param['transaction_ip_address'] : '';
+
+                    // Package Featured Urgent Highlight
+                    $transactionDescription = !empty($this->param['transaction_description']) ? $this->param['transaction_description'] : '';
+                    // Premium Ad
+                    $transactionMethod = !empty($this->param['transaction_method']) ? $this->param['transaction_method'] : '';
+                    // Frequency enum('MONTHLY', 'YEARLY', 'LIFETIME')
+                    $frequency = !empty($this->param['frequency']) ? $this->param['frequency'] : null;
+
+                    $billing = array(
+                        'type' => $this->getUserOptions($payload->userId, 'billing_details_type'),
+                        'tax_id' => $this->getUserOptions($payload->userId, 'billing_tax_id'),
+                        'name' => $this->getUserOptions($payload->userId, 'billing_name'),
+                        'address' => $this->getUserOptions($payload->userId, 'billing_address'),
+                        'city' => $this->getUserOptions($payload->userId, 'billing_city'),
+                        'state' => $this->getUserOptions($payload->userId, 'billing_state'),
+                        'zipcode' => $this->getUserOptions($payload->userId, 'billing_zipcode'),
+                        'country' => $this->getUserOptions($payload->userId, 'billing_country'),
+                    );
+                    $billing = !empty($billing) ? json_encode($billing) : '';
+                    $taxesIds = !empty($this->param['taxes_ids']) ? $this->param['taxes_ids'] : '';
+
+                    $insert_query = "INSERT INTO `ad_transaction` (`product_name`,`product_id`,`seller_id`,`amount`,`currency_code`,`base_amount`,`featured`,`urgent`,`highlight`,`transaction_time`,`status`,`payment_id`,`transaction_gatway`,`transaction_ip`,`transaction_description`,`transaction_method`,`frequency`,`billing`,`taxes_ids`) VALUES(:product_name,:product_id,:seller_id,:amount,:currency_code,:base_amount,:featured,:urgent,:highlight,:transaction_time,:status,:payment_id,:transaction_gatway,:transaction_ip,:transaction_description,:transaction_method,:frequency,:billing,:taxes_ids)";
+                    $stmt = $this->dbConn->prepare($insert_query);
+                    $stmt->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                    $stmt->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                    $stmt->bindValue(':seller_id', $userId, PDO::PARAM_STR);
+                    $stmt->bindValue(':amount', $amount, PDO::PARAM_STR);
+                    $stmt->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
+                    $stmt->bindValue(':base_amount', $baseAmount, PDO::PARAM_STR);
+                    $stmt->bindValue(':featured', $featured, PDO::PARAM_STR);
+                    $stmt->bindValue(':urgent', $urgent, PDO::PARAM_STR);
+                    $stmt->bindValue(':highlight', $highlight, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_time', $transactionTime, PDO::PARAM_STR);
+                    $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+                    $stmt->bindValue(':payment_id', $paymentId, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_gatway', $paymentGatway, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_ip', $transactionIpAddress, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_description', $transactionDescription, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_method', $transactionMethod, PDO::PARAM_STR);
+                    $stmt->bindValue(':frequency', $frequency, PDO::PARAM_STR);
+                    $stmt->bindValue(':billing', $billing, PDO::PARAM_STR);
+                    $stmt->bindValue(':taxes_ids', $taxesIds, PDO::PARAM_STR);
+                    $stmt->execute();
+                    // Get the last insert ID
+                    $transactionId = $this->dbConn->lastInsertId();
+                    if (!empty($transactionId)) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done"];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Requst token not found"];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
         }
     }
 
