@@ -341,6 +341,7 @@ if (mysqli_num_rows($result) > 0) {
         }
 
         $item[$info['id']]['id'] = $info['id'];
+        $item[$info['id']]['user_id'] = $info['user_id'];
         $item[$info['id']]['featured'] = $info['featured'];
         $item[$info['id']]['urgent'] = $info['urgent'];
         $item[$info['id']]['highlight'] = $info['highlight'];
