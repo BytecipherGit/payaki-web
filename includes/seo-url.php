@@ -47,4 +47,10 @@ $link['BLOG-AUTHOR']    = $config['site_url'] . 'blog/author';
 $link['INVOICE']        = $config['site_url'] . 'invoice';
 $link['ADVERTISE_HERE'] = $config['site_url'] . 'advertise-here';
 $link['POST-QUOTE']     = $config['site_url'].'post-quote';
+$link['VIEWCART']       = $config['site_url'].'viewcart';
+$link['CHECKOUT']       = $config['site_url'].'checkout';
+$link['PLACEORDER']     = $config['site_url'].'placeorder';
+$link['CUSTOMPAYMENT']  = $config['site_url'].'custompayment';
+$link['CUSTOMNOTIFY']  = $config['site_url'].'customnotify';
+$link['CUSTOMSUCCESS']  = $config['site_url'].'customsuccess';
 ?>
