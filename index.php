@@ -94,6 +94,12 @@ $router->map('GET|POST','/blog/[i:id]?/[*:slug]?/?', 'blog-single.php');
 $router->map('GET|POST','/webhook/[*:i]?/?', 'webhook.php');
 $router->map('GET|POST','/invoice/[i:id]?/?', 'invoice.php');
 $router->map('GET|POST','/post-quote/[i:post_id]?/[*:post_user_id]?/?', 'quote.php');
+$router->map('GET|POST','/viewcart/?', 'viewcart.php');
+$router->map('GET|POST','/checkout/?', 'checkout.php');
+$router->map('GET|POST','/placeorder/?', 'placeorder.php');
+$router->map('GET|POST','/custompayment/?', 'custompayment.php');
+$router->map('GET|POST','/customnotify/?', 'customnotify.php');
+$router->map('GET|POST','/customsuccess/?', 'customsuccess.php');
 // API Routes
 
 /* Match the current request */

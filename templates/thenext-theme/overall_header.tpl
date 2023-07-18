@@ -259,6 +259,19 @@
                                 {:IF}
                                 <li><a href="{LINK_POST-AD}" class="button ripple-effect post-job">{LANG_POST_FREE_AD}</a>
                                 </li>
+                                IF({LOGGED_IN}){
+                                <li>
+                                    <a href="{VIEWCART}" class="cart-counter" id="cart-info" title="View Cart">            
+                                        <span class="cart-item" id="cart-container"><?php 
+                                        if(isset($_SESSION["products"])){
+                                            echo count($_SESSION["products"]); 
+                                        } else {
+                                            echo 0; 
+                                        }
+                                        ?></span>
+                                    </a>
+                                </li>
+                                 {:IF}
                             </ul>
                         </nav>
                     </div>

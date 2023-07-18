@@ -20,12 +20,14 @@ if (isset($_GET['action'])) {
 }
 
 if (isset($_POST['action'])) {
+    
     if ($_POST['action'] == "check_availability") {check_availability();}
     if ($_POST['action'] == "removeImage") {removeImage();}
     if ($_POST['action'] == "hideItem") {hideItem();}
     if ($_POST['action'] == "removeAdImg") {removeAdImg();}
     if ($_POST['action'] == "setFavAd") {setFavAd();}
     if ($_POST['action'] == "removeFavAd") {removeFavAd();}
+    if ($_POST['action'] == "setCartItem") {setCartItem();}
     if ($_POST['action'] == "getsubcatbyidList") {getsubcatbyidList();}
     if ($_POST['action'] == "getsubcatbyid") {getsubcatbyid();}
     if ($_POST['action'] == "getCustomFieldByCatID") {getCustomFieldByCatID();}
@@ -1227,6 +1229,36 @@ function setFavAd()
             echo 0;
         }
 
+    }
+    die();
+}
+
+function setCartItem()
+{
+    global $config;
+    if(isset($_POST["id"])) {
+        foreach($_POST as $key => $value){
+            $product[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+        }
+        $productDetails = ORM::for_table($config['db']['pre'] . 'product')
+                    ->where('id', $_POST['id'])
+                    ->find_one();
+        if(!empty($productDetails['id'])){
+            $product["product_name"] = $productDetails['product_name'];
+            $product["product_price"] = $productDetails['price'];
+            $product["product_qty"] = 1;
+            if(isset($_SESSION["products"])){ 
+                if(isset($_SESSION["products"][$product['id']])) {				
+                    $_SESSION["products"][$product['id']]["product_qty"] = 1;				
+                } else {
+                    $_SESSION["products"][$product['id']] = $product;
+                }			
+            } else {
+                $_SESSION["products"][$product['id']] = $product;
+            }	
+        }
+        $total_product = count($_SESSION["products"]);
+        die(json_encode(array('products'=>$total_product)));
     }
     die();
 }
