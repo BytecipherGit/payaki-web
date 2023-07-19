@@ -45,6 +45,9 @@
 // } else {
 //     echo "Failed to send email.";
 // }
+if(isset($_SESSION["products"])){
+    unset($_SESSION["products"]);
+}
 global $config, $link;
 $successMsg = "Your payment successfully done";
 $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/customsuccess.tpl');
