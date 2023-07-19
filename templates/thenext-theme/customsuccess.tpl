@@ -3,12 +3,12 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h2>Proceed to payment</h2>
+                <h2>Payment Success</h2>
                 <!-- Breadcrumbs -->
                 <nav id="breadcrumbs">
                     <ul>
                         <li><a href="{LINK_INDEX}">{LANG_HOME}</a></li>
-                        <li>Proceed to payment</li>
+                        <li>Payment Success</li>
                     </ul>
                 </nav>
 
@@ -23,24 +23,7 @@
                 <div class="dashboard-box margin-top-0">
                     <!-- Headline -->
                     <div class="headline">
-                        <h3>Your order payment has been successful! </h3>
-                    </div>
-                    <div class="content with-padding">
-                        <div class="row">
-                        <div class="col-md-4">
-                        </div>
-                        
-                            <div class="col-md-6">
-                            <div class="text-left">	
-                            <h5>TXT ID: {TXNID}	</h5>
-                            <h5>AMOUNT : {AMOUNT}	</h5>
-                            <h5>CURRENCY CODE : {CURRENCYCODE}	</h5>
-                            <h5>PAYMENT STATUS : {PAYMENTSTATUS}	</h5>
-	                        </div>
-                            </div>
-                            <div class="col-md-2">
-                        </div>
-                        </div>
+                        <h3>{SUCCESSMESSAGE}</h3>
                     </div>
                 </div>
             </div>

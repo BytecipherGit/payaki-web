@@ -15,6 +15,9 @@ if(isset($_SESSION['user']['id']) && isset($_SESSION["products"])){
         $insert_so->order_at = date("Y-m-d H:i:s");
         $insert_so->payment_type = "PAYPAL";
         $insert_so->save();
+        // Print the last executed query
+        // echo ORM::get_last_query();
+        // die;
         $orderId = $insert_so->id();
         // insert order item details
         if(!empty($orderId)) {	

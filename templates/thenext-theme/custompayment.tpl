@@ -40,13 +40,13 @@
                             <h5>Contact Email : {EMAIL}	</h5>
                             
                             <form class="form-horizontal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="POST">
-                                <input type='hidden' name='business' value='{EMAIL}'>
+                                <input type='hidden' name='business' value='tiwarilalit601@gmail.com'>
                                 <input type='hidden' name='item_name' value='{CARTITEM}'> 
                                 <input type='hidden' name='item_number' value="{ORDERID}">
                                 <input type='hidden' name='amount' value='{TOTALAMOUNTPAYBLE}'> 
                                 <input type='hidden' name='currency_code' value='USD'> 
-                                <input type='hidden' name='notify_url' value='http://localhost/payaki-web/customnotify'>
-                                <input type='hidden' name='return' value='http://localhost/payaki-web/customsuccess?orderId={ORDERID}'>
+                                <input type='hidden' name='notify_url' value='http://themindcrm.com/payaki-web/customnotify/'>
+                                <input type='hidden' name='return' value='http://themindcrm.com/payaki-web/customsuccess/'>
                                 <input type="hidden" name="cmd" value="_xclick"> 
                                 <input type="hidden" name="order" value="1">
                                 <br>

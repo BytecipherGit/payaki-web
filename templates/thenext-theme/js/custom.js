@@ -147,8 +147,9 @@
                 url: ajaxurl,
                 data: data,
                 success: function (result) {
-                    if (result == 1) {
-                        /*if (action == 'removeFavAd') {
+                    window.location.reload();
+                    /*if (result == 1) {
+                        if (action == 'removeFavAd') {
                             $item.remove();
                             var val = $('.fav-ad-count').text();
                             var favcount = val - 1;
@@ -156,7 +157,7 @@
                         }
                         else {
                             $this.removeClass('button-loader').addClass('added');
-                        }*/
+                        }
 
                     }
                     else if (result == 2) {
@@ -164,7 +165,7 @@
                     }
                     else {
                         //alert("else");
-                    }
+                    }*/
                 }
             });
         });

@@ -177,7 +177,7 @@
                                 
                             </ul>
                             IF("{ITEM.user_id}"!="{USER_ID}"){
-                                <!--<span class="button set-item-cart" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setCartItem">Add to cart</span>-->
+                                <span class="button set-item-cart" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setCartItem">Add to cart</span>
                             {:IF}
                             <span class="fav-icon set-item-fav IF('{ITEM.favorite}'){ added {:IF}" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd"></span>
                         </div>
