@@ -2650,6 +2650,9 @@ class Api extends Rest
                         $totalAmt = $totalAmt + $row['product_price'];
                     }
                     $responseArr['total'] = $totalAmt;
+                } else {
+                    $responseArr['products']= [];
+                    $responseArr['total'] = 0;
                 }
                 $response = ["status" => true, "code" => 200, "Message" => "Cart listing", "data" => $responseArr];
                 $this->returnResponse($response);
