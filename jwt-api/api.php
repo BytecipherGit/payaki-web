@@ -8,7 +8,6 @@ require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 
-
 class Api extends Rest
 {
     protected $Host = 'smtp.gmail.com';
@@ -310,12 +309,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+	                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+	                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+	                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+	                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+	                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+	                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -753,7 +752,6 @@ class Api extends Rest
                 $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
                 $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
-
                 $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
@@ -998,9 +996,9 @@ class Api extends Rest
 
                         // Package Featured Urgent Highlight
                         $transactionDescription = 'Package';
-                        if($featured == 1){ $transactionDescription .= ' Featured'; }
-                        if($urgent == 1){ $transactionDescription .= ' Urgent'; }
-                        if($highlight == 1){ $transactionDescription .= ' Highlight'; }
+                        if ($featured == 1) {$transactionDescription .= ' Featured';}
+                        if ($urgent == 1) {$transactionDescription .= ' Urgent';}
+                        if ($highlight == 1) {$transactionDescription .= ' Highlight';}
 
                         // $transactionDescription = !empty($_POST['transaction_description']) ? $_POST['transaction_description'] : '';
                         // Premium Ad
@@ -1008,7 +1006,6 @@ class Api extends Rest
                         // Frequency enum('MONTHLY', 'YEARLY', 'LIFETIME')
                         // $frequency = !empty($_POST['frequency']) ? $_POST['frequency'] : null;
                         $frequency = null;
-                        
 
                         $billing = array(
                             'type' => $this->getUserOptions($userId, 'billing_details_type'),
@@ -1114,7 +1111,6 @@ class Api extends Rest
                     } else {
                         $postData['chat_url'] = null;
                     }
-
 
                     if (!empty($this->param['userId'])) {
                         //Check Is favourite
@@ -2177,7 +2173,6 @@ class Api extends Rest
                                 $deviceToken = $userData['device_token'];
                                 $this->pushNotificationForApp($deviceToken, $title, $message);
 
-
                                 $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, redirect_url, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :redirect_url, :user_id, :status, :created_at)';
                                 $type = 'quote';
                                 $user_id = $postData['user_id'];
@@ -2193,7 +2188,6 @@ class Api extends Rest
                                 $notifivationStmt->bindParam(':status', $nStatus);
                                 $notifivationStmt->bindParam(':created_at', $createdDate);
                                 $notifivationStmt->execute();
-
 
                             }
                         }
@@ -2262,7 +2256,6 @@ class Api extends Rest
                             } else {
                                 $listUserArr['last_message_time'] = '';
                             }
-
 
                             $returnArr[] = $listUserArr;
                         }
@@ -2549,5 +2542,121 @@ class Api extends Rest
         $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields, "result" => $decode_result];
         $this->returnResponse($response);
 
+    }
+
+    public function addToCart()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $getItem = "SELECT * FROM `ad_product_add_to_cart_mobile` WHERE `user_id`=:user_id AND `product_id`=:product_id";
+                $getItemData = $this->dbConn->prepare($getItem);
+                $getItemData->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $getItemData->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $getItemData->execute();
+                $getItemData = $getItemData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($getItemData)) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product already added into your cart list."];
+                    $this->returnResponse($response);
+                }
+
+                $getProduct = "SELECT id,product_name,price,screen_shot FROM `ad_product` WHERE `id`=:product_id";
+                $getProductDetails = $this->dbConn->prepare($getProduct);
+                $getProductDetails->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $getProductDetails->execute();
+                $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
+                if (empty($getProductDetails['id'])) {
+                    $response = ["status" => false, "code" => 400, "Message" => "Product not found."];
+                    $this->returnResponse($response);
+                }
+                $product_qty = 1;
+                if (!empty($getProductDetails['screen_shot'])) {
+                    $screenShotArr = explode(",", $getProductDetails['screen_shot']);
+                    if (count($screenShotArr) > 0) {
+                        $product_image = $this->display_image_url . 'storage/products/' . $screenShotArr[0];
+                    }
+                } else {
+                    $product_image = '';
+                }
+                $insert_query = "INSERT INTO `ad_product_add_to_cart_mobile` (`user_id`,`product_id`,`product_name`,`product_price`,`product_qty`,`product_image`) VALUES(:user_id,:product_id,:product_name,:product_price,:product_qty,:product_image)";
+                $stmt = $this->dbConn->prepare($insert_query);
+                $stmt->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $stmt->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $stmt->bindValue(':product_name', $getProductDetails['product_name'], PDO::PARAM_STR);
+                $stmt->bindValue(':product_price', $getProductDetails['price'], PDO::PARAM_STR);
+                $stmt->bindValue(':product_qty', $product_qty, PDO::PARAM_STR);
+                $stmt->bindValue(':product_image', $product_image, PDO::PARAM_STR);
+                $stmt->execute();
+                // Get the last insert ID
+                $transactionId = $this->dbConn->lastInsertId();
+                if (!empty($transactionId)) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product successfully added into your cart list."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteFromCart()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id AND product_id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product has been removed from your cart list."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function getCartItems()
+    {
+        $responseArr = array();
+        $totalAmt = 0;
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $getItem = "SELECT * FROM `ad_product_add_to_cart_mobile` WHERE `user_id`=:user_id";
+                $getItemData = $this->dbConn->prepare($getItem);
+                $getItemData->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $getItemData->execute();
+                $getItemData = $getItemData->fetchAll(PDO::FETCH_ASSOC);
+                // $totalItem = count($getItemData);
+                if (count($getItemData) > 0) {
+                    $responseArr['products'] = $getItemData;
+                    foreach ($getItemData as $key => $row) {
+                        $totalAmt = $totalAmt + $row['product_price'];
+                    }
+                    $responseArr['total'] = $totalAmt;
+                }
+                $response = ["status" => true, "code" => 200, "Message" => "Cart listing", "data" => $responseArr];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
     }
 }
