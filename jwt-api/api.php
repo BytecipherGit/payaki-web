@@ -2665,8 +2665,26 @@ class Api extends Rest
 
     public function checkoutPaypal()
     {
-        // $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
-        $price = $this->validateParameter('amount', $this->param['amount'], INTEGER);
+        // $product_id = $this->validateParameter('product_id', $this->param['product_id'], 'array');
+        if(count($this->param['product_id']) > 0){
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['product_id'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for product_id. It should be type array.");
+            } 
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Product id should not be empty array");
+        }
+
+        if(count($this->param['amount']) > 0){
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['amount'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for amount. It should be type array.");
+            } 
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amount should not be empty array");
+        }
+        
+        // $price = $this->validateParameter('amount', $this->param['amount'], INTEGER);
         $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
         $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
@@ -2693,46 +2711,48 @@ class Api extends Rest
                 $orderId = $this->dbConn->lastInsertId();
                 if(!empty($orderId)){
                     $qty = 1;
-                    $product_id = !empty($this->param['product_id']) ? $this->param['product_id'] : null;
-                    $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
-                    $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
-                    $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
-                    $insertSOSTIT->bindValue(':product_id', $product_id, PDO::PARAM_STR);
-                    $insertSOSTIT->bindValue(':item_price', $price, PDO::PARAM_STR);
-                    $insertSOSTIT->bindValue(':quantity', $qty, PDO::PARAM_STR);
-                    $insertSOSTIT->execute();
-                    // Get the last insert ID
-                    $shopOrderId = $this->dbConn->lastInsertId();
-                    if(!empty($shopOrderId)){
-                        $payment_response = 'VERIFIED';
-                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response)";
-                        $insertSPST = $this->dbConn->prepare($insertSP);
-                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
-                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
-                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
-                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
-                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
-                        $insertSPST->execute();
-                        // Get the last insert ID
-                        $shopPaymentId = $this->dbConn->lastInsertId();
-                        if(!empty($shopPaymentId)){
-                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
-                            $this->returnResponse($response);
-                        } else {
-                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
-                            $this->returnResponse($response);
+                    if(count($this->param['product_id']) > 0)
+                    {
+                        for($i=0; $i<count($this->param['product_id']); $i++)
+                        {
+                            $productId = !empty($this->param['product_id'][$i]) ? $this->param['product_id'][$i] : 0;
+                            $amount = !empty($this->param['amount'][$i]) ? $this->param['amount'][$i] : 0;
+                            // echo $this->param['product_id'][$i].'<br>';
+                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
+                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':item_price', $amount, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':quantity', $qty, PDO::PARAM_STR);
+                            $insertSOSTIT->execute();
                         }
+                    }
+                    $payment_response = 'VERIFIED';
+                    $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response)";
+                    $insertSPST = $this->dbConn->prepare($insertSP);
+                    $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                    $insertSPST->execute();
+                    // Get the last insert ID
+                    $shopPaymentId = $this->dbConn->lastInsertId();
+                    if(!empty($shopPaymentId)){
+                        $stmt = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id');
+                        $stmt->bindParam(":user_id", $payload->userId);
+                        $stmt->execute();
+
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
+                        $this->returnResponse($response);
                     } else {
-                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop order item creations."];
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                         $this->returnResponse($response);
                     }
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
                     $this->returnResponse($response);
                 }
-
-                
-
             } else {
                 $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
                 $this->returnResponse($response);
