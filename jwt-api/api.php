@@ -2666,7 +2666,7 @@ class Api extends Rest
     public function paypal()
     {
         // $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
-        $price = $this->validateParameter('price', $this->param['price'], INTEGER);
+        $price = $this->validateParameter('amount', $this->param['amount'], INTEGER);
         $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
         $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
