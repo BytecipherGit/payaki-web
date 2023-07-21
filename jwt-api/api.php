@@ -2665,7 +2665,7 @@ class Api extends Rest
 
     public function paypal()
     {
-        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        // $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
         $price = $this->validateParameter('price', $this->param['price'], INTEGER);
         $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
@@ -2693,6 +2693,7 @@ class Api extends Rest
                 $orderId = $this->dbConn->lastInsertId();
                 if(!empty($orderId)){
                     $qty = 1;
+                    $product_id = !empty($this->param['product_id']) ? $this->param['product_id'] : null;
                     $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
                     $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                     $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
