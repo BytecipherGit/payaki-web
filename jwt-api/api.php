@@ -2663,7 +2663,7 @@ class Api extends Rest
         }
     }
 
-    public function paypal()
+    public function checkoutPaypal()
     {
         // $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
         $price = $this->validateParameter('amount', $this->param['amount'], INTEGER);
