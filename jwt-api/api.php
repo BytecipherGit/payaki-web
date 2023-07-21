@@ -996,9 +996,15 @@ class Api extends Rest
 
                         // Package Featured Urgent Highlight
                         $transactionDescription = 'Package';
-                        if ($featured == 1) {$transactionDescription .= ' Featured';}
-                        if ($urgent == 1) {$transactionDescription .= ' Urgent';}
-                        if ($highlight == 1) {$transactionDescription .= ' Highlight';}
+                        if ($featured == 1) {
+                            $transactionDescription .= ' Featured';
+                        }
+                        if ($urgent == 1) {
+                            $transactionDescription .= ' Urgent';
+                        }
+                        if ($highlight == 1) {
+                            $transactionDescription .= ' Highlight';
+                        }
 
                         // $transactionDescription = !empty($_POST['transaction_description']) ? $_POST['transaction_description'] : '';
                         // Premium Ad
@@ -2651,7 +2657,7 @@ class Api extends Rest
                     }
                     $responseArr['total'] = $totalAmt;
                 } else {
-                    $responseArr['products']= [];
+                    $responseArr['products'] = [];
                     $responseArr['total'] = 0;
                 }
                 $response = ["status" => true, "code" => 200, "Message" => "Cart listing", "data" => $responseArr];
@@ -2666,25 +2672,25 @@ class Api extends Rest
     public function checkoutPaypal()
     {
         // $product_id = $this->validateParameter('product_id', $this->param['product_id'], 'array');
-        if(count($this->param['product_id']) > 0){
+        if (count($this->param['productIds']) > 0) {
             // Check if the variables are arrays or not
-            if (!is_array($this->param['product_id'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for product_id. It should be type array.");
-            } 
+            if (!is_array($this->param['productIds'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for productIds. It should be type array.");
+            }
         } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Product id should not be empty array");
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "productIds should not be empty array");
         }
 
-        if(count($this->param['amount']) > 0){
+        if (count($this->param['amounts']) > 0) {
             // Check if the variables are arrays or not
-            if (!is_array($this->param['amount'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for amount. It should be type array.");
-            } 
+            if (!is_array($this->param['amounts'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for amounts. It should be type array.");
+            }
         } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amount should not be empty array");
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amounts should not be empty array");
         }
-        
-        // $price = $this->validateParameter('amount', $this->param['amount'], INTEGER);
+
+        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
         $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
         $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
@@ -2709,14 +2715,12 @@ class Api extends Rest
                 $insertSOST->execute();
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
-                if(!empty($orderId)){
+                if (!empty($orderId)) {
                     $qty = 1;
-                    if(count($this->param['product_id']) > 0)
-                    {
-                        for($i=0; $i<count($this->param['product_id']); $i++)
-                        {
-                            $productId = !empty($this->param['product_id'][$i]) ? $this->param['product_id'][$i] : 0;
-                            $amount = !empty($this->param['amount'][$i]) ? $this->param['amount'][$i] : 0;
+                    if (count($this->param['productIds']) > 0) {
+                        for ($i = 0; $i < count($this->param['productIds']); $i++) {
+                            $productId = !empty($this->param['productIds'][$i]) ? $this->param['productIds'][$i] : 0;
+                            $amount = !empty($this->param['amounts'][$i]) ? $this->param['amounts'][$i] : 0;
                             // echo $this->param['product_id'][$i].'<br>';
                             $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
                             $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
@@ -2728,17 +2732,18 @@ class Api extends Rest
                         }
                     }
                     $payment_response = 'VERIFIED';
-                    $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response)";
+                    $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                     $insertSPST = $this->dbConn->prepare($insertSP);
                     $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
                     $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
                     $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
                     $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
                     $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
                     $insertSPST->execute();
                     // Get the last insert ID
                     $shopPaymentId = $this->dbConn->lastInsertId();
-                    if(!empty($shopPaymentId)){
+                    if (!empty($shopPaymentId)) {
                         $stmt = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id');
                         $stmt->bindParam(":user_id", $payload->userId);
                         $stmt->execute();
