@@ -2667,9 +2667,9 @@ class Api extends Rest
     {
         $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
         $price = $this->validateParameter('price', $this->param['price'], INTEGER);
-        $txn_id = $this->validateParameter('txn_id', $this->param['txn_id'], STRING);
+        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
-        $payment_status = $this->validateParameter('payment_status', $this->param['payment_status'], STRING); // Pending, Success, Hold
+        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
         // $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
         $token = $this->getBearerToken();
         if (!empty($token)) {
