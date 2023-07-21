@@ -90,7 +90,7 @@ $res = trim(end($tokens));
 if (strcmp ($res, "VERIFIED") == 0) {
 	$fp = fopen('php/hello.php', 'w');
 	if ($fp) {
-		$bytes_written = fwrite($fp, json_encode($_POST));
+		$bytes_written = fwrite($fp, json_encode($res));
 		fclose($fp);
 	} else {
 		echo "Failed to open the file for writing.";
@@ -101,6 +101,7 @@ if (strcmp ($res, "VERIFIED") == 0) {
 	$payment_amount = $_POST['mc_gross'];
 	$payment_currency = $_POST['mc_currency'];
 	$txn_id = $_POST['txn_id'];
+	$payer_id = $_POST['payer_id'];
 	$receiver_email = $_POST['receiver_email'];
 	$payer_email = $_POST['payer_email'];	
 	$isPaymentCompleted = false;
@@ -111,8 +112,10 @@ if (strcmp ($res, "VERIFIED") == 0) {
 	// insert payment details
 	$insert_sp = ORM::for_table($config['db']['pre'].'shop_payment')->create();
     $insert_sp->order_id = $item_number;
+    $insert_sp->txn_id = $txn_id;
+	$insert_sp->payer_id = $payer_id;
     $insert_sp->payment_status = $payment_status;
-    $insert_sp->payment_response = $payment_response;
+    $insert_sp->payment_response = "VERIFIED";
     $insert_sp->save();
 
 	// Update the user with ID 1 and change the email

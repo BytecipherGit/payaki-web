@@ -2662,4 +2662,104 @@ class Api extends Rest
             }
         }
     }
+
+    public function paypal()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $price = $this->validateParameter('price', $this->param['price'], INTEGER);
+        $txn_id = $this->validateParameter('txn_id', $this->param['txn_id'], STRING);
+        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        $payment_status = $this->validateParameter('payment_status', $this->param['payment_status'], STRING); // Pending, Success, Hold
+        // $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $order_status = 'PAID';
+                $order_at = date("Y-m-d H:i:s");
+                $payment_type = 'PAYPAL';
+                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSOST = $this->dbConn->prepare($insertSO);
+                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
+                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
+                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
+                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
+                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
+                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
+                $insertSOST->execute();
+                // Get the last insert ID
+                $orderId = $this->dbConn->lastInsertId();
+                if(!empty($orderId)){
+                    $qty = 1;
+                    $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
+                    $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                    $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':item_price', $price, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':quantity', $qty, PDO::PARAM_STR);
+                    $insertSOSTIT->execute();
+                    // Get the last insert ID
+                    $shopOrderId = $this->dbConn->lastInsertId();
+                    if(!empty($shopOrderId)){
+                        $payment_response = 'VERIFIED';
+                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response)";
+                        $insertSPST = $this->dbConn->prepare($insertSP);
+                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                        $insertSPST->execute();
+                        // Get the last insert ID
+                        $shopPaymentId = $this->dbConn->lastInsertId();
+                        if(!empty($shopPaymentId)){
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                            $this->returnResponse($response);
+                        }
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop order item creations."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
+                    $this->returnResponse($response);
+                }
+
+                
+
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteUserPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product successfully deleted."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
 }
