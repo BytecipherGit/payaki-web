@@ -1080,7 +1080,7 @@ ul.user-menu-small-nav li a:hover i {
   cursor: pointer;
 }
 .navigation ul a:not(.button) {
-  line-height: 60px;
+  line-height: 45px;
   padding: 0 9px;
   border-right: 4px;
 }
@@ -15639,15 +15639,15 @@ ul.prop_details li {
 }
 
 .cart-counter {	
-	background: #9C5FA3 url(../images/cart-icon.png) no-repeat 10px 10px;	
+	background: #9C5FA3 url(../images/cart-icon.png) no-repeat 10px 15px;	
 	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .23), inset 1px 1px 0 0 rgba(255, 255, 255, .2);
     padding: 10px 0;
     text-align: center;
-    height: 41px;
-    border-radius: 2px;
+    height: 44px;
+    border-radius: 8px;
     font-weight: 500;
-    margin-top: 5px;
-    width: 80px;
+    margin-top: 8px;
+    width: 59px;
     display: inline-block;
 }
 
@@ -15659,5 +15659,5 @@ ul.prop_details li {
     display: inline-block;
     color: #fff;
     line-height: 12px;
-    margin-left: 25px;
+    margin-left: 14px;
 }
