@@ -107,6 +107,19 @@ if (strcmp ($res, "VERIFIED") == 0) {
 	$isPaymentCompleted = false;
 	if($payment_status == "Completed") {
 		$isPaymentCompleted = true;
+		$status = 'success';
+	} else {
+		$status = $payment_status; 
+	}
+	
+	$totalAmount = 0;
+	if(!empty($item_number)){
+		$getAllOrders = ORM::for_table($config['db']['pre'].'shop_order_item')->where('order_id', $item_number)->find_many();
+		if(count($getAllOrders) > 0){
+			foreach ($getAllOrders as $row) {
+				$totalAmount = $totalAmount + $row['item_price'];
+			}
+		}
 	}
 
 	// insert payment details
@@ -114,8 +127,9 @@ if (strcmp ($res, "VERIFIED") == 0) {
     $insert_sp->order_id = $item_number;
     $insert_sp->txn_id = $txn_id;
 	$insert_sp->payer_id = $payer_id;
-    $insert_sp->payment_status = $payment_status;
+    $insert_sp->payment_status = $status;
     $insert_sp->payment_response = "VERIFIED";
+	$insert_sp->total_amount = $totalAmount;
     $insert_sp->save();
 
 	// Update the user with ID 1 and change the email
