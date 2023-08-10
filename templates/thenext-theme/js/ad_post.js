@@ -319,9 +319,9 @@ document.querySelector(".add-file").addEventListener("click", function() {
 
     var newInput = document.createElement("input");
     newInput.type = "file";
-    newInput.name = "files[]";
+    newInput.name = "trainingVideo[]";
     newInput.accept = "image/*, video/*";
-    newInput.className = "file-input";
+    newInput.className = "training-file-input";
 
     var removeButton = document.createElement("i");
     removeButton.className = "fas fa-minus-circle remove-file";

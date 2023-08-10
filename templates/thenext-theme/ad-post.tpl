@@ -9,7 +9,7 @@
             width:89%;
         }
 
-        .file-input {
+        .training-file-input {
             margin-bottom: 5px;
         }
 
@@ -281,7 +281,7 @@ IF("{POST_WATERMARK}"=="0"){
                                         <h5>Upload training video / image *</h5>
                                         <div id="input-container">
                                             <div class="file-input-container">
-                                                <input type="file" name="files[]" accept="image/*, video/*" class="file-input">
+                                                <input type="file" name="trainingVideo[]" accept="image/*, video/*" class="training-file-input">
                                             </div>
                                         </div>
                                         <div id="button-container">
