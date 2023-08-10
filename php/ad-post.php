@@ -58,6 +58,56 @@ function ajax_post_advertise()
     global $config, $lang, $link;
     if (isset($_POST['submit'])) {
 
+        // Check if files were uploaded
+        /*if (isset($_FILES['trainingVideo'])) {
+            // Define the target directory for storing video files
+            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+
+            // Create the target directory if it doesn't exist
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+
+            // Loop through the uploaded files
+            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                $tempFile = $_FILES['trainingVideo']['tmp_name'][$key];
+                $targetFile = $targetDir . $_FILES['trainingVideo']['name'][$key];
+
+                // Move the uploaded file to the target directory
+                if (move_uploaded_file($tempFile, $targetFile)) {
+                    echo 'File ' . $_FILES['trainingVideo']['name'][$key] . ' has been uploaded successfully.<br>';
+                } else {
+                    echo 'Error uploading file ' . $_FILES['trainingVideo']['name'][$key] . '.<br>';
+                }
+            }
+        }
+        echo '<pre>';
+        print_r($_FILES['trainingVideo']);
+        die;*/
+        if (isset($_FILES['trainingVideo'])) {
+            // Define the target directory for storing video files
+            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+
+            // Create the target directory if it doesn't exist
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+            // Loop through the uploaded files
+            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                $id_proof_file_name = $_FILES['trainingVideo']['name'][$key];
+                $id_proof_file_tmp = $_FILES['trainingVideo']['tmp_name'][$key];
+                if ($id_proof_file_tmp != '') {
+                    $extension = pathinfo($id_proof_file_name, PATHINFO_EXTENSION);
+                    $id_proof_new_file_name = microtime(true) . '.' . $extension;
+                    $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                    move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
+                }
+            }
+
+        }
+        echo '<pre>';
+        print_r($_FILES['trainingVideo']);
+        die;
         $errors = array();
         $item_screen = "";
 

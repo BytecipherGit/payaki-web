@@ -3,6 +3,7 @@ $(document).ready(function () {
     //  prepare the form when the DOM is ready
     // -------------------------------------------------------------
     $('#post-advertise-form').on('submit', function (e) {
+        // alert('Post');
         e.stopPropagation();
         e.preventDefault();
 
@@ -54,11 +55,9 @@ var payment_uri = '';
 
 function post_advertise() {
     $('#submit_job_button').addClass('button-progress').prop('disabled', true);
-
     // submit the form
     $('#post-advertise-form').ajaxSubmit(function (data) {
         data = JSON.parse(data);
-
         if (data.status == "error") {
             if (data["errors"].length > 0) {
                 for (var i = 0; i < data["errors"].length; i++) {
