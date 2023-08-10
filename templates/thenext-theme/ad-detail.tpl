@@ -103,14 +103,14 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             <div class="single-page-section">
                 <h3>{LANG_ADDITIONAL_DETAILS}</h3>
                 <div class="row">
-                    <div class="col-md-6">
+                    <!--<div class="col-md-6">
                         <div class="job-property">
                             <i class="icon-feather-hash"></i>
                             <span>{LANG_AD_ID}</span>
                             <h5>{ITEM_ID}</h5>
                         </div>
-                    </div>
-                    <div class="col-md-6">
+                    </div>-->
+                    <div class="col-md-12">
                         <div class="job-property">
                             <i class="icon-feather-eye"></i>
                             <span>{LANG_AD_VIEWS}</span>
@@ -174,12 +174,12 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                 </div>
             </div>
             IF({SHOW_TAG}){
-            <div class="single-page-section">
+            <!--<div class="single-page-section">
                 <h3>{LANG_TAGS}</h3>
                 <ul class="job-tags">
                     {ITEM_TAG}
                 </ul>
-            </div>
+            </div>-->
             {:IF}
             IF(('{POST_ADDRESS_MODE}'=='1') && ('{ITEM_LAT}'!='')){
             <div class="single-page-section">
@@ -191,14 +191,14 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             </div>
             {:IF}
             <div class="single-page-section">
-                <h3>{LANG_REVIEWS} ({ITEMREVIEW})</h3>
+                <!--<h3>{LANG_REVIEWS} ({ITEMREVIEW})</h3>-->
 
                 <!-- **** Start reviews **** -->
                 <div class="starReviews text-widget">
                     <!-- This is where your product ID goes -->
-                    <div id="review-productId" class="review-productId" style="">{ITEM_ID}</div>
+                    <!--<div id="review-productId" class="review-productId" style="">{ITEM_ID}</div>-->
                     <!-- Show current reviews -->
-                    <div class="show-reviews"><div class="loader" style="margin: 0 auto;"></div></div>
+                    <!--<div class="show-reviews"><div class="loader" style="margin: 0 auto;"></div></div>-->
                     <hr>
 
                     IF("{LOGGED_IN}"=="0"){
@@ -283,9 +283,9 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                 <a href="#sign-in-dialog" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10">{LANG_LOGIN_CHAT} <i class="icon-feather-message-circle"></i></a>
                             {:IF}
                             IF("{NON_LOGIN_SENDEMAIL_ALLOW}"=="1"){
-                                <a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>
+                                <!--<a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>-->
                             ELSEIF({LOGGED_IN}){
-                                <a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>
+                                <!--<a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>-->
                             {:IF}
                         </div>
                     </div>
