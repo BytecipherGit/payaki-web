@@ -225,6 +225,11 @@ $('.select-category.post-option .tg-category').on('click', function () {
     $(".tg-subcategories").show();
     $('#input-subcatid').val('');
     $('#sub-category-text').html('--');
+    if(catid != 9){
+        $("#training_upload_container").css("display", "none");
+    } else {
+        $("#training_upload_container").css("display", "block");
+    }
 });
 // -------------------------------------------------------------
 //  select-sub-category Change
@@ -305,3 +310,36 @@ function fillPrice(obj, val) {
     }
     $('#totalPrice').html(c);
 }
+
+// JavaScript to add more file input fields and handle removal
+document.querySelector(".add-file").addEventListener("click", function() {
+    var inputContainer = document.getElementById("input-container");
+    var newInputContainer = document.createElement("div");
+    newInputContainer.className = "file-input-container";
+
+    var newInput = document.createElement("input");
+    newInput.type = "file";
+    newInput.name = "files[]";
+    newInput.accept = "image/*, video/*";
+    newInput.className = "file-input";
+
+    var removeButton = document.createElement("i");
+    removeButton.className = "fas fa-minus-circle remove-file";
+
+    // Add click event handler to remove the input field
+    removeButton.addEventListener("click", function() {
+        inputContainer.removeChild(newInputContainer);
+    });
+
+    newInputContainer.appendChild(newInput);
+    newInputContainer.appendChild(removeButton);
+
+    inputContainer.appendChild(newInputContainer);
+});
+
+// Event delegation for handling removal of dynamically added fields
+document.getElementById("input-container").addEventListener("click", function(event) {
+    if (event.target && event.target.matches(".remove-file")) {
+        event.target.parentNode.remove();
+    }
+});

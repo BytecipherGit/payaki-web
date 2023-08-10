@@ -1,5 +1,43 @@
 {OVERALL_HEADER}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* CSS to style the elements */
+        #input-container {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 10px;
+            width:89%;
+        }
 
+        .file-input {
+            margin-bottom: 5px;
+        }
+
+        .file-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .remove-file {
+            margin-left: 5px;
+            padding-left: 5px;
+            cursor: pointer;
+            color: #dc3545; /* Red color for the remove icon */
+        }
+
+        .add-file {
+            margin-left: 5px;
+            cursor: pointer;
+            color: #28a745; /* Green color for the add icon */
+            margin-top: 10px;
+        }
+
+        #button-container {
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
 <!-- orakuploader -->
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader.css" rel="stylesheet"/>
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/jquery.min.js"></script>
@@ -238,6 +276,17 @@ IF("{POST_WATERMARK}"=="0"){
                                     </div>
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
+                                    </div>
+                                    <div class="submit-field" id="training_upload_container" style="display:none;">
+                                        <h5>Upload training video / image *</h5>
+                                        <div id="input-container">
+                                            <div class="file-input-container">
+                                                <input type="file" name="files[]" accept="image/*, video/*" class="file-input">
+                                            </div>
+                                        </div>
+                                        <div id="button-container">
+                                            <i class="fas fa-plus-circle add-file"></i>
+                                        </div>
                                     </div>
                                     <div id="ResponseCustomFields">
 
