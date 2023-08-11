@@ -1,7 +1,7 @@
 <?php
-error_reporting(E_ALL); // Report all types of errors
-ini_set('display_errors', 1); // Display errors in the output
-// error_reporting(0);
+// error_reporting(E_ALL); // Report all types of errors
+// ini_set('display_errors', 1); // Display errors in the output
+error_reporting(0);
 use JWT as GlobalJWT;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -1122,7 +1122,7 @@ class Api extends Rest
         }
     }
 
-    public function addTrainingGallery()
+    public function addPostVideo()
     {
         try {
             $productId = $_POST['product_id'];
