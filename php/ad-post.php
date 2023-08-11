@@ -58,56 +58,6 @@ function ajax_post_advertise()
     global $config, $lang, $link;
     if (isset($_POST['submit'])) {
 
-        // Check if files were uploaded
-        /*if (isset($_FILES['trainingVideo'])) {
-            // Define the target directory for storing video files
-            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
-
-            // Create the target directory if it doesn't exist
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
-            }
-
-            // Loop through the uploaded files
-            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
-                $tempFile = $_FILES['trainingVideo']['tmp_name'][$key];
-                $targetFile = $targetDir . $_FILES['trainingVideo']['name'][$key];
-
-                // Move the uploaded file to the target directory
-                if (move_uploaded_file($tempFile, $targetFile)) {
-                    echo 'File ' . $_FILES['trainingVideo']['name'][$key] . ' has been uploaded successfully.<br>';
-                } else {
-                    echo 'Error uploading file ' . $_FILES['trainingVideo']['name'][$key] . '.<br>';
-                }
-            }
-        }
-        echo '<pre>';
-        print_r($_FILES['trainingVideo']);
-        die;*/
-        if (isset($_FILES['trainingVideo'])) {
-            // Define the target directory for storing video files
-            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
-
-            // Create the target directory if it doesn't exist
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
-            }
-            // Loop through the uploaded files
-            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
-                $id_proof_file_name = $_FILES['trainingVideo']['name'][$key];
-                $id_proof_file_tmp = $_FILES['trainingVideo']['tmp_name'][$key];
-                if ($id_proof_file_tmp != '') {
-                    $extension = pathinfo($id_proof_file_name, PATHINFO_EXTENSION);
-                    $id_proof_new_file_name = microtime(true) . '.' . $extension;
-                    $idProofNewMainFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
-                    move_uploaded_file($id_proof_file_tmp, $idProofNewMainFilePath);
-                }
-            }
-
-        }
-        echo '<pre>';
-        print_r($_FILES['trainingVideo']);
-        die;
         $errors = array();
         $item_screen = "";
 
@@ -381,6 +331,14 @@ function ajax_post_advertise()
                     $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +7 day'));
                 }
 
+                if (validate_input($_POST['catid']) == 9) {
+                    $postType = 'training';
+                } else if (validate_input($_POST['catid']) == 10) {
+                    $postType = 'event';
+                } else {
+                    $postType = 'other';
+                }
+
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->product_name = validate_input($post_title);
@@ -388,6 +346,7 @@ function ajax_post_advertise()
                 $item_insrt->status = validate_input($status);
                 $item_insrt->category = validate_input($_POST['catid']);
                 $item_insrt->sub_category = validate_input($_POST['subcatid']);
+                $item_insrt->post_type = $postType;
                 $item_insrt->description = $description;
                 $item_insrt->price = validate_input($price);
                 $item_insrt->negotiable = validate_input($negotiable);
@@ -424,6 +383,48 @@ function ajax_post_advertise()
                             $insert_notification->save();
                         }
                     }
+
+                    if (validate_input($_POST['catid']) == 9) {
+                        // Check if files were uploaded
+                        if (isset($_FILES['trainingVideo'])) {
+                            $video = '';
+                            // Define the target directory for storing video files
+                            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                            // Create the target directory if it doesn't exist
+                            if (!file_exists($targetDir)) {
+                                mkdir($targetDir, 0777, true);
+                            }
+                            $countTrainingVidoe = 0;
+                            // Loop through the uploaded files
+                            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                                $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
+                                $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
+                                if ($trainingVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingVideoNewFileName)) {
+                                        if ($countTrainingVidoe == 0) {
+                                            $video = $trainingVideoNewFileName;
+                                        } elseif ($countTrainingVidoe >= 1) {
+                                            $video = $video . "," . $trainingVideoNewFileName;
+                                        }
+                                    }
+                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                                    move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
+                                    $countTrainingVidoe++;
+                                }
+                            }
+
+                        }
+                        //Insert record in Training Gallery
+                        $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
+                        $tGInsert->product_id = $product_id;
+                        $tGInsert->training_video = $video;
+                        $tGInsert->save();
+                    } else if (validate_input($_POST['catid']) == 10) {
+                        //Write Insert Event code here
+                    }
+
                 }
                 add_post_customField_data($_POST['catid'], $_POST['subcatid'], $product_id);
 

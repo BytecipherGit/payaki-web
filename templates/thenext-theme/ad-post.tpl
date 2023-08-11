@@ -390,11 +390,11 @@ IF("{POST_WATERMARK}"=="0"){
                                     </div>
                                     {:IF}
                                     IF("{POST_TAGS_MODE}"=="1"){
-                                    <div class="submit-field form-group">
+                                    <!--<div class="submit-field form-group">
                                         <h5>{LANG_TAGS}</h5>
                                         <input class="with-border" type="text" name="tags">
                                         <small>{LANG_TAGS_DETAIL}</small>
-                                    </div>
+                                    </div>-->
                                     {:IF}
 
                                     <div class="submit-field form-group">
