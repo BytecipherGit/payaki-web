@@ -3,6 +3,7 @@ $(document).ready(function () {
     //  prepare the form when the DOM is ready
     // -------------------------------------------------------------
     $('#post-advertise-form').on('submit', function (e) {
+        // alert('Post');
         e.stopPropagation();
         e.preventDefault();
 
@@ -54,11 +55,9 @@ var payment_uri = '';
 
 function post_advertise() {
     $('#submit_job_button').addClass('button-progress').prop('disabled', true);
-
     // submit the form
     $('#post-advertise-form').ajaxSubmit(function (data) {
         data = JSON.parse(data);
-
         if (data.status == "error") {
             if (data["errors"].length > 0) {
                 for (var i = 0; i < data["errors"].length; i++) {
@@ -225,6 +224,11 @@ $('.select-category.post-option .tg-category').on('click', function () {
     $(".tg-subcategories").show();
     $('#input-subcatid').val('');
     $('#sub-category-text').html('--');
+    /*if(catid != 9){
+        $("#training_upload_container").css("display", "none");
+    } else {
+        $("#training_upload_container").css("display", "block");
+    }*/
 });
 // -------------------------------------------------------------
 //  select-sub-category Change
@@ -305,3 +309,36 @@ function fillPrice(obj, val) {
     }
     $('#totalPrice').html(c);
 }
+
+// JavaScript to add more file input fields and handle removal
+document.querySelector(".add-file").addEventListener("click", function() {
+    var inputContainer = document.getElementById("input-container");
+    var newInputContainer = document.createElement("div");
+    newInputContainer.className = "file-input-container";
+
+    var newInput = document.createElement("input");
+    newInput.type = "file";
+    newInput.name = "trainingVideo[]";
+    newInput.accept = "image/*, video/*";
+    newInput.className = "training-file-input";
+
+    var removeButton = document.createElement("i");
+    removeButton.className = "fas fa-minus-circle remove-file";
+
+    // Add click event handler to remove the input field
+    removeButton.addEventListener("click", function() {
+        inputContainer.removeChild(newInputContainer);
+    });
+
+    newInputContainer.appendChild(newInput);
+    newInputContainer.appendChild(removeButton);
+
+    inputContainer.appendChild(newInputContainer);
+});
+
+// Event delegation for handling removal of dynamically added fields
+document.getElementById("input-container").addEventListener("click", function(event) {
+    if (event.target && event.target.matches(".remove-file")) {
+        event.target.parentNode.remove();
+    }
+});

@@ -100,6 +100,8 @@ $router->map('GET|POST','/placeorder/?', 'placeorder.php');
 $router->map('GET|POST','/custompayment/?', 'custompayment.php');
 $router->map('GET|POST','/customnotify/?', 'customnotify.php');
 $router->map('GET|POST','/customsuccess/?', 'customsuccess.php');
+$router->map('GET|POST','/training/[i:id]?', 'ad-training-video.php');
+$router->map('GET|POST','/event/[i:id]?', 'ad-event.php');
 // API Routes
 
 /* Match the current request */

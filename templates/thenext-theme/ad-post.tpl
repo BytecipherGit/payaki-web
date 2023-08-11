@@ -1,5 +1,43 @@
 {OVERALL_HEADER}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* CSS to style the elements */
+        #input-container {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 10px;
+            width:89%;
+        }
 
+        .training-file-input {
+            margin-bottom: 5px;
+        }
+
+        .file-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .remove-file {
+            margin-left: 5px;
+            padding-left: 5px;
+            cursor: pointer;
+            color: #dc3545; /* Red color for the remove icon */
+        }
+
+        .add-file {
+            margin-left: 5px;
+            cursor: pointer;
+            color: #28a745; /* Green color for the add icon */
+            margin-top: 10px;
+        }
+
+        #button-container {
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
 <!-- orakuploader -->
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader.css" rel="stylesheet"/>
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/jquery.min.js"></script>
@@ -229,6 +267,10 @@ IF("{POST_WATERMARK}"=="0"){
                                         <input type="hidden" id="input-subcatid" name="subcatid" value="">
                                     </div>
                                     <div class="submit-field">
+                                        <h5>Seller Name *</h5>
+                                        <input type="text" class="with-border" name="seller_name" placeholder="Enter the seller name" required>
+                                    </div>
+                                    <div class="submit-field">
                                         <h5>{LANG_TITLE} *</h5>
                                         <input type="text" class="with-border" name="title" placeholder="{LANG_AD_TITLE}" required>
                                     </div>
@@ -239,6 +281,17 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
                                     </div>
+                                    <!--<div class="submit-field" id="training_upload_container" style="display:none;">
+                                        <h5>Upload training video / image *</h5>
+                                        <div id="input-container">
+                                            <div class="file-input-container">
+                                                <input type="file" name="trainingVideo[]" accept="image/*, video/*" class="training-file-input">
+                                            </div>
+                                        </div>
+                                        <div id="button-container">
+                                            <i class="fas fa-plus-circle add-file"></i>
+                                        </div>
+                                    </div>-->
                                     <div id="ResponseCustomFields">
 
                                     {LOOP: CUSTOMFIELDS}
@@ -341,11 +394,11 @@ IF("{POST_WATERMARK}"=="0"){
                                     </div>
                                     {:IF}
                                     IF("{POST_TAGS_MODE}"=="1"){
-                                    <div class="submit-field form-group">
+                                    <!--<div class="submit-field form-group">
                                         <h5>{LANG_TAGS}</h5>
                                         <input class="with-border" type="text" name="tags">
                                         <small>{LANG_TAGS_DETAIL}</small>
-                                    </div>
+                                    </div>-->
                                     {:IF}
 
                                     <div class="submit-field form-group">

@@ -27,6 +27,7 @@ if ($num_rows > 0) {
     update_itemview($_GET['id']);
 
     $item_id = $info['id'];
+    $seller_name = $info['seller_name'];
     $item_title = $info['product_name'];
     $item_status = $info['status'];
     $item_featured = $info['featured'];
@@ -283,6 +284,7 @@ if (count($result1) > 0) {
         $item[$info1['id']]['id'] = $info1['id'];
         $item[$info1['id']]['featured'] = $info1['featured'];
         $item[$info1['id']]['urgent'] = $info1['urgent'];
+        $item[$info1['id']]['seller_name'] = $info1['seller_name'];
         $item[$info1['id']]['product_name'] = $info1['product_name'];
         $item[$info1['id']]['location'] = $info1['location'];
         $item[$info1['id']]['city'] = $info1['city'];
@@ -450,6 +452,7 @@ $page->SetParameter ('ITEM_LONG', $long);
 $page->SetParameter ('ITEM_CREATED', $item_created_at);
 $page->SetParameter ('ITEM_DESC', $item_description);
 $page->SetParameter ('ITEM_SHOWMORE', $showmore);
+$page->SetParameter ('SELLER_NAME', $seller_name);
 $page->SetParameter ('ITEM_PRICE', $item_price);
 $page->SetParameter ('ITEM_NEGOTIATE', $item_negotiable);
 $page->SetParameter ('ITEM_PHONE', $item_phone);
