@@ -1122,7 +1122,7 @@ class Api extends Rest
         }
     }
 
-    public function addPostVideo()
+    public function addTrainingVideo()
     {
         try {
             $productId = $_POST['product_id'];
@@ -1348,6 +1348,48 @@ class Api extends Rest
                     $this->returnResponse($response);
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Post not found."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "postId required."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getTrainingVideo()
+    {
+        try {
+            $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
+            if (!empty($postId)) {
+                $responseArr = array();
+                // $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id=:id AND ap.status='active' AND ap.expired_date >= :expired_date";
+                $getpost = "SELECT ap.* FROM ad_training_gallery AS ap WHERE ap.product_id=:postId";
+                $postData = $this->dbConn->prepare($getpost);
+                $postData->bindValue(':postId', $postId, PDO::PARAM_STR);
+                $postData->execute();
+                // echo "Last executed query: " . $postData->queryString;
+                // exit;
+                $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                if(count($postData) > 0){
+                    foreach($postData as $key => $post){
+                        $responseArr[$key]['id'] = $post['id'];
+                        $responseArr[$key]['product_id'] = $post['product_id'];
+                        if(!empty($post['training_video'])){
+                            $responseArr[$key]['training_video'] = $this->display_image_url . 'storage/training_video/' . $post['training_video'];
+                        } else {
+                            $responseArr[$key]['training_video'] = '';
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "Training video successfully fetched.", "data" => $responseArr];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Training vidoe not found."];
                     $this->returnResponse($response);
                 }
             } else {
