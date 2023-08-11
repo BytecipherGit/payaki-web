@@ -35,7 +35,7 @@
                                         <div class="file-input-container">
                                             <input type="hidden" name="productId" id="productId" value="{ITEM_ID}">
                                             <input type="hidden" name="max_size" id="max_size" min="1" value="500" required>
-                                            <input type="file" name="trainingVideo" class="training-file-input" accept="video/mp4,video/avi,video/mov,video/x-matroska" required>
+                                            <input type="file" name="trainingVideo" id="trainingVideo" class="training-file-input" accept="video/mp4,video/avi,video/mov,video/x-matroska" required>
                                         </div>
                                     </div>
                                 </div>
@@ -75,6 +75,16 @@
             $('.apply-dialog-button').trigger('click');
         });
     {:IF}
+
+    //binds to onchange event of your input field
+    $('#trainingVideo').bind('change', function() {
+        //this.files[0].size gets the size of your file.
+        if (this.files[0].size >= 524288000) {
+            // File size is within the allowed limit
+            alert('File size exceeds the maximum limit (500 MB)');
+            window.location.reload();
+        }
+    });
 </script>
 <!-- END jQuery starReviews -->
 
@@ -99,6 +109,7 @@ IF("{MAP_TYPE}"=="google"){
 {ELSE}
 <script>
     var openstreet_access_token = '{OPENSTREET_ACCESS_TOKEN}';
+    
 </script>
 <link rel="stylesheet" href="{SITE_URL}includes/assets/plugins/map/openstreet/css/style.css">
 <!-- Leaflet // Docs: https://leafletjs.com/ -->

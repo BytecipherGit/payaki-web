@@ -1,4 +1,7 @@
 <?php
+// error_reporting(E_ALL); // Report all types of errors
+// ini_set('display_errors', 1); // Display errors in the output
+
 if(checkloggedin()) {
     update_lastactive();
 }
@@ -119,6 +122,12 @@ if (isset($_GET['action'])) {
 $mailsent =0;
 $errors = 0;
 $error = '';
+if(empty($success)){
+    $success = '';
+}
+if(empty($customError)){
+    $customError = '';
+}
 $recaptcha_error = '';
 $GetCategory = get_maincategory();
 $cat_dropdown = get_categories_dropdown($lang);
@@ -126,7 +135,7 @@ $meta_desc = substr(strip_tags($item_description),0,150);
 $meta_desc = trim(preg_replace('/\s\s+/', ' ', $meta_desc));
 // Output to template
 $page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-training-video.tpl');
-$page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,$meta_image,true));
+$page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,true));
 // $page->SetParameter ('TOTAL_ITEMS', count($item));
 // $page->SetLoop ('ITEM', $item);
 // $page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
@@ -195,8 +204,8 @@ $page->SetParameter ('ITEM_SUBCATLINK', $item_subcatlink);
 // $page->SetParameter ('SHOW_TAG', $show_tag);
 // $page->SetParameter ('ITEM_VIEW', $item_view);
 // $page->SetParameter ('MAILSENT', $mailsent);
-$page->SetParameter('SUCCESS', $success);
 $page->SetParameter('ERROR', $error);
+$page->SetParameter('SUCCESS', $success);
 $page->SetParameter('CUSTOMERROR', $customError);
 $page->SetParameter ('RECAPTCH_ERROR', $recaptcha_error);
 // $page->SetParameter ('ITEMREVIEW', count_product_review($item_id));
