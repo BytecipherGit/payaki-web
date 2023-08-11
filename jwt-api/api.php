@@ -813,6 +813,7 @@ class Api extends Rest
                 $featured = isset($_POST['featured']) ? $_POST['featured'] : 0;
                 $urgent = isset($_POST['urgent']) ? $_POST['urgent'] : 0;
                 $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
+                $sellerName = $_POST['seller_name'];
                 $productName = $_POST['product_name'];
                 if (!empty($productName)) {
                     $slug = $this->createSlug($productName);
@@ -841,6 +842,14 @@ class Api extends Rest
                 $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
                 $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
+
+                if (validate_input($category) == 9) {
+                    $postType = 'training';
+                } else if (validate_input($category) == 10) {
+                    $postType = 'event';
+                } else {
+                    $postType = 'other';
+                }
 
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
@@ -874,7 +883,7 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
                 $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
-                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
                 $createdDate = date('Y-m-d H:i:s');
                 $featuredExpDate = null;
@@ -884,11 +893,13 @@ class Api extends Rest
                 $stmt->bindParam(':featured', $featured);
                 $stmt->bindParam(':urgent', $urgent);
                 $stmt->bindParam(':highlight', $highlight);
+                $stmt->bindParam(':seller_name', $sellerName);
                 $stmt->bindParam(':product_name', $productName);
                 $stmt->bindParam(':slug', $slug);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':category', $category);
                 $stmt->bindParam(':sub_category', $subCategory);
+                $stmt->bindParam(':post_type', $postType);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':negotiable', $negotiable);
                 $stmt->bindParam(':phone', $phone);
@@ -918,6 +929,47 @@ class Api extends Rest
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
                     if (!empty($last_id)) {
+                        if (validate_input($_POST['catid']) == 9) {
+                            // Check if files were uploaded
+                            if (isset($_FILES['trainingVideo'])) {
+                                $video = '';
+                                // Define the target directory for storing video files
+                                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                                // Create the target directory if it doesn't exist
+                                if (!file_exists($targetDir)) {
+                                    mkdir($targetDir, 0777, true);
+                                }
+                                $countTrainingVidoe = 0;
+                                // Loop through the uploaded files
+                                foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                                    $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
+                                    $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
+                                    if ($trainingVideoTempFileName != '') {
+                                        $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                        $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                        if (!empty($trainingVideoNewFileName)) {
+                                            if ($countTrainingVidoe == 0) {
+                                                $video = $trainingVideoNewFileName;
+                                            } elseif ($countTrainingVidoe >= 1) {
+                                                $video = $video . "," . $trainingVideoNewFileName;
+                                            }
+                                        }
+                                        $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                                        move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
+                                        $countTrainingVidoe++;
+                                    }
+                                }
+    
+                            }
+                            //Insert record in Training Gallery
+                            $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
+                            $tGInsert->product_id = $product_id;
+                            $tGInsert->training_video = $video;
+                            $tGInsert->save();
+                        } else if (validate_input($_POST['catid']) == 10) {
+                            //Write Insert Event code here
+                        }
+
                         $notification_id = $last_id;
                         $title = $productName;
                         //Fetch all active user who's status = 1
