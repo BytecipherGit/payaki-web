@@ -267,6 +267,10 @@ IF("{POST_WATERMARK}"=="0"){
                                         <input type="hidden" id="input-subcatid" name="subcatid" value="">
                                     </div>
                                     <div class="submit-field">
+                                        <h5>Seller Name *</h5>
+                                        <input type="text" class="with-border" name="seller_name" placeholder="Enter the seller name" required>
+                                    </div>
+                                    <div class="submit-field">
                                         <h5>{LANG_TITLE} *</h5>
                                         <input type="text" class="with-border" name="title" placeholder="{LANG_AD_TITLE}" required>
                                     </div>

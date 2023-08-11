@@ -64,6 +64,9 @@ function ajax_post_advertise()
         if (empty($_POST['subcatid']) or empty($_POST['catid'])) {
             $errors[]['message'] = $lang['CAT_REQ'];
         }
+        if (empty($_POST['seller_name'])) {
+            $errors[]['message'] = "Seller name is required";
+        }
         if (empty($_POST['title'])) {
             $errors[]['message'] = $lang['ADTITLE_REQ'];
         }
@@ -341,6 +344,7 @@ function ajax_post_advertise()
 
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
+                $item_insrt->seller_name = validate_input($_POST['seller_name']);
                 $item_insrt->product_name = validate_input($post_title);
                 $item_insrt->slug = $slug;
                 $item_insrt->status = validate_input($status);
@@ -384,7 +388,7 @@ function ajax_post_advertise()
                         }
                     }
 
-                    if (validate_input($_POST['catid']) == 9) {
+                    /*if (validate_input($_POST['catid']) == 9) {
                         // Check if files were uploaded
                         if (isset($_FILES['trainingVideo'])) {
                             $video = '';
@@ -409,7 +413,7 @@ function ajax_post_advertise()
                                             $video = $video . "," . $trainingVideoNewFileName;
                                         }
                                     }
-                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
                                     move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
                                     $countTrainingVidoe++;
                                 }
@@ -423,7 +427,7 @@ function ajax_post_advertise()
                         $tGInsert->save();
                     } else if (validate_input($_POST['catid']) == 10) {
                         //Write Insert Event code here
-                    }
+                    }*/
 
                 }
                 add_post_customField_data($_POST['catid'], $_POST['subcatid'], $product_id);
@@ -495,9 +499,14 @@ function ajax_post_advertise()
                     echo json_encode($response, JSON_UNESCAPED_SLASHES);
                     die();
                 } else {
+                    if (validate_input($_POST['catid']) == 9) {
+                        $ad_link = $link['POST-TRAINING-VIDEO'] . "/" . $product_id;
+                    } else if (validate_input($_POST['catid']) == 10) {
+                        $ad_link = $link['POST-EVENT'] . "/" . $product_id;
+                    } else {
+                        $ad_link = $link['POST-DETAIL'] . "/" . $product_id;
+                    }
                     unset($_POST);
-                    $ad_link = $link['POST-DETAIL'] . "/" . $product_id;
-
                     $json = '{"status" : "success","ad_type" : "free","redirect" : "' . $ad_link . '"}';
                     echo $json;
                     die();

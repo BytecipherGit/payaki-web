@@ -110,7 +110,14 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                             <h5>{ITEM_ID}</h5>
                         </div>
                     </div>-->
-                    <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="job-property">
+                            <i class="icon-feather-user"></i>
+                            <span>Seller Name</span>
+                            <h5>{SELLER_NAME}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="job-property">
                             <i class="icon-feather-eye"></i>
                             <span>{LANG_AD_VIEWS}</span>
