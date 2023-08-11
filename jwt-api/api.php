@@ -1,5 +1,7 @@
 <?php
-error_reporting(0);
+error_reporting(E_ALL); // Report all types of errors
+ini_set('display_errors', 1); // Display errors in the output
+// error_reporting(0);
 use JWT as GlobalJWT;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -806,15 +808,15 @@ class Api extends Rest
     }
     public function addPost()
     {
-
         try {
             $userId = $_POST['user_id'];
             if (!empty($userId)) {
                 $featured = isset($_POST['featured']) ? $_POST['featured'] : 0;
                 $urgent = isset($_POST['urgent']) ? $_POST['urgent'] : 0;
                 $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
-                $sellerName = $_POST['seller_name'];
+                $seller_name = $_POST['seller_name'];
                 $productName = $_POST['product_name'];
+               
                 if (!empty($productName)) {
                     $slug = $this->createSlug($productName);
                 } else {
@@ -842,17 +844,18 @@ class Api extends Rest
                 $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
                 $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
-
-                if (validate_input($category) == 9) {
+                
+                if ($category == 9) {
                     $postType = 'training';
-                } else if (validate_input($category) == 10) {
+                } else if ($category == 10) {
                     $postType = 'event';
                 } else {
                     $postType = 'other';
                 }
-
+               
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
+               
                 if ($total_count > 0) {
                     $screenShot = '';
                     for ($i = 0; $i < $total_count; $i++) {
@@ -893,7 +896,7 @@ class Api extends Rest
                 $stmt->bindParam(':featured', $featured);
                 $stmt->bindParam(':urgent', $urgent);
                 $stmt->bindParam(':highlight', $highlight);
-                $stmt->bindParam(':seller_name', $sellerName);
+                $stmt->bindParam(':seller_name', $seller_name);
                 $stmt->bindParam(':product_name', $productName);
                 $stmt->bindParam(':slug', $slug);
                 $stmt->bindParam(':description', $description);
@@ -929,46 +932,46 @@ class Api extends Rest
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
                     if (!empty($last_id)) {
-                        if (validate_input($_POST['catid']) == 9) {
-                            // Check if files were uploaded
-                            if (isset($_FILES['trainingVideo'])) {
-                                $video = '';
-                                // Define the target directory for storing video files
-                                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
-                                // Create the target directory if it doesn't exist
-                                if (!file_exists($targetDir)) {
-                                    mkdir($targetDir, 0777, true);
-                                }
-                                $countTrainingVidoe = 0;
-                                // Loop through the uploaded files
-                                foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
-                                    $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
-                                    $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
-                                    if ($trainingVideoTempFileName != '') {
-                                        $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
-                                        $trainingVideoNewFileName = microtime(true) . '.' . $extension;
-                                        if (!empty($trainingVideoNewFileName)) {
-                                            if ($countTrainingVidoe == 0) {
-                                                $video = $trainingVideoNewFileName;
-                                            } elseif ($countTrainingVidoe >= 1) {
-                                                $video = $video . "," . $trainingVideoNewFileName;
-                                            }
-                                        }
-                                        $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
-                                        move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
-                                        $countTrainingVidoe++;
-                                    }
-                                }
+                        // if (validate_input($_POST['catid']) == 9) {
+                        //     // Check if files were uploaded
+                        //     if (isset($_FILES['trainingVideo'])) {
+                        //         $video = '';
+                        //         // Define the target directory for storing video files
+                        //         $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                        //         // Create the target directory if it doesn't exist
+                        //         if (!file_exists($targetDir)) {
+                        //             mkdir($targetDir, 0777, true);
+                        //         }
+                        //         $countTrainingVidoe = 0;
+                        //         // Loop through the uploaded files
+                        //         foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                        //             $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
+                        //             $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
+                        //             if ($trainingVideoTempFileName != '') {
+                        //                 $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                        //                 $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                        //                 if (!empty($trainingVideoNewFileName)) {
+                        //                     if ($countTrainingVidoe == 0) {
+                        //                         $video = $trainingVideoNewFileName;
+                        //                     } elseif ($countTrainingVidoe >= 1) {
+                        //                         $video = $video . "," . $trainingVideoNewFileName;
+                        //                     }
+                        //                 }
+                        //                 $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                        //                 move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
+                        //                 $countTrainingVidoe++;
+                        //             }
+                        //         }
     
-                            }
-                            //Insert record in Training Gallery
-                            $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
-                            $tGInsert->product_id = $product_id;
-                            $tGInsert->training_video = $video;
-                            $tGInsert->save();
-                        } else if (validate_input($_POST['catid']) == 10) {
-                            //Write Insert Event code here
-                        }
+                        //     }
+                        //     //Insert record in Training Gallery
+                        //     $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
+                        //     $tGInsert->product_id = $product_id;
+                        //     $tGInsert->training_video = $video;
+                        //     $tGInsert->save();
+                        // } else if (validate_input($_POST['catid']) == 10) {
+                        //     //Write Insert Event code here
+                        // }
 
                         $notification_id = $last_id;
                         $title = $productName;
@@ -1119,6 +1122,75 @@ class Api extends Rest
         }
     }
 
+    public function addTrainingGallery()
+    {
+        try {
+            $productId = $_POST['product_id'];
+            if (!empty($productId) && !empty($_POST["max_size"]) && isset($_FILES["trainingVideo"])) {
+                    // Define the target directory for storing video files
+                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                    // Create the target directory if it doesn't exist
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                    $maxSizeMB = (int)$_POST["max_size"];
+                
+                    // Check if the file has no errors
+                    if ($_FILES["trainingVideo"]["error"] === UPLOAD_ERR_OK) {
+                        // Validate file size
+                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                        if ($_FILES["trainingVideo"]["size"] <= $maxSizeBytes) {
+                            // Validate file extension
+                            $fileExtension = strtolower(pathinfo($_FILES["trainingVideo"]["name"], PATHINFO_EXTENSION));
+                            if (in_array($fileExtension, $allowedExtensions)) {
+                                $trainingVideoFileName = $_FILES['trainingVideo']['name'];
+                                $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'];
+                                if ($trainingVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingVideoNewFileName)) {
+                                        $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
+                                        if (move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath)) {
+                                            //Insert record in Training Gallery
+                                            $sql = 'INSERT INTO ad_training_gallery (id, product_id, training_video) VALUES(null, :product_id, :training_video)';
+                                            $stmt = $this->dbConn->prepare($sql);
+                                            $stmt->bindParam(':product_id', $productId);
+                                            $stmt->bindParam(':training_video', $trainingVideoNewFileName);
+                                            if ($stmt->execute()) {
+                                                $response = ["status" => true, "code" => 200, "Message" => "Training video successfuly uploaded."];
+                                                $this->returnResponse($response);
+                                            } else {
+                                                $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                                                $this->returnResponse($response);
+                                            }
+                                        } else {
+                                            $response = ["status" => false, "code" => 400, "Message" => "Error moving the uploaded file."];
+                                            $this->returnResponse($response);
+                                        }
+                                    }
+                                }
+                            } else {
+                                $response = ["status" => false, "code" => 400, "Message" => "Invalid file extension. Allowed extensions: " . implode(", ", $allowedExtensions)];
+                                $this->returnResponse($response);
+                            }
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "File size exceeds the maximum allowed size of {$maxSizeMB} MB."];
+                            $this->returnResponse($response);
+                        }
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Error uploading the file."];
+                        $this->returnResponse($response);
+                    }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "productId required"];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
     public function getPostDetails()
     {
         try {
