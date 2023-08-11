@@ -224,11 +224,11 @@ $('.select-category.post-option .tg-category').on('click', function () {
     $(".tg-subcategories").show();
     $('#input-subcatid').val('');
     $('#sub-category-text').html('--');
-    if(catid != 9){
+    /*if(catid != 9){
         $("#training_upload_container").css("display", "none");
     } else {
         $("#training_upload_container").css("display", "block");
-    }
+    }*/
 });
 // -------------------------------------------------------------
 //  select-sub-category Change

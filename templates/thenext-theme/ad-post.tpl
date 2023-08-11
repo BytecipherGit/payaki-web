@@ -277,7 +277,7 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
                                     </div>
-                                    <div class="submit-field" id="training_upload_container" style="display:none;">
+                                    <!--<div class="submit-field" id="training_upload_container" style="display:none;">
                                         <h5>Upload training video / image *</h5>
                                         <div id="input-container">
                                             <div class="file-input-container">
@@ -287,7 +287,7 @@ IF("{POST_WATERMARK}"=="0"){
                                         <div id="button-container">
                                             <i class="fas fa-plus-circle add-file"></i>
                                         </div>
-                                    </div>
+                                    </div>-->
                                     <div id="ResponseCustomFields">
 
                                     {LOOP: CUSTOMFIELDS}
