@@ -43,9 +43,28 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "email_verify") {email_verify();}
     if ($_POST['action'] == "quickad_ajax_home_search") {quickad_ajax_home_search();}
     if ($_POST['action'] == "get_notification") {get_notification();}
-
+    if ($_POST['action'] == "removeTrainingVideo") {removeTrainingVideo();}
 }
 
+function removeTrainingVideo()
+{
+    global $config, $lang;
+    // Check if this is an Name availability check from signup page using ajax
+    if (isset($_POST["videoId"]) && isset($_POST["productId"])) {
+        $result = ORM::for_table($config['db']['pre'] . 'training_gallery')
+            ->where(array(
+                'id' => $_POST['videoId'],
+                'product_id' => $_POST['productId'],
+            ))
+            ->delete_many();
+        if ($result) {
+            echo 'success';
+        } else {
+            echo 'failed';
+        }
+    }
+    die();
+}
 function check_availability()
 {
     global $config, $lang;

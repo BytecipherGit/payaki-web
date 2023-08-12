@@ -498,7 +498,7 @@ if (checkloggedin()) {
             $urgent_duration = $group_get_info['urgent_duration'];
             $featured_duration = $group_get_info['featured_duration'];
             $highlight_duration = $group_get_info['highlight_duration'];
-
+            
             // Output to template
             $page = new HtmlTemplate('templates/' . $config['tpl_name'] . '/ad-edit.tpl');
             $page->SetParameter('OVERALL_HEADER', create_header($header_text));

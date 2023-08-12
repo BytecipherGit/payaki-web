@@ -1,4 +1,17 @@
 {OVERALL_HEADER}
+<style>
+    .parallel-div {
+        display: inline-block;
+        width: 45%; /* Adjust the width as needed */
+        margin-right: 2%; /* Add a small margin between the divs */
+        vertical-align: top; /* Align the divs to the top */
+    }
+
+    /* Optional: Apply styles to make the divs visible */
+    .parallel-div {
+        padding: 10px;
+    }
+</style>
 <div id="titlebar" class="margin-bottom-0">
     <div class="container">
         <div class="row">
@@ -49,8 +62,23 @@
                         <button type="submit" id="submit_job_button" name="Submit" class="button ripple-effect big">Submit</button>
                     </div>
                 </div>
-            </form> 
+            </form>
         </div>
+        {LOOP: TRAINING_VIDEO}
+                <div class="col-xl-12 col-lg-12 content-right-offset">
+                    <div class="parallel-div">
+                        <!-- Use the video element to embed a video -->
+                            <video width="340" height="260" controls>
+                                IF("{TRAINING_VIDEO.training_video}"!=""){
+                                    <source src="{SITE_URL}/storage/training_video/{TRAINING_VIDEO.training_video}" type="video/mp4">
+                                {:IF}
+                            </video>    
+                    </div>
+                    <div class="parallel-div">
+                        <button type="submit" onclick="removeTrainingVideo({TRAINING_VIDEO.id},{TRAINING_VIDEO.product_id})" id="submit_job_button" name="Submit" class="button ripple-effect big">Remove Video</button>
+                    </div>
+                </div>
+            {/LOOP: TRAINING_VIDEO} 
     </div>
 </div>
 <script src='https://www.google.com/recaptcha/api.js'></script>
@@ -85,6 +113,23 @@
             window.location.reload();
         }
     });
+
+    function removeTrainingVideo(videoId, productId){
+        if(videoId != '' && productId != ''){
+            $.ajax({											//the main ajax request
+                type: "POST",
+                data: "action=removeTrainingVideo&videoId="+videoId+"&productId="+productId,
+                url: ajaxurl,
+                success: function(data)
+                {
+                    if(data=='success'){
+                        alert('Video successfully removed from gallery');
+                        window.location.reload();
+                    } 
+                }
+            });
+        }
+    }
 </script>
 <!-- END jQuery starReviews -->
 

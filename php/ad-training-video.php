@@ -61,6 +61,20 @@ else {
     exit;
 }
 
+$trainingVideoArr = array();
+$trainingResult = ORM::for_table($config['db']['pre'].'training_gallery')
+        ->where('product_id', $item_id)
+        ->find_many();
+if(count($trainingResult) > 0){
+    foreach($trainingResult as $key => $training){
+        $trainingVideoArr[$training['id']]['id'] = $training['id'];
+        $trainingVideoArr[$training['id']]['product_id'] = $training['product_id'];
+        $trainingVideoArr[$training['id']]['training_video'] = $training['training_video'];
+    }
+} else {
+    $trainingVideoArr = [];
+}
+
 if (isset($_GET['action'])) {
     global $config, $lang, $link;
     $customError = '';
@@ -150,6 +164,7 @@ $page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,true
 // $page->SetParameter ('ITEM_FAVORITE', check_product_favorite($item_id));
 $page->SetParameter ('ITEM_ID', $item_id);
 $page->SetParameter ('ITEM_TITLE', $item_title);
+$page->SetLoop ('TRAINING_VIDEO', $trainingVideoArr);
 // $page->SetParameter ('ITEM_FEATURED', $item_featured);
 // $page->SetParameter ('ITEM_URGENT', $item_urgent);
 // $page->SetParameter ('ITEM_HIGHLIGHT', $item_highlight);
