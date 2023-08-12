@@ -180,6 +180,22 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                     IF('{ITEM_SHOWMORE}'=='1'){ <a href="#" class="show-more-button">{LANG_SHOW_MORE} <i class="fa fa-angle-down"></i></a> {:IF}
                 </div>
             </div>
+
+            IF("{CATEGORYID}"=="9"){
+            {LOOP: TRAINING_VIDEO}
+                <div class="col-md-6">
+                    <div class="job-property">
+                    <!-- Use the video element to embed a video -->
+                        <video width="640" height="360" controls>
+                            IF("{TRAINING_VIDEO.training_video}"!=""){
+                                <source src="{SITE_URL}/storage/training_video/{TRAINING_VIDEO.training_video}" type="video/mp4">
+                            {:IF}
+                        </video>    
+                    </div>
+                </div>
+            {/LOOP: TRAINING_VIDEO}
+            {:IF}
+
             IF({SHOW_TAG}){
             <!--<div class="single-page-section">
                 <h3>{LANG_TAGS}</h3>
