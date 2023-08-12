@@ -206,6 +206,11 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div id="item_screen" orakuploader="on"></div>
                                     <input type="hidden" name="deletePrevImg" id="deletePrevImg" value=""/>
                                 </div>
+                                IF('{CATID}'=="9"){
+                                    <div class="submit-field">
+                                        <a href="{SITE_URL}training/{ITEM_ID}" class="button ripple-effect big">Click Here To Manage Training Gallery</a>
+                                    </div>
+                                {:IF}
                                 <div id="ResponseCustomFields">
                                     {LOOP: CUSTOMFIELDS}
                                         IF('{CUSTOMFIELDS.type}'=="text-field"){
