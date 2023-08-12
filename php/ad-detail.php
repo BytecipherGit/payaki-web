@@ -262,6 +262,24 @@ else {
     error($lang['PAGE_NOT_FOUND'], __LINE__, __FILE__, 1);
     exit;
 }
+$trainingVideoArr = array();
+// Check if category id 9 that means for Training Video & if 10 that means for Event
+if($item_catid == 9){
+    $trainingResult = ORM::for_table($config['db']['pre'].'training_gallery')
+        ->where('product_id', $item_id)
+        ->find_many();
+    if(count($trainingResult) > 0){
+        foreach($trainingResult as $key => $training){
+            // $trainingVideoArr[$training['id']]['id'] = $training['id'];
+            // $trainingVideoArr[$training['id']]['product_id'] = $training['product_id'];
+            $trainingVideoArr[$training['id']]['training_video'] = $training['training_video'];
+        }
+    } else {
+        $trainingVideoArr = [];
+    }
+} else if($item_catid == 10){
+    echo 'For Event';
+}
 
 $country_code = check_user_country();
 $result1 = ORM::for_table($config['db']['pre'].'product')
@@ -409,6 +427,8 @@ $page->SetParameter ('ITEM_CUSTOMFIELD', $item_custom_field);
 $page->SetLoop ('ITEM_CUSTOM', $item_custom);
 $page->SetLoop ('ITEM_CUSTOM_TEXTAREA', $item_custom_textarea);
 $page->SetLoop ('ITEM_CUSTOM_CHECKBOX', $item_checkbox);
+$page->SetParameter ('CATEGORYID', $item_catid);
+$page->SetLoop ('TRAINING_VIDEO', $trainingVideoArr);
 $page->SetParameter ('QUICKCHAT_URL', $quickchat_url);
 $page->SetParameter ('CUSTOMCHAT_URL', $customChatUrl);
 $page->SetParameter ('POST_AUTHOR_ID', $item_author_id);
