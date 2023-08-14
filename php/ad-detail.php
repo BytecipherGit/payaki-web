@@ -28,6 +28,7 @@ if ($num_rows > 0) {
 
     $item_id = $info['id'];
     $seller_name = $info['seller_name'];
+    $promo_video = $info['promo_video'];
     $item_title = $info['product_name'];
     $item_status = $info['status'];
     $item_featured = $info['featured'];
@@ -473,6 +474,7 @@ $page->SetParameter ('ITEM_CREATED', $item_created_at);
 $page->SetParameter ('ITEM_DESC', $item_description);
 $page->SetParameter ('ITEM_SHOWMORE', $showmore);
 $page->SetParameter ('SELLER_NAME', $seller_name);
+$page->SetParameter ('PROMO_VIDEO', $promo_video);
 $page->SetParameter ('ITEM_PRICE', $item_price);
 $page->SetParameter ('ITEM_NEGOTIATE', $item_negotiable);
 $page->SetParameter ('ITEM_PHONE', $item_phone);

@@ -43,12 +43,11 @@
                                     <h6 style="color:red">{CUSTOMERROR}</h6>
                                     <h5>Upload training video / image *</h5>
                                     <div id="input-container">
-                                        <label for="video_file">Select a video file (MP4, AVI, MOV, MKV only):</label>
-                                        <label for="max_size">Maximum file size (500 MB):</label>
+                                        <h6 style="color:#9C5FA3; font-weight: bold;">Video size should not more then (500MB) & allowed extension ("mp4", "avi", "mov", "mkv")</h6>
                                         <div class="file-input-container">
                                             <input type="hidden" name="productId" id="productId" value="{ITEM_ID}">
                                             <input type="hidden" name="max_size" id="max_size" min="1" value="500" required>
-                                            <input type="file" name="trainingVideo" id="trainingVideo" class="training-file-input" accept="video/mp4,video/avi,video/mov,video/x-matroska" required>
+                                            <input type="file" name="trainingVideo" id="trainingVideo" class="training-file-input" accept="video/*" required>
                                         </div>
                                     </div>
                                 </div>

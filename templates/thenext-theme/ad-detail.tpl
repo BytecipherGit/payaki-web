@@ -60,7 +60,23 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
 
         <!-- Content -->
         <div class="col-xl-8 col-lg-8 content-right-offset">
-
+            IF("{CATEGORYID}"=="9" || "{CATEGORYID}"=="10"){
+            <div class="single-page-section">
+                <h3>Promo Video</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="job-property">
+                            <!-- Use the video element to embed a video -->
+                            <video width="600px;" height="auto" controls>
+                                IF("{PROMO_VIDEO}"!=""){
+                                    <source src="{SITE_URL}/storage/training_video/{PROMO_VIDEO}" type="video/mp4">
+                                {:IF}
+                            </video>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+             {:IF}
             <div class="single-page-section">
                 <h3>{LANG_ADS_DETAILS}</h3>
                 <div class="row">

@@ -206,6 +206,34 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div id="item_screen" orakuploader="on"></div>
                                     <input type="hidden" name="deletePrevImg" id="deletePrevImg" value=""/>
                                 </div>
+                                IF("{CATID}"=="9" || "{CATID}"=="10"){
+                                    <div class="single-page-section">
+                                        <h3>Promo Video</h3>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="job-property">
+                                                    <!-- Use the video element to embed a video -->
+                                                    <video width="600px;" height="auto" controls>
+                                                        IF("{PROMO_VIDEO}"!=""){
+                                                            <source src="{SITE_URL}/storage/training_video/{PROMO_VIDEO}" type="video/mp4">
+                                                        {:IF}
+                                                    </video>    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-field">
+                                        <h5>Update training promo video / image *</h5>
+                                        <h6 style="color:#9C5FA3; font-weight: bold;">Video size should not more then (500MB) & allowed extension ("mp4", "avi", "mov", "mkv")</h6>
+                                        <div id="input-container">
+                                            <div class="file-input-container">
+                                                <input type="file" name="trainingPromoVideo" accept="video/*" class="training-file-input">
+                                                <input type="hidden" name="max_size" value="500">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {:IF}
+
                                 IF('{CATID}'=="9"){
                                     <div class="submit-field">
                                         <a href="{SITE_URL}training/{ITEM_ID}" class="button ripple-effect big">Click Here To Manage Training Gallery</a>
