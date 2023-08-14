@@ -886,7 +886,6 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
                 $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
-
                 $promoVideoFileName = '';
                 if (isset($_FILES["promo_video"]) && ($category == 9 || $category == 10)) {
                     // Define the target directory for storing video files
@@ -906,8 +905,8 @@ class Api extends Rest
                             // Validate file extension
                             $fileExtension = strtolower(pathinfo($_FILES["promo_video"]["name"], PATHINFO_EXTENSION));
                             if (in_array($fileExtension, $allowedExtensions)) {
-                                $trainingPromoVideoFileName = $_FILES['trainingPromoVideo']['name'];
-                                $trainingPromoVideoTempFileName = $_FILES['trainingPromoVideo']['tmp_name'];
+                                $trainingPromoVideoFileName = $_FILES['promo_video']['name'];
+                                $trainingPromoVideoTempFileName = $_FILES['promo_video']['tmp_name'];
                                 if ($trainingPromoVideoTempFileName != '') {
                                     $extension = pathinfo($trainingPromoVideoFileName, PATHINFO_EXTENSION);
                                     $trainingPromoVideoNewFileName = microtime(true) . '.' . $extension;
@@ -922,7 +921,6 @@ class Api extends Rest
                         } 
                     } 
                 }
-
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, promo_video, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :promo_video, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
                 $createdDate = date('Y-m-d H:i:s');
