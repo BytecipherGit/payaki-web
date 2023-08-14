@@ -886,7 +886,44 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
                 $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
-                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+
+                $promoVideoFileName = '';
+                if (isset($_FILES["promo_video"]) && ($category == 9 || $category == 10)) {
+                    // Define the target directory for storing video files
+                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                    // Create the target directory if it doesn't exist
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                    $maxSizeMB = (int)$_POST["max_size"];
+                
+                    // Check if the file has no errors
+                    if ($_FILES["promo_video"]["error"] === UPLOAD_ERR_OK) {
+                        // Validate file size
+                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                        if ($_FILES["promo_video"]["size"] <= $maxSizeBytes) {
+                            // Validate file extension
+                            $fileExtension = strtolower(pathinfo($_FILES["promo_video"]["name"], PATHINFO_EXTENSION));
+                            if (in_array($fileExtension, $allowedExtensions)) {
+                                $trainingPromoVideoFileName = $_FILES['trainingPromoVideo']['name'];
+                                $trainingPromoVideoTempFileName = $_FILES['trainingPromoVideo']['tmp_name'];
+                                if ($trainingPromoVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingPromoVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingPromoVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingPromoVideoNewFileName)) {
+                                        $trainingPromoVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingPromoVideoNewFileName;
+                                        if (move_uploaded_file($trainingPromoVideoTempFileName, $trainingPromoVideoFilePath)) {
+                                            $promoVideoFileName = $trainingPromoVideoNewFileName; 
+                                        } 
+                                    }
+                                }
+                            } 
+                        } 
+                    } 
+                }
+
+                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, promo_video, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :promo_video, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
                 $status = 'pending';
                 $createdDate = date('Y-m-d H:i:s');
                 $featuredExpDate = null;
@@ -913,6 +950,7 @@ class Api extends Rest
                 $stmt->bindParam(':country', $country);
                 $stmt->bindParam(':latlong', $latlong);
                 $stmt->bindParam(':screen_shot', $screenShot);
+                $stmt->bindParam(':promo_video', $promoVideoFileName);
                 $stmt->bindParam(':tag', $tag);
                 $stmt->bindParam(':view', $view);
                 $stmt->bindParam(':created_at', $createdDate);
