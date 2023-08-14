@@ -342,6 +342,42 @@ function ajax_post_advertise()
                     $postType = 'other';
                 }
 
+                $promoVideoFileName = '';
+                if (isset($_FILES["trainingPromoVideo"]) && ($_POST['catid'] == 9 || $_POST['catid'] == 10)) {
+                    // Define the target directory for storing video files
+                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                    // Create the target directory if it doesn't exist
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                    $maxSizeMB = (int)$_POST["max_size"];
+                
+                    // Check if the file has no errors
+                    if ($_FILES["trainingPromoVideo"]["error"] === UPLOAD_ERR_OK) {
+                        // Validate file size
+                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                        if ($_FILES["trainingPromoVideo"]["size"] <= $maxSizeBytes) {
+                            // Validate file extension
+                            $fileExtension = strtolower(pathinfo($_FILES["trainingPromoVideo"]["name"], PATHINFO_EXTENSION));
+                            if (in_array($fileExtension, $allowedExtensions)) {
+                                $trainingPromoVideoFileName = $_FILES['trainingPromoVideo']['name'];
+                                $trainingPromoVideoTempFileName = $_FILES['trainingPromoVideo']['tmp_name'];
+                                if ($trainingPromoVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingPromoVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingPromoVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingPromoVideoNewFileName)) {
+                                        $trainingPromoVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingPromoVideoNewFileName;
+                                        if (move_uploaded_file($trainingPromoVideoTempFileName, $trainingPromoVideoFilePath)) {
+                                            $promoVideoFileName = $trainingPromoVideoNewFileName; 
+                                        } 
+                                    }
+                                }
+                            } 
+                        } 
+                    } 
+                }
+
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->seller_name = validate_input($_POST['seller_name']);
@@ -362,6 +398,7 @@ function ajax_post_advertise()
                 $item_insrt->country = validate_input($country);
                 $item_insrt->latlong = validate_input($latlong);
                 $item_insrt->screen_shot = $item_screen;
+                $item_insrt->promo_video = $promoVideoFileName;
                 $item_insrt->tag = validate_input($tags);
                 $item_insrt->created_at = $timenow;
                 $item_insrt->updated_at = $timenow;

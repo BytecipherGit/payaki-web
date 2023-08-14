@@ -281,17 +281,20 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
                                     </div>
-                                    <!--<div class="submit-field" id="training_upload_container" style="display:none;">
-                                        <h5>Upload training video / image *</h5>
+                                    <div class="submit-field" id="training_upload_container" style="display:none;">
+                                        <h5>Upload training promo video / image *</h5>
+                                        <h6 style="color:#9C5FA3; font-weight: bold;">Video size should not more then (500MB) & allowed extension ("mp4", "avi", "mov", "mkv")</h6>
                                         <div id="input-container">
                                             <div class="file-input-container">
-                                                <input type="file" name="trainingVideo[]" accept="image/*, video/*" class="training-file-input">
+                                                <input type="file" name="trainingPromoVideo" accept="video/*" class="training-file-input">
+                                                <input type="hidden" name="max_size" value="500">
                                             </div>
                                         </div>
-                                        <div id="button-container">
+                                        <!--<div id="button-container">
                                             <i class="fas fa-plus-circle add-file"></i>
-                                        </div>
-                                    </div>-->
+                                        </div>-->
+                                    </div>
+
                                     <div id="ResponseCustomFields">
 
                                     {LOOP: CUSTOMFIELDS}

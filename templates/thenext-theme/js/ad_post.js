@@ -224,6 +224,14 @@ $('.select-category.post-option .tg-category').on('click', function () {
     $(".tg-subcategories").show();
     $('#input-subcatid').val('');
     $('#sub-category-text').html('--');
+    
+    //If condition for Training & Event Promo Video
+    if(catid === 9 || catid === 10){
+        $("#training_upload_container").css("display", "block");
+    } else {
+        $("#training_upload_container").css("display", "none");
+    }
+
     /*if(catid != 9){
         $("#training_upload_container").css("display", "none");
     } else {
