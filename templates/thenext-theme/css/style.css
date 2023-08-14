@@ -15681,3 +15681,19 @@ ul.prop_details li {
   border: none;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.12);
 }
+
+.videopLeft{
+  padding-left: 0 !important;
+  position: relative;
+}
+.overlay{
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 0;
+  right:0;
+  width: 100%;
+  height: 94%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index:9;
+}
