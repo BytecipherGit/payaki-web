@@ -61,22 +61,7 @@ else {
     exit;
 }
 
-$eventArr = array();
-$eventResult = ORM::for_table($config['db']['pre'].'product_event_types')
-        ->where('product_id', $item_id)
-        ->find_many();
-if(count($eventResult) > 0){
-    foreach($eventResult as $key => $event){
-        $eventArr[$event['id']]['id'] = $event['id'];
-        $eventArr[$event['id']]['product_id'] = $event['product_id'];
-        $eventArr[$event['id']]['ticket_type'] = $event['ticket_type'];
-        $eventArr[$event['id']]['ticket_price'] = $event['ticket_price'];
-        $eventArr[$event['id']]['available_quantity'] = $event['available_quantity'];
-        $eventArr[$event['id']]['selling_mode'] = $event['selling_mode'];
-    }
-} else {
-    $eventArr = [];
-}
+
 
 if (isset($_GET['action']) && $_GET['action'] == "post_event") {
     global $config, $lang, $link;
@@ -110,7 +95,7 @@ if (isset($_GET['action']) && $_GET['action'] == "post_event") {
                         'remaining_quantity' => $availableQuantity,
                         'selling_mode' => $sellingMode
                     ])->save();
-                
+                $success = "Event successfully updated";
             } else {
                 // Insert a new record
                 //Insert record in Training Gallery
@@ -123,36 +108,30 @@ if (isset($_GET['action']) && $_GET['action'] == "post_event") {
                 $tGInsert->selling_mode = $sellingMode;
                 $tGInsert->created_at = date("Y-m-d H:i:s");
                 if($tGInsert->save()){
-                    $success = "Event successfully created";
+                    $success = "Event successfully updated";
                 } else {
                     $customError = "Error while creating event records.";
                 }
             }
-            
-            
-            /*$tGInsert->save();
-            $event_id = $tGInsert->id();
-            if(!empty($event_id) && !empty($availableQuantity)){
-                for ($i=0; $i <= $availableQuantity; $i++) {
-                    //Generate random string code for ticket selling
-                    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    $randomString = '';
-                    for ($i = 0; $i < 16; $i++) {
-                        $randomString .= $characters[rand(0, strlen($characters) - 1)];
-                    } 
-                    $tGInsert = ORM::for_table($config['db']['pre'] . 'product_event_types_seat_availablity')->create();
-                    $tGInsert->product_event_types_id = $event_id;
-                    $tGInsert->product_id = $item_id;
-                    $tGInsert->ticket_code = $randomString;
-                    $tGInsert->selling_status = "available";
-                    $tGInsert->save();
-                }
-                
-            } else {
-                $customError = "Error while creating event records.";
-            }*/
         }
     }
+}
+
+$eventArr = array();
+$eventResult = ORM::for_table($config['db']['pre'].'product_event_types')
+        ->where('product_id', $item_id)
+        ->find_many();
+if(count($eventResult) > 0){
+    foreach($eventResult as $key => $event){
+        $eventArr[$event['id']]['id'] = $event['id'];
+        $eventArr[$event['id']]['product_id'] = $event['product_id'];
+        $eventArr[$event['id']]['ticket_type'] = $event['ticket_type'];
+        $eventArr[$event['id']]['ticket_price'] = $event['ticket_price'];
+        $eventArr[$event['id']]['available_quantity'] = $event['available_quantity'];
+        $eventArr[$event['id']]['selling_mode'] = $event['selling_mode'];
+    }
+} else {
+    $eventArr = [];
 }
 
 $mailsent =0;
@@ -172,83 +151,18 @@ $meta_desc = trim(preg_replace('/\s\s+/', ' ', $meta_desc));
 // Output to template
 $page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-event.tpl');
 $page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,true));
-// $page->SetParameter ('TOTAL_ITEMS', count($item));
-// $page->SetLoop ('ITEM', $item);
-// $page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
-// $page->SetLoop ('CATEGORY',$GetCategory);
-// $page->SetLoop ('ITEM_SCREENSHOT', $item_screenshot);
-// $page->SetParameter ('ITEM_CUSTOMFIELD', $item_custom_field);
-// $page->SetLoop ('ITEM_CUSTOM', $item_custom);
-// $page->SetLoop ('ITEM_CUSTOM_TEXTAREA', $item_custom_textarea);
-// $page->SetLoop ('ITEM_CUSTOM_CHECKBOX', $item_checkbox);
-// $page->SetParameter ('QUICKCHAT_URL', $quickchat_url);
-// $page->SetParameter ('CUSTOMCHAT_URL', $customChatUrl);
-// $page->SetParameter ('POST_AUTHOR_ID', $item_author_id);
-// $page->SetParameter ('LOGGEDIN_USER_ID', $_SESSION['user']['id']);
-// $page->SetParameter ('ITEM_FAVORITE', check_product_favorite($item_id));
 $page->SetParameter ('ITEM_ID', $item_id);
 $page->SetParameter ('ITEM_TITLE', $item_title);
 $page->SetLoop ('EVENTS', $eventArr);
-// $page->SetParameter ('ITEM_FEATURED', $item_featured);
-// $page->SetParameter ('ITEM_URGENT', $item_urgent);
-// $page->SetParameter ('ITEM_HIGHLIGHT', $item_highlight);
-// $page->SetParameter ('ITEM_AUTHORID', $item_author_id);
-// $page->SetParameter ('ITEM_AUTHORLINK', $item_author_link);
-// $page->SetParameter ('ITEM_AUTHORUEMAIL', $item_author_email);
-// $page->SetParameter ('ITEM_AUTHORNAME', $item_author_name);
-// $page->SetParameter ('ITEM_AUTHORUNAME', $item_author_username);
-// $page->SetParameter ('ITEM_AUTHORIMG', $item_author_image);
-// $page->SetParameter ('ITEM_AUTHORONLINE', $item_author_online);
-// $page->SetParameter ('ITEM_AUTHORCOUNTRY', $item_author_country);
-// $page->SetParameter ('ITEM_AUTHORJOINED', $item_author_joined);
-// if(check_user_upgrades($item_author_id))
-// {
-//     $sub_info = get_user_membership_detail($item_author_id);
-//     $page->SetParameter('SUB_TITLE', $sub_info['name']);
-//     $page->SetParameter('SUB_IMAGE', $sub_info['badge']);
-// }else{
-//     $page->SetParameter('SUB_TITLE','');
-//     $page->SetParameter('SUB_IMAGE', '');
-// }
 $page->SetParameter ('ITEM_CATEGORY', $item_category);
 $page->SetParameter ('ITEM_SUB_CATEGORY', $item_sub_category);
 $page->SetParameter ('ITEM_LINK', $item_link);
-// $page->SetParameter ('QUOTE_LINK', $quote_link);
 $page->SetParameter ('ITEM_CATLINK', $item_catlink);
 $page->SetParameter ('ITEM_SUBCATLINK', $item_subcatlink);
-// $page->SetParameter ('ITEM_LOCATION', $item_location);
-// $page->SetParameter ('ITEM_CITY', $item_city);
-// $page->SetParameter ('ITEM_STATE', $item_state);
-// $page->SetParameter ('ITEM_COUNTRY', $item_country);
-// $page->SetParameter ('ITEM_LAT', $lat);
-// $page->SetParameter ('ITEM_LONG', $long);
-// $page->SetParameter ('ITEM_CREATED', $item_created_at);
-// $page->SetParameter ('ITEM_DESC', $item_description);
-// $page->SetParameter ('ITEM_SHOWMORE', $showmore);
-// $page->SetParameter ('ITEM_PRICE', $item_price);
-// $page->SetParameter ('ITEM_NEGOTIATE', $item_negotiable);
-// $page->SetParameter ('ITEM_PHONE', $item_phone);
-// $page->SetParameter ('ITEM_HIDE_PHONE', $item_hide_phone);
-// $page->SetParameter ('MAIN_SCREEN', $main_Screen);
-// $page->SetParameter ('META_IMAGE', $meta_image);
-// $page->SetParameter ('ITEM_SCREENS_SM', $screen_sm);
-// $page->SetParameter ('ITEM_SCREENS_BIG', $screen_big);
-// $page->SetParameter ('ITEM_SCREENS_CLASSB', $screen_classicb);
-// $page->SetParameter ('ITEM_SCREENS_CLASSSM', $screen_classicsm);
-// $page->SetParameter ('SHOW_IMAGE_SLIDER', $show_image_slider);
-// $page->SetParameter ('ITEM_STATUS', $item_status);
-// $page->SetParameter ('ITEM_TAG', $item_tag);
-// $page->SetParameter ('SHOW_TAG', $show_tag);
-// $page->SetParameter ('ITEM_VIEW', $item_view);
-// $page->SetParameter ('MAILSENT', $mailsent);
 $page->SetParameter('ERROR', $error);
 $page->SetParameter('SUCCESS', $success);
 $page->SetParameter('CUSTOMERROR', $customError);
 $page->SetParameter ('RECAPTCH_ERROR', $recaptcha_error);
-// $page->SetParameter ('ITEMREVIEW', count_product_review($item_id));
-// $page->SetParameter('ZECHAT', get_option("zechat_on_off"));
-// $page->SetParameter('QUICKCHAT', get_option("quickchat_ajax_on_off"));
-// $page->SetParameter('MAP_COLOR', get_option("map_color"));
 $page->SetParameter ('OVERALL_FOOTER', create_footer());
 $page->CreatePageEcho();
 ?>
