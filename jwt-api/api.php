@@ -826,7 +826,7 @@ class Api extends Rest
                 $category = $_POST['category'];
                 $subCategory = $_POST['sub_category'];
                 $price = $_POST['price'];
-                $negotiable = $_POST['negotiable'];
+                $negotiable = isset($_POST['negotiable']) ? $_POST['negotiable'] : 0;
                 $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
                 $hidePhone = isset($_POST['hide_phone']) ? $_POST['hide_phone'] : 0;
                 $location = $_POST['location'];
