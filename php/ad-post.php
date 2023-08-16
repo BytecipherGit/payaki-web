@@ -424,6 +424,32 @@ function ajax_post_advertise()
                             $insert_notification->save();
                         }
                     }
+                    /*if (validate_input($_POST['catid']) == 10) {
+                        // Loop through submitted data and insert into the database
+                        if (isset($_POST['ticket_type']) && isset($_POST['ticket_price']) && isset($_POST['available_quantity']) && isset($_POST['selling_mode'])) {
+                            $ticketTypes = $_POST['ticket_type'];
+                            $ticketPrices = $_POST['ticket_price'];
+                            $availableQuantities = $_POST['available_quantity'];
+                            $sellingModes = $_POST['selling_mode'];
+
+                            foreach ($ticketTypes as $key => $ticketType) {
+                                $ticketPrice = $ticketPrices[$key];
+                                $availableQuantity = $availableQuantities[$key];
+                                $sellingMode = $sellingModes[$key];
+                                
+                                //Insert record in Training Gallery
+                                $tGInsert = ORM::for_table($config['db']['pre'] . 'product_event_types')->create();
+                                $tGInsert->product_id = $product_id;
+                                $tGInsert->ticket_type = $ticketType;
+                                $tGInsert->ticket_price = $ticketPrice;
+                                $tGInsert->available_quantity = $availableQuantity;
+                                $tGInsert->remaining_quantity = $availableQuantity;
+                                $tGInsert->selling_mode = $sellingMode;
+                                $tGInsert->created_at = date("Y-m-d H:i:s");
+                                $tGInsert->save();
+                            }
+                        }
+                    }*/
 
                     /*if (validate_input($_POST['catid']) == 9) {
                         // Check if files were uploaded
