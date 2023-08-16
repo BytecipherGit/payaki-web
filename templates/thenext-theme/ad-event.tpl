@@ -69,7 +69,7 @@
                                 <div class="submit-field" id="event_container">
                                     <h5>Event Ticket Selling Details</h5>
                                     <div id="container">
-                                        <div class="container">
+                                    <div class="container">
                                             <div class="row">
                                                 <div class="col-md-3">
                                                     <div class="column">
@@ -103,6 +103,45 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    {LOOP: EVENTS}
+                                        <input type="hidden" name="id[]" value="{EVENTS.id}">
+                                        <input type="hidden" name="product_id[]" value="{EVENTS.product_id}">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="column">
+                                                        <label class="label">Ticket Type:</label>
+                                                        <input type="text" name="ticket_type[]" value="{EVENTS.ticket_type}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="column">
+                                                        <label class="label">Ticket Price:</label>
+                                                        <input type="text" name="ticket_price[]" value="{EVENTS.ticket_price}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">    
+                                                    <div class="column">
+                                                        <label class="label">Ticket Quantity:</label>
+                                                        <input type="text" name="available_quantity[]" value="{EVENTS.available_quantity}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">    
+                                                    <div class="column">
+                                                        <label class="label">Selling Mode:</label>
+                                                        <select name="selling_mode[]">
+                                                            <option value="offline" IF("{EVENTS.selling_mode}"=="offline"){ selected="selected"{:IF}>Offline</option>
+                                                            <option value="online" IF("{EVENTS.selling_mode}"=="offline"){ selected="selected"{:IF}>Online</option>
+                                                        </select>
+                                                    </div>
+                                                </div>    
+                                                <div class="col-md-1">
+                                                    <!--<button type="button" class="remove-button" onclick="removeFields(this.parentNode)">-</button>-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {/LOOP: EVENTS}
+                                        
                                     </div>
                                 </div>
                             </div>

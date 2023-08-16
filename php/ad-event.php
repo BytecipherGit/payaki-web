@@ -61,18 +61,21 @@ else {
     exit;
 }
 
-$trainingVideoArr = array();
-$trainingResult = ORM::for_table($config['db']['pre'].'training_gallery')
+$eventArr = array();
+$eventResult = ORM::for_table($config['db']['pre'].'product_event_types')
         ->where('product_id', $item_id)
         ->find_many();
-if(count($trainingResult) > 0){
-    foreach($trainingResult as $key => $training){
-        $trainingVideoArr[$training['id']]['id'] = $training['id'];
-        $trainingVideoArr[$training['id']]['product_id'] = $training['product_id'];
-        $trainingVideoArr[$training['id']]['training_video'] = $training['training_video'];
+if(count($eventResult) > 0){
+    foreach($eventResult as $key => $event){
+        $eventArr[$event['id']]['id'] = $event['id'];
+        $eventArr[$event['id']]['product_id'] = $event['product_id'];
+        $eventArr[$event['id']]['ticket_type'] = $event['ticket_type'];
+        $eventArr[$event['id']]['ticket_price'] = $event['ticket_price'];
+        $eventArr[$event['id']]['available_quantity'] = $event['available_quantity'];
+        $eventArr[$event['id']]['selling_mode'] = $event['selling_mode'];
     }
 } else {
-    $trainingVideoArr = [];
+    $eventArr = [];
 }
 
 if (isset($_GET['action']) && $_GET['action'] == "post_event") {
@@ -81,30 +84,52 @@ if (isset($_GET['action']) && $_GET['action'] == "post_event") {
     $success = '';
     // Loop through submitted data and insert into the database
     if (isset($_POST['ticket_type']) && isset($_POST['ticket_price']) && isset($_POST['available_quantity']) && isset($_POST['selling_mode'])) {
+        $ids = $_POST['id'];
+        $productIds = $_POST['product_id'];
         $ticketTypes = $_POST['ticket_type'];
         $ticketPrices = $_POST['ticket_price'];
         $availableQuantities = $_POST['available_quantity'];
         $sellingModes = $_POST['selling_mode'];
 
         foreach ($ticketTypes as $key => $ticketType) {
+            $id = $ids[$key];
+            $productId = $productIds[$key];
             $ticketPrice = $ticketPrices[$key];
             $availableQuantity = $availableQuantities[$key];
             $sellingMode = $sellingModes[$key];
-            
-            //Insert record in Training Gallery
-            $tGInsert = ORM::for_table($config['db']['pre'] . 'product_event_types')->create();
-            $tGInsert->product_id = $item_id;
-            $tGInsert->ticket_type = $ticketType;
-            $tGInsert->ticket_price = $ticketPrice;
-            $tGInsert->available_quantity = $availableQuantity;
-            $tGInsert->remaining_quantity = $availableQuantity;
-            $tGInsert->selling_mode = $sellingMode;
-            $tGInsert->created_at = date("Y-m-d H:i:s");
-            if($tGInsert->save()){
-                $success = "Event successfully created";
+
+             // Check if ID exists
+             if (!empty($id)) {
+                // Update the existing record
+                ORM::for_table($config['db']['pre'] . 'product_event_types')->find_one($id)->set(
+                    [
+                        'product_id' => $productId, 
+                        'ticket_type' => $ticketType,
+                        'ticket_price' => $ticketPrice,
+                        'available_quantity' => $availableQuantity,
+                        'remaining_quantity' => $availableQuantity,
+                        'selling_mode' => $sellingMode
+                    ])->save();
+                
             } else {
-                $customError = "Error while creating event records.";
+                // Insert a new record
+                //Insert record in Training Gallery
+                $tGInsert = ORM::for_table($config['db']['pre'] . 'product_event_types')->create();
+                $tGInsert->product_id = $item_id;
+                $tGInsert->ticket_type = $ticketType;
+                $tGInsert->ticket_price = $ticketPrice;
+                $tGInsert->available_quantity = $availableQuantity;
+                $tGInsert->remaining_quantity = $availableQuantity;
+                $tGInsert->selling_mode = $sellingMode;
+                $tGInsert->created_at = date("Y-m-d H:i:s");
+                if($tGInsert->save()){
+                    $success = "Event successfully created";
+                } else {
+                    $customError = "Error while creating event records.";
+                }
             }
+            
+            
             /*$tGInsert->save();
             $event_id = $tGInsert->id();
             if(!empty($event_id) && !empty($availableQuantity)){
@@ -163,7 +188,7 @@ $page->SetParameter ('OVERALL_HEADER', create_header($item_title,$meta_desc,true
 // $page->SetParameter ('ITEM_FAVORITE', check_product_favorite($item_id));
 $page->SetParameter ('ITEM_ID', $item_id);
 $page->SetParameter ('ITEM_TITLE', $item_title);
-$page->SetLoop ('TRAINING_VIDEO', $trainingVideoArr);
+$page->SetLoop ('EVENTS', $eventArr);
 // $page->SetParameter ('ITEM_FEATURED', $item_featured);
 // $page->SetParameter ('ITEM_URGENT', $item_urgent);
 // $page->SetParameter ('ITEM_HIGHLIGHT', $item_highlight);
