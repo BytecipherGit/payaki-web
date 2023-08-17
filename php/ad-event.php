@@ -92,7 +92,6 @@ if (isset($_GET['action']) && $_GET['action'] == "post_event") {
                         'ticket_type' => $ticketType,
                         'ticket_price' => $ticketPrice,
                         'available_quantity' => $availableQuantity,
-                        'remaining_quantity' => $availableQuantity,
                         'selling_mode' => $sellingMode
                     ])->save();
                 $success = "Event successfully updated";

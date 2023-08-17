@@ -1227,6 +1227,55 @@ class Api extends Rest
             $this->returnResponse($response);
         }
     }
+
+    public function addAndUpdateEvent(){
+        try {
+            if(!empty($this->param['events']) && !empty($this->param['product_id'])){
+                $product_id = $this->param['product_id'];
+                foreach ($this->param['events'] as $key => $event) {
+                    $ticket_type = $event['ticket_title'];
+                    $ticket_price = $event['ticket_price'];
+                    $available_quantity = $event['ticket_quantity'];
+                    $remaining_quantity = $event['ticket_quantity'];
+                    $selling_mode = $event['selling_mode'];
+                    $created_at = date("Y-m-d H:i:s");
+                    if(!empty($event['id']) && $event['id'] != null){
+                        //Update code
+                        $stmt = $this->dbConn->prepare('UPDATE ad_product_event_types SET ticket_type = :ticket_type,ticket_price = :ticket_price,available_quantity = :available_quantity,selling_mode = :selling_mode WHERE id = :id');
+                        // Bind the parameters and execute the statement
+                        $stmt->bindValue(':id', $event['id'], PDO::PARAM_STR);
+                        $stmt->bindValue(':ticket_type', $ticket_type, PDO::PARAM_STR);
+                        $stmt->bindValue(':ticket_price', $ticket_price, PDO::PARAM_STR);
+                        $stmt->bindValue(':available_quantity', $available_quantity, PDO::PARAM_STR);
+                        $stmt->bindValue(':selling_mode', $selling_mode, PDO::PARAM_STR);
+                        $stmt->execute();
+                    } else {
+                        //Insert code here
+                        $sql = 'INSERT INTO ad_product_event_types (id, product_id, ticket_type, ticket_price, available_quantity, remaining_quantity, selling_mode, created_at) VALUES(null, :product_id, :ticket_type, :ticket_price, :available_quantity, :remaining_quantity, :selling_mode, :created_at)';
+                        $stmt = $this->dbConn->prepare($sql);
+                        $stmt->bindParam(':product_id', $product_id);
+                        $stmt->bindParam(':ticket_type', $ticket_type);
+                        $stmt->bindParam(':ticket_price', $ticket_price);
+                        $stmt->bindParam(':available_quantity', $available_quantity);
+                        $stmt->bindParam(':remaining_quantity', $remaining_quantity);
+                        $stmt->bindParam(':selling_mode', $selling_mode);
+                        $stmt->bindParam(':created_at', $created_at);
+                        $stmt->execute();
+                    }
+                }
+                $response = ["status" => true, "code" => 200, "Message" => "events successfully updated."];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "events & product_id is required."];
+                $this->returnResponse($response);
+            }
+            
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
     public function getPostDetails()
     {
         try {
