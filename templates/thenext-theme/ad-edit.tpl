@@ -239,6 +239,11 @@ IF("{POST_WATERMARK}"=="0"){
                                         <a href="{SITE_URL}training/{ITEM_ID}" class="button ripple-effect big">Click Here To Manage Training Gallery</a>
                                     </div>
                                 {:IF}
+                                IF('{CATID}'=="10"){
+                                    <div class="submit-field">
+                                        <a href="{SITE_URL}event/{ITEM_ID}" class="button ripple-effect big">Click Here To Manage Events</a>
+                                    </div>
+                                {:IF}
                                 <div id="ResponseCustomFields">
                                     {LOOP: CUSTOMFIELDS}
                                         IF('{CUSTOMFIELDS.type}'=="text-field"){
@@ -278,6 +283,7 @@ IF("{POST_WATERMARK}"=="0"){
                                     {:IF}
                                     {/LOOP: CUSTOMFIELDS}
                                 </div>
+                                IF('{CATID}'!="10"){
                                 <div class="submit-field" id="quickad-price-field">
                                     <h5>{LANG_PRICE}</h5>
                                     <div class="row">
@@ -295,6 +301,7 @@ IF("{POST_WATERMARK}"=="0"){
                                         </div>
                                     </div>
                                 </div>
+                                {:IF}
                                 <div class="submit-field">
                                     <h5>{LANG_PHONE_NO}</h5>
                                     <div class="row">

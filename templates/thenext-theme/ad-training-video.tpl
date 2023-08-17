@@ -39,8 +39,8 @@
                         <div class="row">
                             <div class="col-xl-12">
                                 <div class="submit-field" id="training_upload_container">
-                                    <h6 style="color:green">{SUCCESS}</h6>
-                                    <h6 style="color:red">{CUSTOMERROR}</h6>
+                                    <h5 style="color:green">{SUCCESS}</h5>
+                                    <h5 style="color:red">{CUSTOMERROR}</h5>
                                     <h5>Upload training video / image *</h5>
                                     <div id="input-container">
                                         <h6 style="color:#9C5FA3; font-weight: bold;">Video size should not more then (500MB) & allowed extension ("mp4", "avi", "mov", "mkv")</h6>

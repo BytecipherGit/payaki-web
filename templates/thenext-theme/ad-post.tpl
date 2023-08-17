@@ -1,42 +1,39 @@
 {OVERALL_HEADER}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* CSS to style the elements */
-        #input-container {
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 10px;
-            width:89%;
-        }
-
-        .training-file-input {
-            margin-bottom: 5px;
-        }
-
-        .file-input-container {
+        /*.container {
             display: flex;
-            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .column {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .label {
+            display: block;
             margin-bottom: 5px;
+            color:#000000;
         }
 
-        .remove-file {
-            margin-left: 5px;
-            padding-left: 5px;
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
             cursor: pointer;
-            color: #dc3545; /* Red color for the remove icon */
+            padding: 5px 10px;
+            border-radius: 4px;
         }
 
-        .add-file {
-            margin-left: 5px;
-            cursor: pointer;
-            color: #28a745; /* Green color for the add icon */
-            margin-top: 10px;
+        .add-button {
+            background-color: #00cc00;
         }
 
-        #button-container {
-            display: inline-block;
-            vertical-align: top;
-        }
+        .remove-button {
+            background-color: #ff3333;
+        }*/
+    
     </style>
 <!-- orakuploader -->
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader.css" rel="stylesheet"/>
@@ -290,11 +287,35 @@ IF("{POST_WATERMARK}"=="0"){
                                                 <input type="hidden" name="max_size" value="500">
                                             </div>
                                         </div>
-                                        <!--<div id="button-container">
-                                            <i class="fas fa-plus-circle add-file"></i>
-                                        </div>-->
                                     </div>
-
+                                    <!--<div class="submit-field" id="event_container" style="display:none;">
+                                        <h5>Event Ticket Selling Details</h5>
+                                        <div id="container">
+                                            <div class="container">
+                                                <div class="column">
+                                                    <label class="label">Ticket Type:</label>
+                                                    <input type="text" name="ticket_type[]" placeholder="Delux">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Ticket Price:</label>
+                                                    <input type="text" name="ticket_price[]" placeholder="200">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Ticket Quantity:</label>
+                                                    <input type="text" name="available_quantity[]" placeholder="10">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Selling Mode:</label>
+                                                    <select name="selling_mode[]">
+                                                        <option value="offline">Offline</option>
+                                                        <option value="online">Online</option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" class="add-button" onclick="addFields()">+</button>    
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                    
                                     <div id="ResponseCustomFields">
 
                                     {LOOP: CUSTOMFIELDS}
