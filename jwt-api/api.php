@@ -826,7 +826,7 @@ class Api extends Rest
                 $category = $_POST['category'];
                 $subCategory = $_POST['sub_category'];
                 $price = $_POST['price'];
-                $negotiable = $_POST['negotiable'];
+                $negotiable = isset($_POST['negotiable']) ? $_POST['negotiable'] : 0;
                 $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
                 $hidePhone = isset($_POST['hide_phone']) ? $_POST['hide_phone'] : 0;
                 $location = $_POST['location'];
@@ -968,6 +968,30 @@ class Api extends Rest
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
                     if (!empty($last_id)) {
+                        //Insert record into event table 
+                        if(!empty($_POST['events']) && $category == 10){
+                            foreach (json_decode($_POST['events']) as $key => $event) {
+                                $ticket_type = $event->ticket_title;
+                                $ticket_price = $event->ticket_price;
+                                $available_quantity = $event->ticket_quantity;
+                                $remaining_quantity = $event->ticket_quantity;
+                                $selling_mode = $event->selling_mode;
+                                $created_at = date("Y-m-d H:i:s");
+
+                                //Insert code here
+                                $sql = 'INSERT INTO ad_product_event_types (id, product_id, ticket_type, ticket_price, available_quantity, remaining_quantity, selling_mode, created_at) VALUES(null, :product_id, :ticket_type, :ticket_price, :available_quantity, :remaining_quantity, :selling_mode, :created_at)';
+                                $stmt = $this->dbConn->prepare($sql);
+                                $stmt->bindParam(':product_id', $last_id);
+                                $stmt->bindParam(':ticket_type', $ticket_type);
+                                $stmt->bindParam(':ticket_price', $ticket_price);
+                                $stmt->bindParam(':available_quantity', $available_quantity);
+                                $stmt->bindParam(':remaining_quantity', $remaining_quantity);
+                                $stmt->bindParam(':selling_mode', $selling_mode);
+                                $stmt->bindParam(':created_at', $created_at);
+                                $stmt->execute();
+                            }
+                        }
+                        
                         // if (validate_input($_POST['catid']) == 9) {
                         //     // Check if files were uploaded
                         //     if (isset($_FILES['trainingVideo'])) {
