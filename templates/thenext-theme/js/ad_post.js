@@ -238,9 +238,11 @@ $('.select-category.post-option .tg-category').on('click', function () {
     if(catid === 10){
         $("#quickad-price-field").css("display", "none");
         $("#event_container").css("display", "block");
+        $("#event_date_time_container").css("display", "block");
     } else {
         $("#quickad-price-field").css("display", "block");
         $("#event_container").css("display", "none");
+        $("#event_date_time_container").css("display", "none");
     }
 });
 // -------------------------------------------------------------
@@ -355,65 +357,3 @@ document.getElementById("input-container").addEventListener("click", function(ev
         event.target.parentNode.remove();
     }
 });
-
-/*function addFields() {
-    var container = document.getElementById("container");
-    var newSet = document.createElement("div");
-    newSet.classList.add("container");
-
-    newSet.innerHTML = `
-        <label class="label">Type of ticket:</label>
-        <input type="text" name="ticket_type[]" placeholder="Ticket Type">
-        <label class="label">Ticket Quantity:</label>
-        <input type="text" name="available_quantity[]" placeholder="Ticket Quantity">
-        <label class="label">Mode of sale:</label>
-        <select name="selling_mode[]">
-            <option value="offline">Off Line</option>
-            <option value="online">On Line</option>
-        </select>
-        <button type="button" class="remove-button" onclick="removeFields(this)">-</button>
-    `;
-
-    container.appendChild(newSet);
-}
-
-function removeFields(button) {
-    var container = document.getElementById("container");
-    container.removeChild(button.parentNode);
-}*/
-
-/*function addFields() {
-    var container = document.getElementById("container");
-    var newSet = document.createElement("div");
-    newSet.classList.add("container");
-
-    newSet.innerHTML = `
-        <div class="column">
-            <label class="label">Ticket Type:</label>
-            <input type="text" name="ticket_type[]">
-        </div>
-        <div class="column">
-            <label class="label">Ticket Price:</label>
-            <input type="text" name="ticket_price[]">
-        </div>
-        <div class="column">
-            <label class="label">Ticket Quantity:</label>
-            <input type="text" name="available_quantity[]">
-        </div>
-        <div class="column">
-            <label class="label">Selling Mode:</label>
-            <select name="selling_mode[]">
-                <option value="offline">Offline</option>
-                <option value="online">Online</option>
-            </select>
-        </div>
-        <button type="button" class="remove-button" onclick="removeFields(this)">-</button>
-    `;
-
-    container.appendChild(newSet);
-}
-
-function removeFields(button) {
-    var container = document.getElementById("container");
-    container.removeChild(button.parentNode);
-}*/

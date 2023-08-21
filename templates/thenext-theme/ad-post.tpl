@@ -1,39 +1,11 @@
 {OVERALL_HEADER}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /*.container {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .column {
+        .box {
             flex: 1;
-            margin-right: 10px;
+            padding: 4px;
+            box-sizing: border-box;
         }
-
-        .label {
-            display: block;
-            margin-bottom: 5px;
-            color:#000000;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-
-        .add-button {
-            background-color: #00cc00;
-        }
-
-        .remove-button {
-            background-color: #ff3333;
-        }*/
-    
     </style>
 <!-- orakuploader -->
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader.css" rel="stylesheet"/>
@@ -355,6 +327,23 @@ IF("{POST_WATERMARK}"=="0"){
                                         </div>
                                     {:IF}
                                     {/LOOP: CUSTOMFIELDS}
+                                    </div>
+                                    
+                                    <div class="submit-field" id="event_date_time_container" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-xl-12">
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="box">
+                                                        <h5>Select Event Date</h5>
+                                                        <input type="date" id="event_date" name="event_date">
+                                                    </div>
+                                                    <div class="box">
+                                                        <h5>Select Event Time</h5>
+                                                        <input type="time" id="event_time" name="event_time">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>   
                                     </div>
                                     <div class="submit-field" id="quickad-price-field">
                                         <h5>{LANG_PRICE}</h5>
