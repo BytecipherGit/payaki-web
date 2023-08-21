@@ -285,11 +285,11 @@ $('#sub_category').on('click', 'li', function (e) {
     } else {
         $('#quickad-photo-field').hide();
     }
-    if (priceshow == 1) {
-        $('#quickad-price-field').show();
-    } else {
-        $('#quickad-price-field').hide();
-    }
+    // if (priceshow == 1) {
+    //     $('#quickad-price-field').show();
+    // } else {
+    //     $('#quickad-price-field').hide();
+    // }
     $('#choose-category').html(lang_edit_cat);
     $.magnificPopup.close();
 });
