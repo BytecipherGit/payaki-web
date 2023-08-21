@@ -1,4 +1,11 @@
 {OVERALL_HEADER}
+<style>
+        .box {
+            flex: 1;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+    </style>
 <div id="titlebar" class="margin-bottom-0">
     <div class="container">
         <div class="row">
@@ -196,7 +203,24 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                     IF('{ITEM_SHOWMORE}'=='1'){ <a href="#" class="show-more-button">{LANG_SHOW_MORE} <i class="fa fa-angle-down"></i></a> {:IF}
                 </div>
             </div>
-
+            IF("{CATEGORYID}"=="10"){
+            <div class="single-page-section">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="d-flex justify-content-between">
+                            <div class="box">
+                                <h3>Event Date</h3>
+                                {ITEM_EVENT_DATE}
+                            </div>
+                            <div class="box">
+                                <h3>Event Title</h3>
+                                {ITEM_EVENT_TIME}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {:IF}
             IF("{CATEGORYID}"=="9"){
                 <div class="row">
             {LOOP: TRAINING_VIDEO}
