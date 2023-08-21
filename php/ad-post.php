@@ -57,7 +57,6 @@ function ajax_post_advertise()
 
     global $config, $lang, $link;
     if (isset($_POST['submit'])) {
-
         $errors = array();
         $item_screen = "";
 
@@ -378,6 +377,18 @@ function ajax_post_advertise()
                     } 
                 }
 
+                if(isset($_POST['event_date'])){
+                    $event_date = $_POST['event_date'];
+                } else {
+                    $event_date = date('Y-m-d');
+                }
+
+                if(isset($_POST['event_time'])){
+                    $event_time = date("h:i A", strtotime($_POST['event_time']));
+                } else {
+                    $event_time = date("h:i A");
+                }
+                
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->seller_name = validate_input($_POST['seller_name']);
@@ -387,6 +398,8 @@ function ajax_post_advertise()
                 $item_insrt->category = validate_input($_POST['catid']);
                 $item_insrt->sub_category = validate_input($_POST['subcatid']);
                 $item_insrt->post_type = $postType;
+                $item_insrt->event_date = $event_date;
+                $item_insrt->event_time = $event_time;
                 $item_insrt->description = $description;
                 $item_insrt->price = validate_input($price);
                 $item_insrt->negotiable = validate_input($negotiable);
