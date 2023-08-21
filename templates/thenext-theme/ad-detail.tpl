@@ -203,7 +203,9 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             
                 <div class="col-md-4">
                     <div class="job-property videopLeft">
-                    <div class="overlay"></div>
+                    IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}"){
+                        <div class="overlay"></div>
+                    {:IF}
                     <!-- Use the video element to embed a video -->
                         <video width="100%" height="auto" controls>
                             IF("{TRAINING_VIDEO.training_video}"!=""){

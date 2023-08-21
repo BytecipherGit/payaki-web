@@ -39,18 +39,18 @@
                                 {LOOP: ITEM}
                                     <tr>
                                         <td>{ITEM.product_name}</td>
-                                        <td>{ITEM.product_price}</td>
+                                        <td>{ITEM.display_price}</td>
                                         <td>{ITEM.product_qty}</td>
-                                        <td><?php echo {ITEM.product_price} * {ITEM.product_qty}?></td>
+                                        <td>{ITEM.sub_total}</td>
                                     </tr>
                                 {/LOOP: ITEM}
                                 <!--<tr>
                                     <td colspan="1"></td>
-                                    <td colspan="3">Shipping Cost : $ {TOTALAMOUNT}</td>
+                                    <td colspan="3">Shipping Cost : {TOTALAMOUNT}</td>
                                 </tr>-->
                                 <tr>
                                     <td colspan="1"></td>
-                                    <td colspan="3">Total Amount : $ {TOTALAMOUNT}</td>
+                                    <td colspan="3">Total Amount : {TOTALAMOUNT}</td>
                                    
                                 </tr>
                                 <tr>

@@ -7,6 +7,7 @@ if (isset($_SESSION["products"])) {
 			$total = ($total + $subtotal);
         }
     }
+    $total = price_format($total,'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/viewcart.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
     $page->SetLoop ('ITEM', $_SESSION["products"]);
