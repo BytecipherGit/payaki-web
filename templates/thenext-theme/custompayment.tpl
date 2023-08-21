@@ -32,7 +32,7 @@
                         
                             <div class="col-md-6">
                             <div class="text-left">	
-                            <h4>Payable Amount (Rs): {TOTALAMOUNTPAYBLE}	</h4>
+                            <h4>Payable Amount : {DISPLAYTOTALAMOUNTPAYBLE}	</h4>
                             <strong>Shipping Address:</strong> <br>
                             <h5>Full Name: {NAME}	</h5>
                             <h5>Address : {ADDRESS}	</h5>

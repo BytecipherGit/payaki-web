@@ -1264,6 +1264,10 @@ function setCartItem()
                     ->find_one();
         if(!empty($productDetails['id'])){
             $product["product_name"] = $productDetails['product_name'];
+            $currency_code = get_countryCurrecny_by_code($productDetails['country']);
+            $product["display_price"] = price_format($productDetails['price'],$currency_code);
+            $subTotal = $productDetails['price'] * 1;
+            $product["sub_total"] = price_format($subTotal,$currency_code);
             $product["product_price"] = $productDetails['price'];
             $product["product_qty"] = 1;
             if(isset($_SESSION["products"])){ 

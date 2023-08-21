@@ -82,7 +82,6 @@ if ($num_rows > 0) {
         }
     }
 
-
     $currency_code = get_countryCurrecny_by_code($info['country']);
     $price = price_format($info['price'],$currency_code);
     $item_price = $price;

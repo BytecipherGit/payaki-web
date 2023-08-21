@@ -33,11 +33,12 @@ if(isset($_SESSION['user']['id']) && isset($_SESSION["products"])){
             }
         }
     }
-    
+    $payableAmount = price_format($_SESSION["payableAmount"],'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/custompayment.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
     $page->SetLoop ('ITEM', $_SESSION["products"]);
     $page->SetParameter('TOTALAMOUNTPAYBLE', $_SESSION["payableAmount"]);
+    $page->SetParameter('DISPLAYTOTALAMOUNTPAYBLE', $payableAmount);
     $page->SetParameter('NAME', $_POST["name"]);
     $page->SetParameter('ADDRESS', $_POST["address"]);
     $page->SetParameter('PHONE', $_POST["contactNumber"]);

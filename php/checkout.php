@@ -12,6 +12,7 @@ if(isset($_SESSION["products"]) && count($_SESSION["products"])>0){
 			$total = ($total + $subtotal);
         }
     }
+    
     $grand_total = $total + $shipping_cost;
 	foreach($taxes as $key => $value){
 			$tax_amount = round($total * ($value / 100));
@@ -25,7 +26,7 @@ if(isset($_SESSION["products"]) && count($_SESSION["products"])>0){
 	$cart_box .= "<span>$shipping_cost  $list_tax <hr>Payable Amount : $currency ".sprintf("%01.2f", $grand_total)."</span>";	
 	$_SESSION["payableAmount"] = round($grand_total);
 	$_SESSION["cartItems"] = $items;
-
+    $total = price_format($total,'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/checkout.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
     $page->SetLoop ('ITEM', $_SESSION["products"]);

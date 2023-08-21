@@ -30,7 +30,7 @@
                         <div class="table-responsive">
                             <table id="js-table-list" class="basic-table dashboard-box-list">
                                 <tr>
-                                    <th class="big-width">Product Name</th>
+                                    <th class="small-width" style="width:69% !important;">Product Name</th>
                                     <th class="small-width">Price</th>
                                     <th class="small-width">Qty</th>
                                 </tr>
@@ -38,12 +38,12 @@
                                 {LOOP: ITEM}
                                     <tr>
                                         <td>{ITEM.product_name}</td>
-                                        <td>{ITEM.product_price}</td>
+                                        <td>{ITEM.display_price}</td>
                                         <td>{ITEM.product_qty}</td>
                                     </tr>
                                 {/LOOP: ITEM}
                                 <tr>
-                                    <td colspan="2">Total Amount : $ {TOTALAMOUNT}</td>
+                                    <td colspan="2">Total Amount : {TOTALAMOUNT}</td>
                                     <td><a href="{CHECKOUT}" class="button">Checkout</a></td>
                                 </tr>
                                 <tr>

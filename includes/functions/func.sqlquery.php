@@ -166,6 +166,7 @@ function get_district_by_code($code)
 function get_countryCurrecny_by_code($code)
 {
     global $config;
+    $code = 'AO';
     $info = ORM::for_table($config['db']['pre'] . 'countries')
         ->select('currency_code')
         ->where('code', $code)
@@ -212,7 +213,7 @@ function price_format($number, $currency_code)
     //$tmp = explode($currency['decimal_places'], $number);
 
     if ($currency['in_left'] == 1) {
-        $number = $currency['html_entity'] . $number;
+        $number = $currency['html_entity'] .' '. $number;
     } else {
         $number = $number . ' ' . $currency['html_entity'];
     }
