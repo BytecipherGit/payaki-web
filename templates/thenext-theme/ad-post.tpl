@@ -776,46 +776,5 @@ IF({POST_ADDRESS_MODE}){
       function setTokenSentToServer(sent) {
         window.localStorage.setItem("sentToServer", sent ? "1" : "0");
       }
-
-      $("#display_price").on("blur", function() {
-                // Define the user's country and currency code (Angola - AOA)
-                var userCountry = "AO";
-                var userCurrency = "AOA";
-                
-                // Define the locale for Angola
-                var angolaLocale = "pt-AO";
-                
-                // Get the input value
-                var inputValue = $(this).val();
-                $("#price").val(inputValue);
-                // Format the price based on Angola's locale and currency
-                var formattedValue = parseFloat(inputValue).toLocaleString(angolaLocale, {
-                    style: "currency",
-                    currency: userCurrency
-                });
-                // Replace non-breaking space with comma
-                formattedValue = formattedValue.replace(",00", ".00");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(" ", ",");
-                formattedValue = formattedValue.replace(",Kz", " Kz");
-                // Update the input field with the formatted value
-                $(this).val(formattedValue);
-            });
-      
     </script>
 {OVERALL_FOOTER}
