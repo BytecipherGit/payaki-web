@@ -376,18 +376,14 @@ function ajax_post_advertise()
                         } 
                     } 
                 }
-
-                if(isset($_POST['event_date'])){
+                
+                if(isset($_POST['event_date']) && validate_input($_POST['catid']) == 10){
                     $event_date = $_POST['event_date'];
-                } else {
-                    $event_date = date('Y-m-d');
-                }
+                } 
 
-                if(isset($_POST['event_time'])){
+                if(isset($_POST['event_time']) && validate_input($_POST['catid']) == 10){
                     $event_time = date("h:i A", strtotime($_POST['event_time']));
-                } else {
-                    $event_time = date("h:i A");
-                }
+                } 
                 
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
@@ -398,8 +394,8 @@ function ajax_post_advertise()
                 $item_insrt->category = validate_input($_POST['catid']);
                 $item_insrt->sub_category = validate_input($_POST['subcatid']);
                 $item_insrt->post_type = $postType;
-                $item_insrt->event_date = $event_date;
-                $item_insrt->event_time = $event_time;
+                $item_insrt->event_date = !empty($event_date) ? $event_date : date("Y-m-d");
+                $item_insrt->event_time = !empty($event_time) ? $event_time : date("h:i A");
                 $item_insrt->description = $description;
                 $item_insrt->price = validate_input($price);
                 $item_insrt->negotiable = validate_input($negotiable);
@@ -419,7 +415,10 @@ function ajax_post_advertise()
                 $item_insrt->expired_date = $expired_date;
                 $item_insrt->expire_date = $expire_timestamp;
                 $item_insrt->save();
-
+                // Print last executed query
+                // $lastQuery = ORM::getLastQuery();
+                // echo $lastQuery;
+                // die;
                 $product_id = $item_insrt->id();
                 //Send Custom Notification to user
                 if (!empty($product_id)) {
