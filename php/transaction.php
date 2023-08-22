@@ -19,11 +19,13 @@ if(checkloggedin()) {
     $total_item = count($rows);
     foreach ($rows as $row)
     {
-        $currency_code = ($row['currency_code'] != null)? $row['currency_code']: $config['currency_code'];
+        // $currency_code = ($row['currency_code'] != null)? $row['currency_code']: $config['currency_code'];
+        $currency_code = get_countryCurrecny_by_code('AO');
+        $amount = price_format($row['amount'],$currency_code);
         $transactions[$count]['id'] = $row['id'];
         $transactions[$count]['product_id'] = $row['product_id'];
         $transactions[$count]['product_name'] = $row['product_name'];
-        $transactions[$count]['amount'] = price_format($row['amount'],$currency_code);
+        $transactions[$count]['amount'] = $amount;
         $transactions[$count]['payment_by'] = $row['transaction_gatway'];
         $transactions[$count]['time'] = date('d M Y h:i A', $row['transaction_time']);
 
