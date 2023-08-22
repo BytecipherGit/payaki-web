@@ -350,8 +350,9 @@ IF("{POST_WATERMARK}"=="0"){
                                         <div class="row">
                                             <div class="col-xl-6 col-md-12">
                                                 <div class="input-with-icon">
-                                                    <input class="with-border" type="text" placeholder="{LANG_PRICE}" name="price">
-                                                    <i class="currency">{USER_CURRENCY_SIGN}</i>
+                                                    <input class="with-border" type="text" id="display_price" placeholder="{LANG_PRICE}" name="display_price">
+                                                    <input class="with-border" type="hidden" id="price" name="price">
+                                                    <!--<i class="currency">{USER_CURRENCY_SIGN}</i>-->
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-md-12 margin-top-12">
@@ -775,5 +776,46 @@ IF({POST_ADDRESS_MODE}){
       function setTokenSentToServer(sent) {
         window.localStorage.setItem("sentToServer", sent ? "1" : "0");
       }
+
+      $("#display_price").on("blur", function() {
+                // Define the user's country and currency code (Angola - AOA)
+                var userCountry = "AO";
+                var userCurrency = "AOA";
+                
+                // Define the locale for Angola
+                var angolaLocale = "pt-AO";
+                
+                // Get the input value
+                var inputValue = $(this).val();
+                $("#price").val(inputValue);
+                // Format the price based on Angola's locale and currency
+                var formattedValue = parseFloat(inputValue).toLocaleString(angolaLocale, {
+                    style: "currency",
+                    currency: userCurrency
+                });
+                // Replace non-breaking space with comma
+                formattedValue = formattedValue.replace(",00", ".00");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(" ", ",");
+                formattedValue = formattedValue.replace(",Kz", " Kz");
+                // Update the input field with the formatted value
+                $(this).val(formattedValue);
+            });
+      
     </script>
 {OVERALL_FOOTER}
