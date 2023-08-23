@@ -1,4 +1,5 @@
 <?php
+
 if(!isset($_GET['page']))
     $page = 1;
 else
@@ -73,13 +74,15 @@ if(checkloggedin()) {
   END),";
     }
 
-    if(isset($category) && !empty($category)){
+    /*if(isset($category) && !empty($category)){
         $where.= "AND (category = '$category') ";
-    }
+    }*/
 
-    if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
-        $where.= "AND (sub_category = '$subcat') ";
-    }
+    $where.= "AND (category = 10) ";
+
+    // if(isset($_GET['subcat']) && !empty($_GET['subcat'])){
+    //     $where.= "AND (sub_category = '$subcat') ";
+    // }
 
     if(isset($_GET['city']) && !empty($_GET['city']))
     {
@@ -102,7 +105,7 @@ if(checkloggedin()) {
         /*$country_code = check_user_country();
         $where.= "AND (country = '$country_code') ";*/
     }
-    $where.= "AND category != 9 AND category != 10";
+    
     $sql = "SELECT *
 FROM `".$config['db']['pre']."product`
  WHERE status = 'active' AND hide = '0' AND user_id = '".$_SESSION['user']['id']."' ";
@@ -236,7 +239,7 @@ FROM `".$config['db']['pre']."product`
     $GetCategory = get_maincategory();
     $cat_dropdown = get_categories_dropdown($lang);
     // Output to template
-    $page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-my.tpl');
+    $page = new HtmlTemplate ('templates/' . $config['tpl_name'] . '/ad-my-event.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['MY_ADS']));
     $page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
     $page->SetParameter ('MYADS', myads_count($_SESSION['user']['id']));

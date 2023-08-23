@@ -3,12 +3,12 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h2>{LANG_HIDDEN_ADS}</h2>
+                <h2>My Training Ads</h2>
                 <!-- Breadcrumbs -->
                 <nav id="breadcrumbs">
                     <ul>
                         <li><a href="{LINK_INDEX}">{LANG_HOME}</a></li>
-                        <li>{LANG_HIDDEN_ADS}</li>
+                        <li>My Training Ads</li>
                     </ul>
                 </nav>
 
@@ -43,12 +43,12 @@
 
                                     <ul data-submenu-title="{LANG_MY_ADS}">
                                         <li><a href="{LINK_MYADS}"><i class="icon-feather-briefcase"></i> {LANG_MY_ADS} <span class="nav-tag">{MYADS}</span></a></li>
-                                        <li><a href="{LINK_MYTRAININGADS}"><i class="icon-feather-briefcase"></i> Training Ads <span class="nav-tag">{MYTRAININGADS}</span></a></li>
-<li><a href="{LINK_MYEVENTADS}"><i class="icon-feather-briefcase"></i> Event Ads <span class="nav-tag">{MYEVENTADS}</span></a></li>
+                                        <li class="active"><a href="{LINK_MYTRAININGADS}"><i class="icon-feather-briefcase"></i> Training Ads <span class="nav-tag">{MYTRAININGADS}</span></a></li>
+                                        <li><a href="{LINK_MYEVENTADS}"><i class="icon-feather-briefcase"></i> Event Ads <span class="nav-tag">{MYEVENTADS}</span></a></li>
                                         <li><a href="{LINK_FAVADS}"><i class="icon-feather-heart"></i> {LANG_FAVOURITE_ADS} <span class="nav-tag">{FAVORITEADS}</span></a></li>
 
                                         <li><a href="{LINK_PENDINGADS}"><i class="icon-feather-clock"></i> {LANG_PENDING_ADS} <span class="nav-tag">{PENDINGADS}</span></a></li>
-                                        <li class="active"><a href="{LINK_HIDDENADS}"><i class="icon-feather-eye-off"></i> {LANG_HIDDEN_ADS} <span class="nav-tag">{HIDDENADS}</span></a></li>
+                                        <li><a href="{LINK_HIDDENADS}"><i class="icon-feather-eye-off"></i> {LANG_HIDDEN_ADS} <span class="nav-tag">{HIDDENADS}</span></a></li>
                                         <li><a href="{LINK_EXPIREADS}"><i class="icon-feather-alert-octagon"></i> {LANG_EXPIRE_ADS} <span class="nav-tag">{EXPIREADS}</span></a></li>
                                         <li><a href="{LINK_RESUBMITADS}"><i class="icon-feather-rotate-cw"></i> {LANG_RESUBMITED_ADS} <span class="nav-tag">{RESUBMITADS}</span></a></li>
                                     </ul>
@@ -72,7 +72,7 @@
                 <div class="dashboard-box margin-top-0">
                     <!-- Headline -->
                     <div class="headline">
-                        <h3><i class="icon-feather-eye-off"></i> {LANG_HIDDEN_ADS}</h3>
+                        <h3><i class="icon-feather-briefcase"></i> My Training Ads</h3>
                     </div>
                     <div class="content with-padding">
                         <div class="table-responsive">
@@ -82,56 +82,60 @@
                                     <th class="small-width">{LANG_STATUS}</th>
                                     <th class="small-width">{LANG_ACTIONS}</th>
                                 </tr>
-                                IF({TOTALITEM}){
+                                IF({ADSFOUND}){
                                 {LOOP: ITEM}
-                                <tr class="ajax-item-listing" data-item-id="{ITEM.id}">
-                                    <td>
-                                        <div class="job-listing">
-                                            <div class="job-listing-details">
-                                                <div class="job-listing-description">
-                                                    <div class="job-listing-company-logo company-logo-myads">
-                                                        <img src="{SITE_URL}storage/products/thumb/{ITEM.picture}" alt="{ITEM.product_name}">
-                                                    </div>
-                                                    <div>
-                                                        <h3 class="job-listing-title margin-bottom-5">
-                                                            <a href="{ITEM.link}">{ITEM.product_name}</a>
-                                                            <label class="label-wrap hidden-sm hidden-xs margin-zero d-inline-block">
-                                                                IF("{ITEM.featured}"=="1"){ <span class="badge blue"> {LANG_FEATURED}</span> {:IF}
-                                                                IF("{ITEM.urgent}"=="1"){ <span class="badge yellow"> {LANG_URGENT}</span> {:IF}
-                                                                IF("{ITEM.highlight}"=="1"){ <span class="badge red"> {LANG_HIGHLIGHT}</span> {:IF}
-                                                            </label>
-                                                        </h3>
-                                                        <ol class="breadcrumb">
-                                                            <li><a href="{ITEM.catlink}"><i class="la la-tags"></i> {ITEM.category}</a></li>
-                                                            <li><a href="{ITEM.subcatlink}">{ITEM.sub_category}</a></li>
-                                                        </ol>
-                                                        <div class="job-listing-footer font-14">
-                                                            <ul>
-                                                                <li><i class="la la-map-marker"></i> {ITEM.location}</li>
-                                                                <li><i class="la la-calendar-times-o"></i> {LANG_EXPIRING}: {ITEM.expire_date}</li>
-                                                            </ul>
-                                                            IF("{ITEM.price}"!="0"){
-                                                            <span class="table-property-price">{ITEM.price}</span>
-                                                            {:IF}
+                                    <tr class="ajax-item-listing IF('{ITEM.hide}'=='1'){ opapcityLight {:IF}" data-item-id="{ITEM.id}">
+                                        <td>
+                                            <div class="job-listing">
+                                                <div class="job-listing-details">
+                                                    <div class="job-listing-description">
+                                                        <div class="job-listing-company-logo company-logo-myads">
+                                                            <img src="{SITE_URL}storage/products/thumb/{ITEM.picture}" alt="{ITEM.product_name}">
+                                                        </div>
+                                                        <div>
+                                                            <h3 class="job-listing-title margin-bottom-5">
+                                                                <a href="{ITEM.link}">{ITEM.product_name}</a>
+                                                                <label class="label-wrap hidden-sm hidden-xs margin-zero d-inline-block">
+                                                                    IF("{ITEM.featured}"=="1"){ <span class="badge blue"> {LANG_FEATURED}</span> {:IF}
+                                                                    IF("{ITEM.urgent}"=="1"){ <span class="badge yellow"> {LANG_URGENT}</span> {:IF}
+                                                                    IF("{ITEM.highlight}"=="1"){ <span class="badge red"> {LANG_HIGHLIGHT}</span> {:IF}
+                                                                </label>
+                                                            </h3>
+                                                            <ol class="breadcrumb">
+                                                                <li><a href="{ITEM.catlink}"><i class="la la-tags"></i> {ITEM.category}</a></li>
+                                                                <li><a href="{ITEM.subcatlink}">{ITEM.sub_category}</a></li>
+                                                            </ol>
+                                                            <div class="job-listing-footer font-14">
+                                                                <ul>
+                                                                    <li><i class="la la-map-marker"></i> {ITEM.location}</li>
+                                                                    <li><i class="la la-calendar-times-o"></i> {LANG_EXPIRING}: {ITEM.expire_date}</li>
+                                                                </ul>
+                                                                IF("{ITEM.price}"!="0"){
+                                                                <span class="table-property-price">{ITEM.price}</span>
+                                                                {:IF}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        IF("{ITEM.hide}"=="1"){ <span class="badge red label-hidden">{LANG_HIDDEN}</span>{:IF}
-                                    </td>
-                                    <td>
-                                        <a href="{LINK_EDIT-AD}/{ITEM.id}" class="button gray ripple-effect ico" data-tippy-placement="top" title="{LANG_EDIT}"><i class="icon-feather-edit"></i></a>
-                                        IF("{ITEM.hide}"=="0"){
-                                        <a href="#" data-ajax-action="hideItem" class="button gray ripple-effect ico item-js-hide" data-tippy-placement="top" title="{LANG_HIDE}"><i class="icon-feather-eye-off"></i></a>
-                                        {ELSE}
-                                        <a href="#" data-ajax-action="hideItem" class="button gray ripple-effect ico item-js-hide" data-tippy-placement="top" title="{LANG_SHOW}"><i class="icon-feather-eye"></i></a>
-                                        {:IF}
-                                        <a href="#" data-ajax-action="deleteMyAd" class="button gray ripple-effect ico item-js-delete" data-tippy-placement="top" title="{LANG_DELETE}"><i class="icon-feather-trash-2"></i></a>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td width="12%">
+                                            IF("{ITEM.status}"=="active"){ <span class="badge green">{LANG_ACTIVE}</span>{:IF}
+                                            IF("{ITEM.status}"=="pending"){ <span class="badge blue">{LANG_PENDING}</span> {:IF}
+                                            IF("{ITEM.status}"=="rejected"){ <span class="badge red">{ITEM.status}</span> {:IF}
+                                            IF("{ITEM.status}"=="expire"){ <span class="badge yellow">{LANG_EXPIRE}</span> {:IF}
+                                            IF("{ITEM.hide}"=="1"){ <span class="badge red label-hidden">{LANG_HIDDEN}</span> {:IF}
+                                        </td>
+                                        <td width="12%">
+                                            <a href="{LINK_EDIT-AD}/{ITEM.id}" class="button gray ripple-effect ico" data-tippy-placement="top" title="{LANG_EDIT}"><i class="icon-feather-edit"></i></a>
+
+                                            <a class="button gray ripple-effect ico item-js-hide" href="#" data-ajax-action="hideItem"  data-tippy-placement="top"
+                                                IF('{ITEM.hide}'=='0'){ title="{LANG_HIDE}" {ELSE} title="{LANG_SHOW}" {:IF} >
+                                                IF('{ITEM.hide}'=='0'){ <i class="fa  fa-eye-slash"></i> {ELSE} <i class="fa  fa-eye"></i> {:IF}</a>
+
+                                            <a href="#" data-ajax-action="deleteMyAd" class="button gray ripple-effect ico item-js-delete" data-tippy-placement="top" title="{LANG_DELETE}"><i class="icon-feather-trash-2"></i></a>
+                                        </td>
+                                    </tr>
                                 {/LOOP: ITEM}
                                 {ELSE}
                                 <tr>
@@ -147,7 +151,7 @@
                                     <nav class="pagination">
                                         <ul>
                                             {LOOP: PAGES}
-                                            IF("{PAGES.current}"=="0"){
+                                                IF("{PAGES.current}"=="0"){
                                                 <li><a href="{PAGES.link}">{PAGES.title}</a></li>
                                             {ELSE}
                                                 <li><a href="#" class="current-page">{PAGES.title}</a></li>
@@ -164,5 +168,4 @@
         </div>
     </div>
 </div>
-
 {OVERALL_FOOTER}
