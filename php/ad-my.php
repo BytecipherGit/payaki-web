@@ -102,7 +102,7 @@ if(checkloggedin()) {
         /*$country_code = check_user_country();
         $where.= "AND (country = '$country_code') ";*/
     }
-
+    $where.= "AND category != 9 AND category != 10";
     $sql = "SELECT *
 FROM `".$config['db']['pre']."product`
  WHERE status = 'active' AND hide = '0' AND user_id = '".$_SESSION['user']['id']."' ";

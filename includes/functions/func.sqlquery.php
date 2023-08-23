@@ -1924,7 +1924,7 @@ function get_resubmited_items($userid = false, $status = null, $page = null, $li
         }
 
     }
-
+    $where .= " AND p.category != 9 AND p.category != 10";
     $pagelimit = "";
     if ($page != null && $limit != null) {
         $pagelimit = "LIMIT  " . ($page - 1) * $limit . "," . $limit;
@@ -2062,6 +2062,8 @@ function resubmited_ads_count($id)
     global $config;
     $num_rows = ORM::for_table($config['db']['pre'] . 'product_resubmit')
         ->where('user_id', $id)
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2074,6 +2076,8 @@ function myads_count($id)
             'status' => "active",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2086,6 +2090,8 @@ function active_ads_count($id)
             'status' => "active",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2098,6 +2104,8 @@ function pending_ads_count($id)
             'status' => "pending",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2110,6 +2118,8 @@ function expire_ads_count($id)
             'status' => "expire",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2122,6 +2132,8 @@ function hidden_ads_count($id)
             'hide' => '1',
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2131,6 +2143,8 @@ function favorite_ads_count($id)
     global $config;
     $num_rows = ORM::for_table($config['db']['pre'] . 'favads')
         ->where('user_id', $id)
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }

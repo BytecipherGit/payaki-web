@@ -28,8 +28,7 @@ if(checkloggedin()) {
         ->find_many();
     if (count($result) > 0) {
         foreach ($result as $fav) {
-            $info = ORM::for_table($config['db']['pre'].'product')->find_one($fav['product_id']);
-
+            $info = ORM::for_table($config['db']['pre'].'product')->where_not_equal('category', 9)->where_not_equal('category', 10)->find_one($fav['product_id']);
             if (!empty($info)) {
                 $item[$info['id']]['id'] = $info['id'];
                 $item[$info['id']]['product_name'] = $info['product_name'];
