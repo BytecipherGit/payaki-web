@@ -1702,6 +1702,9 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
         }
     }*/
 
+    // Adding checked in defualt post listing should not get event & training category product
+    $where .= " AND p.category != 9 AND p.category != 10";
+
     if ($order) {
     //     $order_by = "
     //   (CASE
