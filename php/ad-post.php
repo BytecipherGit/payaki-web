@@ -278,7 +278,13 @@ function ajax_post_advertise()
                     $tags = '';
                 }
 
-                if ($config['post_auto_approve'] == 1) {
+                /*if ($config['post_auto_approve'] == 1) {
+                    $status = "active";
+                } else {
+                    $status = "pending";
+                }*/
+
+                if ($_POST['catid'] == 9 || $_POST['catid'] == 10) {
                     $status = "active";
                 } else {
                     $status = "pending";
