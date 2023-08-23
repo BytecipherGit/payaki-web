@@ -1725,6 +1725,8 @@ class Api extends Rest
             }
             if (!empty($this->param['category'])) {
                 $getpost .= " AND ap.category=:categoryId";
+            } else {
+                $getpost .= " AND ap.category != 9 AND ap.category != 10 ";
             }
             if (!empty($this->param['sub_category'])) {
                 $getpost .= " AND ap.sub_category=:subCategoryId";
