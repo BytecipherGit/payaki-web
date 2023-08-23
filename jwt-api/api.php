@@ -924,7 +924,11 @@ class Api extends Rest
                     } 
                 }
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, event_date, event_time, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, promo_video, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :event_date, :event_time, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :promo_video, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
-                $status = 'pending';
+                if($category == 9 || $category == 10){
+                    $status = 'active';
+                } else {
+                    $status = 'pending';
+                }
                 $createdDate = date('Y-m-d H:i:s');
                 $featuredExpDate = null;
                 $stmt = $this->dbConn->prepare($sql);
