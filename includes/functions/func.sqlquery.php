@@ -2808,7 +2808,7 @@ function get_items_count($userid = false, $status = null, $premium = false, $get
 
     }
 
-    if ($status == "hide") {
+    /*if ($status == "hide") {
         $where_array['status'] = "hide";
         if ($where == '') {
             $where .= "where hide = '1'";
@@ -2824,7 +2824,7 @@ function get_items_count($userid = false, $status = null, $premium = false, $get
             $where .= " AND hide = '0'";
         }
 
-    }
+    }*/
 
     if ($premium) {
         if ($where == '') {
