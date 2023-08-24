@@ -1666,7 +1666,7 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
 
     }
 
-    if ($status == "hide") {
+    /*if ($status == "hide") {
         if ($where == '') {
             $where .= "where p.hide = '1'";
         } else {
@@ -1680,7 +1680,7 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
             $where .= " AND p.hide = '0'";
         }
 
-    }
+    }*/
 
     if($premium){
         $grqry = "u.group_id in ('".implode("','",$listing_search_array)."')";
