@@ -2082,6 +2082,30 @@ function myads_count($id)
     return $num_rows;
 }
 
+function training_ads_count($id)
+{
+    global $config;
+    $num_rows = ORM::for_table($config['db']['pre'] . 'product')
+        ->where(array(
+            'status' => "active",
+            'user_id' => $id,
+            'category' => 9,
+        ))->count();
+    return $num_rows;
+}
+
+function event_ads_count($id)
+{
+    global $config;
+    $num_rows = ORM::for_table($config['db']['pre'] . 'product')
+        ->where(array(
+            'status' => "active",
+            'user_id' => $id,
+            'category' => 10,
+        ))->count();
+    return $num_rows;
+}
+
 function active_ads_count($id)
 {
     global $config;

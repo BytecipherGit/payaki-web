@@ -62,6 +62,8 @@ if(checkloggedin())
         $page->SetParameter ('EXPIREADS', expire_ads_count($_SESSION['user']['id']));
         $page->SetParameter ('FAVORITEADS', favorite_ads_count($_SESSION['user']['id']));
         $page->SetParameter ('MYADS', myads_count($_SESSION['user']['id']));
+        $page->SetParameter ('MYTRAININGADS', training_ads_count($_SESSION['user']['id']));
+        $page->SetParameter ('MYEVENTADS', event_ads_count($_SESSION['user']['id']));
         $page->SetLoop('ERRORS', "");
         $page->SetLoop('COUNTRY', get_country_list($ses_userdata['country']));
         $page->SetParameter ('AUTHORUNAME', ucfirst($ses_userdata['username']));

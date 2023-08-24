@@ -54,6 +54,8 @@ $router->map('GET|POST','/message/?', 'message.php');
 $router->map('GET|POST','/forgot/?', 'forgot.php');
 $router->map('GET|POST','/dashboard/?', 'dashboard.php');
 $router->map('GET|POST','/myads/[*:page]?/?', 'ad-my.php');
+$router->map('GET|POST','/my-training-ads/[*:page]?/?', 'ad-my-training.php');
+$router->map('GET|POST','/my-event-ads/[*:page]?/?', 'ad-my-events.php');
 $router->map('GET|POST','/pending/[*:page]?/?', 'ad-pending.php');
 $router->map('GET|POST','/expire/[*:page]?/?', 'ad-expire.php');
 $router->map('GET|POST','/favourite/[*:page]?/?', 'ad-favourite.php');
