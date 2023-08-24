@@ -1859,90 +1859,12 @@ class Api extends Rest
         try {
             $now = date("Y-m-d H:i:s");
             $responseArr = array();
-            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
-
-            /*if (!empty($this->param['title'])) {
-                $getpost .= " AND ap.product_name LIKE CONCAT( '%', :title, '%')";
-            }
-            if (!empty($this->param['category'])) {
-                $getpost .= " AND ap.category=:categoryId";
+            if (!empty($this->param['user_id'])) {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id = '".$this->param['user_id']."' AND ap.category = 9 ORDER BY ap.created_at DESC";
             } else {
-                $getpost .= " AND ap.category != 9 AND ap.category != 10 ";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
             }
-            if (!empty($this->param['sub_category'])) {
-                $getpost .= " AND ap.sub_category=:subCategoryId";
-            }
-            if (!empty($this->param['location'])) {
-                $getpost .= " AND ap.location LIKE CONCAT( '%', :location, '%')";
-            }
-            if (!empty($this->param['city'])) {
-                $getpost .= " AND ap.city=:cityId";
-            }
-            if (!empty($this->param['state'])) {
-                $getpost .= " AND ap.state LIKE CONCAT( '%', :stateId, '%')";
-            }
-            if (!empty($this->param['country'])) {
-                $getpost .= " AND ap.country LIKE CONCAT( '%', :countryId, '%')";
-            }
-            if (!empty($this->param['priceto']) && !empty($this->param['pricefrom'])) {
-                $getpost .= " AND ap.price BETWEEN " . $this->param['pricefrom'] . " AND " . $this->param['priceto'] . "";
-            }*/
-
-            /*if(!empty($this->param['yearto']) && !empty($this->param['yearfrom'])){
-            $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
-            }*/
-
-            /*if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
-                $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight)";
-            }*/
-
-            /*if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
-                $getpost .= " ORDER BY ap.product_name ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc') {
-                $getpost .= " ORDER BY ap.product_name DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_asc') {
-                $getpost .= " ORDER BY ap.price ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_desc') {
-                $getpost .= " ORDER BY ap.price DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc') {
-                $getpost .= " ORDER BY ap.created_at ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
-                $getpost .= " ORDER BY ap.created_at DESC";
-            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
-                $getpost .= " ORDER BY ap.created_at DESC";
-            }*/
             $postData = $this->dbConn->prepare($getpost);
-            /*$postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
-
-            if (!empty($this->param['title'])) {
-                $postData->bindValue(':title', $this->param['title'], PDO::PARAM_STR);
-            }
-
-            if (!empty($this->param['category'])) {
-                $postData->bindValue(':categoryId', $this->param['category'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['sub_category'])) {
-                $postData->bindValue(':subCategoryId', $this->param['sub_category'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['location'])) {
-                $postData->bindValue(':location', $this->param['location'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['city'])) {
-                $postData->bindValue(':cityId', $this->param['city'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['state'])) {
-                $postData->bindValue(':stateId', $this->param['state'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['country'])) {
-                $postData->bindValue(':countryId', $this->param['country'], PDO::PARAM_STR);
-            }
-
-            if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
-                $postData->bindValue(':featured', 1, PDO::PARAM_STR);
-                $postData->bindValue(':urgent', 1, PDO::PARAM_STR);
-                $postData->bindValue(':highlight', 1, PDO::PARAM_STR);
-            }*/
-
             $postData->execute();
             // echo "Last executed query: " . $postData->queryString;
             // exit;
@@ -2009,90 +1931,12 @@ class Api extends Rest
         try {
             $now = date("Y-m-d H:i:s");
             $responseArr = array();
-            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 10 ORDER BY ap.created_at DESC";
-
-            /*if (!empty($this->param['title'])) {
-                $getpost .= " AND ap.product_name LIKE CONCAT( '%', :title, '%')";
-            }
-            if (!empty($this->param['category'])) {
-                $getpost .= " AND ap.category=:categoryId";
+            if (!empty($this->param['user_id'])) {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id='".$this->param['user_id']."' AND ap.category = 10 ORDER BY ap.created_at DESC";
             } else {
-                $getpost .= " AND ap.category != 9 AND ap.category != 10 ";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 10 ORDER BY ap.created_at DESC";
             }
-            if (!empty($this->param['sub_category'])) {
-                $getpost .= " AND ap.sub_category=:subCategoryId";
-            }
-            if (!empty($this->param['location'])) {
-                $getpost .= " AND ap.location LIKE CONCAT( '%', :location, '%')";
-            }
-            if (!empty($this->param['city'])) {
-                $getpost .= " AND ap.city=:cityId";
-            }
-            if (!empty($this->param['state'])) {
-                $getpost .= " AND ap.state LIKE CONCAT( '%', :stateId, '%')";
-            }
-            if (!empty($this->param['country'])) {
-                $getpost .= " AND ap.country LIKE CONCAT( '%', :countryId, '%')";
-            }
-            if (!empty($this->param['priceto']) && !empty($this->param['pricefrom'])) {
-                $getpost .= " AND ap.price BETWEEN " . $this->param['pricefrom'] . " AND " . $this->param['priceto'] . "";
-            }*/
-
-            /*if(!empty($this->param['yearto']) && !empty($this->param['yearfrom'])){
-            $getpost .= " AND ap.created_at BETWEEN '".$this->param['yearto']."' AND '".$this->param['yearfrom']."'";
-            }*/
-
-            /*if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
-                $getpost .= " AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight)";
-            }*/
-
-            /*if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_asc') {
-                $getpost .= " ORDER BY ap.product_name ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'product_name_desc') {
-                $getpost .= " ORDER BY ap.product_name DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_asc') {
-                $getpost .= " ORDER BY ap.price ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'price_desc') {
-                $getpost .= " ORDER BY ap.price DESC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_asc') {
-                $getpost .= " ORDER BY ap.created_at ASC";
-            } else if (!empty($this->param['sortbyfieldname']) && $this->param['sortbyfieldname'] == 'created_at_desc') {
-                $getpost .= " ORDER BY ap.created_at DESC";
-            } else if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'latest') {
-                $getpost .= " ORDER BY ap.created_at DESC";
-            }*/
             $postData = $this->dbConn->prepare($getpost);
-            /*$postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
-
-            if (!empty($this->param['title'])) {
-                $postData->bindValue(':title', $this->param['title'], PDO::PARAM_STR);
-            }
-
-            if (!empty($this->param['category'])) {
-                $postData->bindValue(':categoryId', $this->param['category'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['sub_category'])) {
-                $postData->bindValue(':subCategoryId', $this->param['sub_category'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['location'])) {
-                $postData->bindValue(':location', $this->param['location'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['city'])) {
-                $postData->bindValue(':cityId', $this->param['city'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['state'])) {
-                $postData->bindValue(':stateId', $this->param['state'], PDO::PARAM_STR);
-            }
-            if (!empty($this->param['country'])) {
-                $postData->bindValue(':countryId', $this->param['country'], PDO::PARAM_STR);
-            }
-
-            if (!empty($this->param['listing_type']) && $this->param['listing_type'] == 'premium') {
-                $postData->bindValue(':featured', 1, PDO::PARAM_STR);
-                $postData->bindValue(':urgent', 1, PDO::PARAM_STR);
-                $postData->bindValue(':highlight', 1, PDO::PARAM_STR);
-            }*/
-
             $postData->execute();
             // echo "Last executed query: " . $postData->queryString;
             // exit;
