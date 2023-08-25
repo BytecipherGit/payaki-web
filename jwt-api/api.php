@@ -1860,9 +1860,9 @@ class Api extends Rest
             $now = date("Y-m-d H:i:s");
             $responseArr = array();
             if (!empty($this->param['user_id'])) {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id = '".$this->param['user_id']."' AND ap.category = 9 ORDER BY ap.created_at DESC";
+                $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id = '".$this->param['user_id']."' AND ap.category = 9 ORDER BY ap.created_at DESC";
             } else {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
+                $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
             }
             $postData = $this->dbConn->prepare($getpost);
             $postData->execute();
@@ -1873,6 +1873,12 @@ class Api extends Rest
                 foreach ($postData as $key => $post) {
                     $responseArr[$key] = $post;
                     // Get location,City, State, Country
+                    // $getUser = "SELECT username FROM ad_user WHERE id = :userId";
+                    // $getUserData = $this->dbConn->prepare($getUser);
+                    // $getUserData->bindValue(':userId', $post['user_id'], PDO::PARAM_STR);
+                    // $getUserData->execute();
+                    // $getUserData = $getUserData->fetch(PDO::FETCH_ASSOC);
+                    // $responseArr[$key]['post_user_name'] = !empty($getUserData['username']) ? $getUserData['username'] : '';
                     $fullAddress = '';
                     if (!empty($post['location'])) {
                         $fullAddress .= $post['location'];
