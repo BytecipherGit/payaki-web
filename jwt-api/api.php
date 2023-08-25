@@ -3222,4 +3222,66 @@ class Api extends Rest
             }
         }
     }
+
+    public function deleteUserEventPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $stmt = $this->dbConn->prepare('DELETE FROM ad_product_event_types WHERE product_id=:product_id');
+                    $stmt->bindParam(":product_id", $product_id);
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Event successfully deleted."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => true, "code" => 200, "Message" => "Event successfully deleted."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteUserTrainingPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $stmt = $this->dbConn->prepare('DELETE FROM ad_training_gallery WHERE product_id=:product_id');
+                    $stmt->bindParam(":product_id", $product_id);
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Training successfully deleted."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => true, "code" => 200, "Message" => "Training successfully deleted."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
 }
