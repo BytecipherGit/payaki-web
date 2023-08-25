@@ -2010,7 +2010,7 @@ class Api extends Rest
             $responseArr = array();
 
             //Get Premium Post
-            $getPremiumPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight) ORDER BY ap.created_at DESC LIMIT 10";
+            $getPremiumPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date AND ap.category != 9 AND ap.category != 10 AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight) ORDER BY ap.created_at DESC LIMIT 10";
             $premiumPostData = $this->dbConn->prepare($getPremiumPost);
             $premiumPostData->bindValue(':expired_date', $now, PDO::PARAM_STR);
             $premiumPostData->bindValue(':featured', 1, PDO::PARAM_STR);
