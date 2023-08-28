@@ -3237,29 +3237,29 @@ class Api extends Rest
     public function checkoutEventPaypal()
     {
         $productId = $this->validateParameter('productId', $this->param['productId'], INTEGER);
-        if (count($this->param['eventTypeIds']) > 0) {
+        if (count($this->param['ticketTypeIds']) > 0) {
             // Check if the variables are arrays or not
-            if (!is_array($this->param['eventTypeIds'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventTypeIds. It should be type array.");
+            if (!is_array($this->param['ticketTypeIds'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketTypeIds. It should be type array.");
             }
         } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventTypeIds should not be empty array");
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketTypeIds should not be empty array");
         }
-        if (count($this->param['eventAmounts']) > 0) {
+        if (count($this->param['ticketAmounts']) > 0) {
             // Check if the variables are arrays or not
-            if (!is_array($this->param['eventAmounts'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventAmounts. It should be type array.");
+            if (!is_array($this->param['ticketAmounts'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketAmounts. It should be type array.");
             }
         } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventAmounts should not be empty array");
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketAmounts should not be empty array");
         }
-        if (count($this->param['eventQuantities']) > 0) {
+        if (count($this->param['ticketQuantities']) > 0) {
             // Check if the variables are arrays or not
-            if (!is_array($this->param['eventQuantities'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventQuantities. It should be type array.");
+            if (!is_array($this->param['ticketQuantities'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketQuantities. It should be type array.");
             }
         } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventQuantities should not be empty array");
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketQuantities should not be empty array");
         }
         
         $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
@@ -3287,17 +3287,17 @@ class Api extends Rest
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
                 if (!empty($orderId)) {
-                    $eventTypeIds = implode(",",$this->param['eventTypeIds']);
-                    $eventAmounts = implode(",",$this->param['eventAmounts']);
-                    $eventQuantities = implode(",",$this->param['eventQuantities']);
+                    $ticketTypeIds = implode(",",$this->param['ticketTypeIds']);
+                    $ticketAmounts = implode(",",$this->param['ticketAmounts']);
+                    $ticketQuantities = implode(",",$this->param['ticketQuantities']);
                     $insertSOIT = "INSERT INTO `ad_event_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
                     $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                     $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
                     $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
                     //$eventTypeId comma seperated id from ad_product_event_types
-                    $insertSOSTIT->bindValue(':event_type_id',  $eventTypeIds, PDO::PARAM_STR);
-                    $insertSOSTIT->bindValue(':item_price', $eventAmounts, PDO::PARAM_STR);
-                    $insertSOSTIT->bindValue(':quantity', $eventQuantities, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':event_type_id',  $ticketTypeIds, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':item_price', $ticketAmounts, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':quantity', $ticketQuantities, PDO::PARAM_STR);
                     if($insertSOSTIT->execute()){
                         $payment_response = 'VERIFIED';
                         $insertSP = "INSERT INTO `ad_event_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
@@ -3309,22 +3309,22 @@ class Api extends Rest
                         $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
                         $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
                         if ($insertSPST->execute()) {
-                            if(!empty($this->param['eventTypeIds']) && !empty($this->param['eventQuantities'])){
+                            if(!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])){
                                 // $eventTypeIdArr = explode(",",$eventTypeId);
                                 // $eventQuantityArr = explode(",",$eventQuantity);
-                                if (count($this->param['eventTypeIds']) > 0) {
-                                    for ($i = 0; $i < count($this->param['eventTypeIds']); $i++) {
+                                if (count($this->param['ticketTypeIds']) > 0) {
+                                    for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
                                         $id = $newAvailableQty = $newRemainingQty = '';
-                                         if(!empty($this->param['eventTypeIds'][$i])){
-                                            $id = $this->param['eventTypeIds'][$i];
+                                         if(!empty($this->param['ticketTypeIds'][$i])){
+                                            $id = $this->param['ticketTypeIds'][$i];
                                             $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
                                             $getAvailableQty = $this->dbConn->prepare($getQty);
                                             $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
                                             $getAvailableQty->execute();
                                             $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
                                             if(!empty($getAvailableQty['available_quantity'])){
-                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['eventQuantities'][$i];
-                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['eventQuantities'][$i];
+                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['ticketQuantities'][$i];
                                                 $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
                                                 $updateNewQty->bindValue(':id', $id, PDO::PARAM_STR);
                                                 $updateNewQty->bindValue(':available_quantity', $newAvailableQty, PDO::PARAM_STR);
