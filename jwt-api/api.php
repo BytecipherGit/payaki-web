@@ -98,6 +98,10 @@ class Api extends Rest
                 'iss' => 'localhost',
                 'exp' => time() + (14400000),
                 'userId' => $user['id'],
+                'name' => $user['name'],
+                'address' => $user['address'],
+                'phone' => $user['phone'],
+                'email' => $user['email'],
             ];
 
             $token = GlobalJWT::encode($paylod, SECRETE_KEY);
@@ -177,6 +181,10 @@ class Api extends Rest
                         'iss' => 'localhost',
                         'exp' => time() + (14400000),
                         'userId' => $user['id'],
+                        'name' => $user['name'],
+                        'address' => $user['address'],
+                        'phone' => $user['phone'],
+                        'email' => $user['email'],
                     ];
                     $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
@@ -301,7 +309,16 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user_id];
+                $paylod = [
+                    'iat' => time(), 
+                    'iss' => 'localhost', 
+                    'exp' => time() + (14400000), 
+                    'userId' => $user_id,
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
                 $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
@@ -754,7 +771,16 @@ class Api extends Rest
                 $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
                 $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
+                $paylod = [
+                    'iat' => time(), 
+                    'iss' => 'localhost', 
+                    'exp' => time() + (14400000), 
+                    'userId' => $user['id'],
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
@@ -783,7 +809,16 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $last_id];
+                $paylod = [
+                    'iat' => time(), 
+                    'iss' => 'localhost', 
+                    'exp' => time() + (14400000), 
+                    'userId' => $last_id,
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
@@ -3187,6 +3222,127 @@ class Api extends Rest
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                         $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function checkoutEventPaypal()
+    {
+        $productId = $this->validateParameter('productId', $this->param['productId'], INTEGER);
+        if (count($this->param['eventTypeIds']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['eventTypeIds'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventTypeIds. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventTypeIds should not be empty array");
+        }
+        if (count($this->param['eventAmounts']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['eventAmounts'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventAmounts. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventAmounts should not be empty array");
+        }
+        if (count($this->param['eventQuantities']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['eventQuantities'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for eventQuantities. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "eventQuantities should not be empty array");
+        }
+        
+        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
+        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $order_status = 'PAID';
+                $order_at = date("Y-m-d H:i:s");
+                $payment_type = 'PAYPAL';
+                $insertSO = "INSERT INTO `ad_event_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSOST = $this->dbConn->prepare($insertSO);
+                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
+                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
+                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
+                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
+                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
+                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
+                $insertSOST->execute();
+                // Get the last insert ID
+                $orderId = $this->dbConn->lastInsertId();
+                if (!empty($orderId)) {
+                    $eventTypeIds = implode(",",$this->param['eventTypeIds']);
+                    $eventAmounts = implode(",",$this->param['eventAmounts']);
+                    $eventQuantities = implode(",",$this->param['eventQuantities']);
+                    $insertSOIT = "INSERT INTO `ad_event_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
+                    $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                    $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                    //$eventTypeId comma seperated id from ad_product_event_types
+                    $insertSOSTIT->bindValue(':event_type_id',  $eventTypeIds, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':item_price', $eventAmounts, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':quantity', $eventQuantities, PDO::PARAM_STR);
+                    if($insertSOSTIT->execute()){
+                        $payment_response = 'VERIFIED';
+                        $insertSP = "INSERT INTO `ad_event_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                        $insertSPST = $this->dbConn->prepare($insertSP);
+                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
+                        if ($insertSPST->execute()) {
+                            if(!empty($this->param['eventTypeIds']) && !empty($this->param['eventQuantities'])){
+                                // $eventTypeIdArr = explode(",",$eventTypeId);
+                                // $eventQuantityArr = explode(",",$eventQuantity);
+                                if (count($this->param['eventTypeIds']) > 0) {
+                                    for ($i = 0; $i < count($this->param['eventTypeIds']); $i++) {
+                                        $id = $newAvailableQty = $newRemainingQty = '';
+                                         if(!empty($this->param['eventTypeIds'][$i])){
+                                            $id = $this->param['eventTypeIds'][$i];
+                                            $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
+                                            $getAvailableQty = $this->dbConn->prepare($getQty);
+                                            $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                            $getAvailableQty->execute();
+                                            $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
+                                            if(!empty($getAvailableQty['available_quantity'])){
+                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['eventQuantities'][$i];
+                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['eventQuantities'][$i];
+                                                $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
+                                                $updateNewQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':available_quantity', $newAvailableQty, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':remaining_quantity', $newRemainingQty, PDO::PARAM_STR);
+                                                $updateNewQty->execute();
+                                            }
+                                        }
+                                    }
+                                }
+                                $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked."];
+                                $this->returnResponse($response);
+                            }
+                            
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                            $this->returnResponse($response);
+                        }
+
                     }
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
