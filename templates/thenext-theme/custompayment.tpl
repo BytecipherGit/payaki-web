@@ -45,8 +45,8 @@
                                 <input type='hidden' name='item_number' value="{ORDERID}">
                                 <input type='hidden' name='amount' value='{TOTALAMOUNTPAYBLE}'> 
                                 <input type='hidden' name='currency_code' value='USD'> 
-                                <input type='hidden' name='notify_url' value='http://themindcrm.com/payaki-web/customnotify/'>
-                                <input type='hidden' name='return' value='http://themindcrm.com/payaki-web/customsuccess/'>
+                                <input type='hidden' name='notify_url' value='{SITE_URL}customnotify'>
+                                <input type='hidden' name='return' value='{SITE_URL}customsuccess'>
                                 <input type="hidden" name="cmd" value="_xclick"> 
                                 <input type="hidden" name="order" value="1">
                                 <br>
