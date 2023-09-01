@@ -310,9 +310,9 @@ class Api extends Rest
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 $paylod = [
-                    'iat' => time(), 
-                    'iss' => 'localhost', 
-                    'exp' => time() + (14400000), 
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
                     'userId' => $user_id,
                     'name' => $user['name'],
                     'address' => $user['address'],
@@ -328,12 +328,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-	                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-	                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-	                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-	                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-	                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-	                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+		                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+		                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+		                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+		                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+		                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+		                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -772,9 +772,9 @@ class Api extends Rest
                 $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
                 $paylod = [
-                    'iat' => time(), 
-                    'iss' => 'localhost', 
-                    'exp' => time() + (14400000), 
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
                     'userId' => $user['id'],
                     'name' => $user['name'],
                     'address' => $user['address'],
@@ -810,9 +810,9 @@ class Api extends Rest
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 $paylod = [
-                    'iat' => time(), 
-                    'iss' => 'localhost', 
-                    'exp' => time() + (14400000), 
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
                     'userId' => $last_id,
                     'name' => $user['name'],
                     'address' => $user['address'],
@@ -851,7 +851,7 @@ class Api extends Rest
                 $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
                 $seller_name = $_POST['seller_name'];
                 $productName = $_POST['product_name'];
-               
+
                 if (!empty($productName)) {
                     $slug = $this->createSlug($productName);
                 } else {
@@ -881,7 +881,7 @@ class Api extends Rest
                 $emailed = isset($_POST['emailed']) ? $_POST['emailed'] : 0;
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
                 $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
-                
+
                 if ($category == 9) {
                     $postType = 'training';
                 } else if ($category == 10) {
@@ -889,10 +889,10 @@ class Api extends Rest
                 } else {
                     $postType = 'other';
                 }
-               
+
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
-               
+
                 if ($total_count > 0) {
                     $screenShot = '';
                     for ($i = 0; $i < $total_count; $i++) {
@@ -932,8 +932,8 @@ class Api extends Rest
                         mkdir($targetDir, 0777, true);
                     }
                     $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
-                    $maxSizeMB = (int)$_POST["max_size"];
-                
+                    $maxSizeMB = (int) $_POST["max_size"];
+
                     // Check if the file has no errors
                     if ($_FILES["promo_video"]["error"] === UPLOAD_ERR_OK) {
                         // Validate file size
@@ -950,16 +950,16 @@ class Api extends Rest
                                     if (!empty($trainingPromoVideoNewFileName)) {
                                         $trainingPromoVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingPromoVideoNewFileName;
                                         if (move_uploaded_file($trainingPromoVideoTempFileName, $trainingPromoVideoFilePath)) {
-                                            $promoVideoFileName = $trainingPromoVideoNewFileName; 
-                                        } 
+                                            $promoVideoFileName = $trainingPromoVideoNewFileName;
+                                        }
                                     }
                                 }
-                            } 
-                        } 
-                    } 
+                            }
+                        }
+                    }
                 }
                 $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, event_date, event_time, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, promo_video, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :event_date, :event_time, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :promo_video, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
-                if($category == 9 || $category == 10){
+                if ($category == 9 || $category == 10) {
                     $status = 'active';
                 } else {
                     $status = 'pending';
@@ -1011,8 +1011,8 @@ class Api extends Rest
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
                     if (!empty($last_id)) {
-                        //Insert record into event table 
-                        if(!empty($_POST['events']) && $category == 10){
+                        //Insert record into event table
+                        if (!empty($_POST['events']) && $category == 10) {
                             foreach (json_decode($_POST['events']) as $key => $event) {
                                 $ticket_type = $event->ticket_title;
                                 $ticket_price = $event->ticket_price;
@@ -1034,7 +1034,7 @@ class Api extends Rest
                                 $stmt->execute();
                             }
                         }
-                        
+
                         // if (validate_input($_POST['catid']) == 9) {
                         //     // Check if files were uploaded
                         //     if (isset($_FILES['trainingVideo'])) {
@@ -1065,7 +1065,7 @@ class Api extends Rest
                         //                 $countTrainingVidoe++;
                         //             }
                         //         }
-    
+
                         //     }
                         //     //Insert record in Training Gallery
                         //     $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
@@ -1230,61 +1230,61 @@ class Api extends Rest
         try {
             $productId = $_POST['product_id'];
             if (!empty($productId) && !empty($_POST["max_size"]) && isset($_FILES["trainingVideo"])) {
-                    // Define the target directory for storing video files
-                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
-                    // Create the target directory if it doesn't exist
-                    if (!file_exists($targetDir)) {
-                        mkdir($targetDir, 0777, true);
-                    }
-                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
-                    $maxSizeMB = (int)$_POST["max_size"];
-                
-                    // Check if the file has no errors
-                    if ($_FILES["trainingVideo"]["error"] === UPLOAD_ERR_OK) {
-                        // Validate file size
-                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
-                        if ($_FILES["trainingVideo"]["size"] <= $maxSizeBytes) {
-                            // Validate file extension
-                            $fileExtension = strtolower(pathinfo($_FILES["trainingVideo"]["name"], PATHINFO_EXTENSION));
-                            if (in_array($fileExtension, $allowedExtensions)) {
-                                $trainingVideoFileName = $_FILES['trainingVideo']['name'];
-                                $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'];
-                                if ($trainingVideoTempFileName != '') {
-                                    $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
-                                    $trainingVideoNewFileName = microtime(true) . '.' . $extension;
-                                    if (!empty($trainingVideoNewFileName)) {
-                                        $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
-                                        if (move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath)) {
-                                            //Insert record in Training Gallery
-                                            $sql = 'INSERT INTO ad_training_gallery (id, product_id, training_video) VALUES(null, :product_id, :training_video)';
-                                            $stmt = $this->dbConn->prepare($sql);
-                                            $stmt->bindParam(':product_id', $productId);
-                                            $stmt->bindParam(':training_video', $trainingVideoNewFileName);
-                                            if ($stmt->execute()) {
-                                                $response = ["status" => true, "code" => 200, "Message" => "Training video successfuly uploaded."];
-                                                $this->returnResponse($response);
-                                            } else {
-                                                $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
-                                                $this->returnResponse($response);
-                                            }
+                // Define the target directory for storing video files
+                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                // Create the target directory if it doesn't exist
+                if (!file_exists($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+                $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                $maxSizeMB = (int) $_POST["max_size"];
+
+                // Check if the file has no errors
+                if ($_FILES["trainingVideo"]["error"] === UPLOAD_ERR_OK) {
+                    // Validate file size
+                    $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                    if ($_FILES["trainingVideo"]["size"] <= $maxSizeBytes) {
+                        // Validate file extension
+                        $fileExtension = strtolower(pathinfo($_FILES["trainingVideo"]["name"], PATHINFO_EXTENSION));
+                        if (in_array($fileExtension, $allowedExtensions)) {
+                            $trainingVideoFileName = $_FILES['trainingVideo']['name'];
+                            $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'];
+                            if ($trainingVideoTempFileName != '') {
+                                $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                if (!empty($trainingVideoNewFileName)) {
+                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
+                                    if (move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath)) {
+                                        //Insert record in Training Gallery
+                                        $sql = 'INSERT INTO ad_training_gallery (id, product_id, training_video) VALUES(null, :product_id, :training_video)';
+                                        $stmt = $this->dbConn->prepare($sql);
+                                        $stmt->bindParam(':product_id', $productId);
+                                        $stmt->bindParam(':training_video', $trainingVideoNewFileName);
+                                        if ($stmt->execute()) {
+                                            $response = ["status" => true, "code" => 200, "Message" => "Training video successfuly uploaded."];
+                                            $this->returnResponse($response);
                                         } else {
-                                            $response = ["status" => false, "code" => 400, "Message" => "Error moving the uploaded file."];
+                                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
                                             $this->returnResponse($response);
                                         }
+                                    } else {
+                                        $response = ["status" => false, "code" => 400, "Message" => "Error moving the uploaded file."];
+                                        $this->returnResponse($response);
                                     }
                                 }
-                            } else {
-                                $response = ["status" => false, "code" => 400, "Message" => "Invalid file extension. Allowed extensions: " . implode(", ", $allowedExtensions)];
-                                $this->returnResponse($response);
                             }
                         } else {
-                            $response = ["status" => false, "code" => 400, "Message" => "File size exceeds the maximum allowed size of {$maxSizeMB} MB."];
+                            $response = ["status" => false, "code" => 400, "Message" => "Invalid file extension. Allowed extensions: " . implode(", ", $allowedExtensions)];
                             $this->returnResponse($response);
                         }
                     } else {
-                        $response = ["status" => false, "code" => 400, "Message" => "Error uploading the file."];
+                        $response = ["status" => false, "code" => 400, "Message" => "File size exceeds the maximum allowed size of {$maxSizeMB} MB."];
                         $this->returnResponse($response);
                     }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Error uploading the file."];
+                    $this->returnResponse($response);
+                }
             } else {
                 $response = ["status" => false, "code" => 400, "Message" => "productId required"];
                 $this->returnResponse($response);
@@ -1295,9 +1295,10 @@ class Api extends Rest
         }
     }
 
-    public function addAndUpdateEvent(){
+    public function addAndUpdateEvent()
+    {
         try {
-            if(!empty($this->param['events']) && !empty($this->param['product_id'])){
+            if (!empty($this->param['events']) && !empty($this->param['product_id'])) {
                 $product_id = $this->param['product_id'];
                 foreach ($this->param['events'] as $key => $event) {
                     $ticket_type = $event['ticket_title'];
@@ -1306,7 +1307,7 @@ class Api extends Rest
                     $remaining_quantity = $event['ticket_quantity'];
                     $selling_mode = $event['selling_mode'];
                     $created_at = date("Y-m-d H:i:s");
-                    if(!empty($event['id']) && $event['id'] != null){
+                    if (!empty($event['id']) && $event['id'] != null) {
                         //Update code
                         $stmt = $this->dbConn->prepare('UPDATE ad_product_event_types SET ticket_type = :ticket_type,ticket_price = :ticket_price,available_quantity = :available_quantity,selling_mode = :selling_mode WHERE id = :id');
                         // Bind the parameters and execute the statement
@@ -1336,7 +1337,6 @@ class Api extends Rest
                 $response = ["status" => false, "code" => 400, "Message" => "events & product_id is required."];
                 $this->returnResponse($response);
             }
-            
 
         } catch (Exception $e) {
             $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
@@ -1528,11 +1528,11 @@ class Api extends Rest
                 // echo "Last executed query: " . $postData->queryString;
                 // exit;
                 $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
-                if(count($postData) > 0){
-                    foreach($postData as $key => $post){
+                if (count($postData) > 0) {
+                    foreach ($postData as $key => $post) {
                         $responseArr[$key]['id'] = $post['id'];
                         $responseArr[$key]['product_id'] = $post['product_id'];
-                        if(!empty($post['training_video'])){
+                        if (!empty($post['training_video'])) {
                             $responseArr[$key]['training_video'] = $this->display_image_url . 'storage/training_video/' . $post['training_video'];
                         } else {
                             $responseArr[$key]['training_video'] = '';
@@ -1892,71 +1892,100 @@ class Api extends Rest
     public function getTrainingPost()
     {
         try {
-            $now = date("Y-m-d H:i:s");
-            $responseArr = array();
-            if (!empty($this->param['user_id'])) {
-                $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id = '".$this->param['user_id']."' AND ap.category = 9 ORDER BY ap.created_at DESC";
-            } else {
-                $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
-            }
-            $postData = $this->dbConn->prepare($getpost);
-            $postData->execute();
-            // echo "Last executed query: " . $postData->queryString;
-            // exit;
-            $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
-            if (count($postData) > 0) {
-                foreach ($postData as $key => $post) {
-                    $responseArr[$key] = $post;
-                    // Get location,City, State, Country
-                    // $getUser = "SELECT username FROM ad_user WHERE id = :userId";
-                    // $getUserData = $this->dbConn->prepare($getUser);
-                    // $getUserData->bindValue(':userId', $post['user_id'], PDO::PARAM_STR);
-                    // $getUserData->execute();
-                    // $getUserData = $getUserData->fetch(PDO::FETCH_ASSOC);
-                    // $responseArr[$key]['post_user_name'] = !empty($getUserData['username']) ? $getUserData['username'] : '';
-                    $fullAddress = '';
-                    if (!empty($post['location'])) {
-                        $fullAddress .= $post['location'];
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $now = date("Y-m-d H:i:s");
+                    $responseArr = array();
+                    if (!empty($this->param['user_id'])) {
+                        $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id = '" . $this->param['user_id'] . "' AND ap.category = 9 ORDER BY ap.created_at DESC";
+                    } else {
+                        $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
                     }
-                    if (!empty($post['city_name'])) {
-                        $fullAddress .= " " . $post['city_name'];
-                    }
-                    if (!empty($post['state_name'])) {
-                        $fullAddress .= " " . $post['state_name'];
-                    }
-                    if (!empty($post['country_name'])) {
-                        $fullAddress .= " " . $post['country_name'];
-                    }
-                    $responseArr[$key]['full_address'] = trim($fullAddress);
-                    if (!empty($post['screen_shot'])) {
-                        $screenShotArr = explode(",", $post['screen_shot']);
-                        if (count($screenShotArr) > 0) {
-                            for ($i = 0; $i < count($screenShotArr); $i++) {
-                                $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                    $postData = $this->dbConn->prepare($getpost);
+                    $postData->execute();
+                    // echo "Last executed query: " . $postData->queryString;
+                    // exit;
+                    $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($postData) > 0) {
+                        foreach ($postData as $key => $post) {
+                            $responseArr[$key] = $post;
+                            // Get location,City, State, Country
+                            $fullAddress = '';
+                            if (!empty($post['location'])) {
+                                $fullAddress .= $post['location'];
+                            }
+                            if (!empty($post['city_name'])) {
+                                $fullAddress .= " " . $post['city_name'];
+                            }
+                            if (!empty($post['state_name'])) {
+                                $fullAddress .= " " . $post['state_name'];
+                            }
+                            if (!empty($post['country_name'])) {
+                                $fullAddress .= " " . $post['country_name'];
+                            }
+                            $responseArr[$key]['full_address'] = trim($fullAddress);
+
+                            //Check if product is purchased from logged in User
+                            $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrderData = $this->dbConn->prepare($getOrder);
+                            $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+                            $getOrderData->execute();
+                            $getOrderData = $getOrderData->fetch(PDO::FETCH_ASSOC);
+                            if(!empty($getOrderData['order_id'])){
+                                //Check product purchase order status for logged in user
+                                $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+                                $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+                                $getPurchaseStatusData->bindValue(':id', $getOrderData['order_id'], PDO::PARAM_STR);
+                                $getPurchaseStatusData->execute();
+                                $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+                                if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
+                                    $responseArr[$key]['is_purchased'] = True;
+                                } else {
+                                    $responseArr[$key]['is_purchased'] = False;
+                                }
+                            } else {
+                                $responseArr[$key]['is_purchased'] = False;
+                            }
+                            
+                            if (!empty($post['screen_shot'])) {
+                                $screenShotArr = explode(",", $post['screen_shot']);
+                                if (count($screenShotArr) > 0) {
+                                    for ($i = 0; $i < count($screenShotArr); $i++) {
+                                        $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                                    }
+                                }
+                            } else {
+                                $responseArr[$key]['image'] = [];
+                            }
+                            if (!empty($post['promo_video'])) {
+                                $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
+                            }
+                            // Fetched Training Vidoe From Training Gallery table for response
+                            $getTrainingVideo = "SELECT tv.* FROM ad_training_gallery AS tv WHERE tv.product_id='" . $post['id'] . "'";
+                            $trainingVideoData = $this->dbConn->prepare($getTrainingVideo);
+                            $trainingVideoData->execute();
+                            $trainingVideoData = $trainingVideoData->fetchAll(PDO::FETCH_ASSOC);
+                            if (count($trainingVideoData) > 0) {
+                                foreach ($trainingVideoData as $key1 => $video) {
+                                    $responseArr[$key]['gallery'][$key1] = $video;
+                                    $responseArr[$key]['gallery'][$key1]['training_video'] = $this->display_image_url . 'storage/training_video/' . $video['training_video'];
+                                }
                             }
                         }
+                        $response = ["status" => true, "code" => 200, "Message" => "Training listing successfully fetched.", "data" => $responseArr];
+                        $this->returnResponse($response);
                     } else {
-                        $responseArr[$key]['image'] = [];
+                        $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
+                        $this->returnResponse($response);
                     }
-                    if (!empty($post['promo_video'])) {
-                        $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
-                    }
-                    // Fetched Training Vidoe From Training Gallery table for response
-                    $getTrainingVideo = "SELECT tv.* FROM ad_training_gallery AS tv WHERE tv.product_id='".$post['id']."'";
-                    $trainingVideoData = $this->dbConn->prepare($getTrainingVideo);
-                    $trainingVideoData->execute();
-                    $trainingVideoData = $trainingVideoData->fetchAll(PDO::FETCH_ASSOC);
-                    if (count($trainingVideoData) > 0) {
-                        foreach ($trainingVideoData as $key1 => $video) {
-                            $responseArr[$key]['gallery'][$key1] = $video;
-                            $responseArr[$key]['gallery'][$key1]['training_video'] = $this->display_image_url . 'storage/training_video/' . $video['training_video'];
-                        }
-                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
                 }
-                $response = ["status" => true, "code" => 200, "Message" => "Training listing successfully fetched.", "data" => $responseArr];
-                $this->returnResponse($response);
             } else {
-                $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
                 $this->returnResponse($response);
             }
 
@@ -1973,7 +2002,7 @@ class Api extends Rest
             $now = date("Y-m-d H:i:s");
             $responseArr = array();
             if (!empty($this->param['user_id'])) {
-                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id='".$this->param['user_id']."' AND ap.category = 10 ORDER BY ap.created_at DESC";
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id='" . $this->param['user_id'] . "' AND ap.category = 10 ORDER BY ap.created_at DESC";
             } else {
                 $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 10 ORDER BY ap.created_at DESC";
             }
@@ -2014,7 +2043,7 @@ class Api extends Rest
                         $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
                     }
                     // Fetched Event Seats details From Event Types table for response
-                    $getEvent = "SELECT e.* FROM ad_product_event_types AS e WHERE e.product_id='".$post['id']."' ORDER BY e.created_at DESC";
+                    $getEvent = "SELECT e.* FROM ad_product_event_types AS e WHERE e.product_id='" . $post['id'] . "' ORDER BY e.created_at DESC";
                     $eventData = $this->dbConn->prepare($getEvent);
                     $eventData->execute();
                     $eventData = $eventData->fetchAll(PDO::FETCH_ASSOC);
@@ -3261,7 +3290,7 @@ class Api extends Rest
         } else {
             $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketQuantities should not be empty array");
         }
-        
+
         $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
         $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
         $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
@@ -3287,18 +3316,18 @@ class Api extends Rest
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
                 if (!empty($orderId)) {
-                    $ticketTypeIds = implode(",",$this->param['ticketTypeIds']);
-                    $ticketAmounts = implode(",",$this->param['ticketAmounts']);
-                    $ticketQuantities = implode(",",$this->param['ticketQuantities']);
+                    $ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
+                    $ticketAmounts = implode(",", $this->param['ticketAmounts']);
+                    $ticketQuantities = implode(",", $this->param['ticketQuantities']);
                     $insertSOIT = "INSERT INTO `ad_event_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
                     $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                     $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
                     $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
                     //$eventTypeId comma seperated id from ad_product_event_types
-                    $insertSOSTIT->bindValue(':event_type_id',  $ticketTypeIds, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':event_type_id', $ticketTypeIds, PDO::PARAM_STR);
                     $insertSOSTIT->bindValue(':item_price', $ticketAmounts, PDO::PARAM_STR);
                     $insertSOSTIT->bindValue(':quantity', $ticketQuantities, PDO::PARAM_STR);
-                    if($insertSOSTIT->execute()){
+                    if ($insertSOSTIT->execute()) {
                         $payment_response = 'VERIFIED';
                         $insertSP = "INSERT INTO `ad_event_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                         $insertSPST = $this->dbConn->prepare($insertSP);
@@ -3309,20 +3338,20 @@ class Api extends Rest
                         $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
                         $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
                         if ($insertSPST->execute()) {
-                            if(!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])){
+                            if (!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])) {
                                 // $eventTypeIdArr = explode(",",$eventTypeId);
                                 // $eventQuantityArr = explode(",",$eventQuantity);
                                 if (count($this->param['ticketTypeIds']) > 0) {
                                     for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
                                         $id = $newAvailableQty = $newRemainingQty = '';
-                                         if(!empty($this->param['ticketTypeIds'][$i])){
+                                        if (!empty($this->param['ticketTypeIds'][$i])) {
                                             $id = $this->param['ticketTypeIds'][$i];
                                             $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
                                             $getAvailableQty = $this->dbConn->prepare($getQty);
                                             $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
                                             $getAvailableQty->execute();
                                             $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
-                                            if(!empty($getAvailableQty['available_quantity'])){
+                                            if (!empty($getAvailableQty['available_quantity'])) {
                                                 $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['ticketQuantities'][$i];
                                                 $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['ticketQuantities'][$i];
                                                 $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
@@ -3337,7 +3366,7 @@ class Api extends Rest
                                 $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked."];
                                 $this->returnResponse($response);
                             }
-                            
+
                         } else {
                             $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                             $this->returnResponse($response);
