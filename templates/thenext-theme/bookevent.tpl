@@ -24,7 +24,7 @@
                 <div class="dashboard-box margin-top-0">
                     <!-- Headline -->
                     <div class="headline">
-                        <h3>Shipping Details </h3>
+                        <h3>Booking Details </h3>
                     </div>
                     <div class="content with-padding">
                         <div class="row">
@@ -50,6 +50,42 @@
                                 <div class="form-group">
                                     <div class="col-sm-12"> 
                                         <input type="email" class="form-control" placeholder="Email" name="emailAddress" value="{EMAIL}" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12"> 
+                                        <input type="email" class="form-control" placeholder="Email" name="emailAddress" value="{EMAIL}" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12"> 
+                                        <table class="table">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th style="width:10%;">Ticket</th>
+                                                    <th style="width:10%;">Price</th>
+                                                    <th style="width:10%;">Mode</th>
+                                                    <th style="width:10%;">Seat Avl.</th>
+                                                    <th style="width:10%;">Booking Qty.</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {LOOP: EVENT_TICKET}
+                                                    <tr>
+                                                        <td>{EVENT_TICKET.ticket_type}</td>
+                                                        <td>{EVENT_TICKET.ticket_price}</td>
+                                                        <td>{EVENT_TICKET.selling_mode}</td>
+                                                        <td>{EVENT_TICKET.available_quantity}</td>
+                                                        <td>
+                                                            <input type="hidden" id="ticketId" name="ticketId[]" value="{EVENT_TICKET.id}" >
+                                                            <input type="hidden" id="productId" name="productId[]" value="{EVENT_TICKET.product_id}" >
+                                                            <input type="hidden" id="price" name="price[]" min="1" max="{EVENT_TICKET.ticket_price}">
+                                                            <input type="number" id="quantity" name="quantity[]" min="1" max="{EVENT_TICKET.available_quantity}">
+                                                        </td>
+                                                    </tr>
+                                                {/LOOP: EVENT_TICKET}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="form-group">
