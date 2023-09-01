@@ -3,11 +3,12 @@ if(isset($_SESSION["products"]) && count($_SESSION["products"])>0){
     $total = 0;
 	$list_tax = '';
     $cart_box = '';
-	$items = '';
+	// $items = '';
     if(count($_SESSION["products"]) > 0){
         foreach($_SESSION["products"] as $product){
             $item_price = sprintf("%01.2f",($product['product_price'] * $product['product_qty'])); 	
-		    $items = $items." ".$product['product_name'];
+		    // $items = $items." ".$product['product_name'];
+            $items = $product['product_name'];
             $subtotal = ($product['product_price'] * $product['product_qty']);
 			$total = ($total + $subtotal);
         }
@@ -24,7 +25,8 @@ if(isset($_SESSION["products"]) && count($_SESSION["products"])>0){
 	}	
 	$shipping_cost = ($shipping_cost)?'Shipping Cost : '.$currency. sprintf("%01.2f", $shipping_cost).'<br />':'';	
 	$cart_box .= "<span>$shipping_cost  $list_tax <hr>Payable Amount : $currency ".sprintf("%01.2f", $grand_total)."</span>";	
-	$_SESSION["payableAmount"] = round($grand_total);
+    $_SESSION["payableAmount"] = round($grand_total);
+    // $_SESSION["payableAmount"] = price_format($grand_total,'AOA');
 	$_SESSION["cartItems"] = $items;
     $total = price_format($total,'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/checkout.tpl');

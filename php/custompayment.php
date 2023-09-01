@@ -33,6 +33,7 @@ if(isset($_SESSION['user']['id']) && isset($_SESSION["products"])){
             }
         }
     }
+   
     $payableAmount = price_format($_SESSION["payableAmount"],'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/custompayment.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));

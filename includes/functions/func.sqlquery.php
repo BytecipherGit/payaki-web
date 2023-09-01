@@ -209,7 +209,7 @@ function price_format($number, $currency_code)
 
     // Currency format - Ex: USD 100,234.56 | EUR 100 234,56
     $number = number_format($number, (int) $currency['decimal_places'], $currency['decimal_separator'], $currency['thousand_separator']);
-
+   
     //$tmp = explode($currency['decimal_places'], $number);
 
     if ($currency['in_left'] == 1) {
@@ -219,8 +219,8 @@ function price_format($number, $currency_code)
     }
 
     // Remove decimal value if it's null
-    $defaultDecimal = str_pad('', (int) $currency['decimal_places'], '0');
-    $number = str_replace($currency['decimal_separator'] . $defaultDecimal, '', $number);
+    // $defaultDecimal = str_pad('', (int) $currency['decimal_places'], '0');
+    // $number = str_replace($currency['decimal_separator'] . $defaultDecimal, '', $number);
 
     return $number;
 }
