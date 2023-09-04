@@ -1,16 +1,9 @@
 <?php
 global $config, $link;
-
+$errorMsg = '';
 $eventTicketArr = array();
 if(isset($_GET['id']) && isset($_GET['uId'])){
     $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_GET['uId']);
-    $total = 0;
-    if(count($_SESSION["products"]) > 0){
-        foreach($_SESSION["products"] as $product){
-            $subtotal = ($product['product_price'] * $product['product_qty']);
-			$total = ($total + $subtotal);
-        }
-    }
     //Get Product Event Type Details
     $eventResults = ORM::for_table($config['db']['pre'].'product_event_types')
         ->where('product_id', $_GET['id'])
@@ -27,17 +20,21 @@ if(isset($_GET['id']) && isset($_GET['uId'])){
     } else {
         $eventTicketArr = [];
     }
+    if(isset($_GET['message'])){
+        $errorMsg = 'exceed_limit';
+    } 
+
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/bookevent.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
-    $page->SetLoop ('ITEM', $_SESSION["products"]);
     $page->SetLoop ('EVENT_TICKET', $eventTicketArr);
-    // $page->SetParameter('TOTALITEM', count($_SESSION["products"]));
     $page->SetParameter('NAME', $user['name']);
     $page->SetParameter('EMAIL', $user['email']);
     $page->SetParameter('PHONE', $user['phone']);
     $page->SetParameter('ADDRESS', $user['address']);
-    // $page->SetParameter('TOTALAMOUNT', $total);
-    $page->SetParameter('CUSTOMPAYMENT', $link['CUSTOMPAYMENT']);
+    $page->SetParameter('PRODUCTID', $_GET['id']);
+    $page->SetParameter('USERID', $_GET['uId']);
+    $page->SetParameter('CUSTOMEVENTPAYMENT', $link['CUSTOMEVENTPAYMENT']);
+    $page->SetParameter('LIMITEXCEEDMSG', $errorMsg);
     $page->SetParameter('OVERALL_FOOTER', create_footer());
     $page->CreatePageEcho();
     exit();
