@@ -180,7 +180,12 @@
                                 <span class="button set-item-cart" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setCartItem">Add to cart</span>
                             {:IF}
                             IF("{ITEM.user_id}"!="{USER_ID}" && "{MAINCAT}"=="10"){
-                                <a href="{BOOKEVENT}/{ITEM.id}/{USER_ID}" class="button" style="color:#FFFFFF;">Book Event</a>
+                                IF("{LOGGED_IN}"=="1"){
+                                    <a href="{BOOKEVENT}/{ITEM.id}/{USER_ID}" class="button" style="color:#FFFFFF;">Book Event</a>
+                                {:IF}
+                                IF("{LOGGED_IN}"=="0"){
+                                    <a href="{LOGIN}" class="button" style="color:#FFFFFF;">Book Event</a>
+                                {:IF}
                             {:IF}
                             <span class="fav-icon set-item-fav IF('{ITEM.favorite}'){ added {:IF}" data-item-id="{ITEM.id}" data-userid="{USER_ID}" data-action="setFavAd"></span>
                         </div>
