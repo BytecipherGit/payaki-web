@@ -583,6 +583,8 @@ $page->SetParameter('LIMIT', $limit);
 $page->SetParameter('FILTER', $filter);
 $page->SetParameter('SORT', $sorting);
 $page->SetParameter('ORDER', $order);
+$page->SetParameter('BOOKEVENT', $link['BOOKEVENT']);
+
 $page->SetParameter('NO_RESULT_ID', $noresult_id);
 if (isset($_SESSION['user']['id'])) {
     $page->SetParameter('USER_ID', $_SESSION['user']['id']);
