@@ -23,7 +23,7 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
     
     if(!empty($_POST['price'])){
         for ($i=0; $i < count($_POST['price']); $i++) { 
-            $totalAmount = $totalAmount + $_POST['price'][$i];
+            $totalAmount = $totalAmount + ($_POST['quantity'][$i] * $_POST['price'][$i]);
         }
     }
     $order_id = 0;
