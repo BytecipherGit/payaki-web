@@ -283,7 +283,7 @@ IF("{POST_WATERMARK}"=="0"){
                                                         <option value="online">Online</option>
                                                     </select>
                                                 </div>
-                                                <button type="button" class="add-button" onclick="addFields()">+</button>    
+                                                <button type="button" style="width: 79px;" class="add-button" onclick="addFields()">+</button>    
                                             </div>
                                         </div>
                                     </div>-->
