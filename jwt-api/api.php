@@ -3302,7 +3302,7 @@ class Api extends Rest
                 $order_status = 'PAID';
                 $order_at = date("Y-m-d H:i:s");
                 $payment_type = 'PAYPAL';
-                $insertSO = "INSERT INTO `ad_event_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
                 $insertSOST = $this->dbConn->prepare($insertSO);
                 $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
                 $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
@@ -3319,7 +3319,7 @@ class Api extends Rest
                     $ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
                     $ticketAmounts = implode(",", $this->param['ticketAmounts']);
                     $ticketQuantities = implode(",", $this->param['ticketQuantities']);
-                    $insertSOIT = "INSERT INTO `ad_event_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
+                    $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
                     $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                     $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
                     $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
@@ -3329,7 +3329,7 @@ class Api extends Rest
                     $insertSOSTIT->bindValue(':quantity', $ticketQuantities, PDO::PARAM_STR);
                     if ($insertSOSTIT->execute()) {
                         $payment_response = 'VERIFIED';
-                        $insertSP = "INSERT INTO `ad_event_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                         $insertSPST = $this->dbConn->prepare($insertSP);
                         $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
                         $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
