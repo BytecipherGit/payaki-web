@@ -3316,7 +3316,64 @@ class Api extends Rest
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
                 if (!empty($orderId)) {
-                    $ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
+                    if(!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketAmounts']) && !empty($this->param['ticketQuantities'])){
+                        for ($i=0; $i < count($this->param['ticketTypeIds']) ; $i++) { 
+                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
+                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':event_type_id', $this->param['ticketTypeIds'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':item_price', $this->param['ticketAmounts'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':quantity', $this->param['ticketQuantities'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->execute();
+                        }
+                    }
+
+                    $payment_response = 'VERIFIED';
+                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                        $insertSPST = $this->dbConn->prepare($insertSP);
+                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
+                        if ($insertSPST->execute()) {
+                            if (!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])) {
+                                // $eventTypeIdArr = explode(",",$eventTypeId);
+                                // $eventQuantityArr = explode(",",$eventQuantity);
+                                if (count($this->param['ticketTypeIds']) > 0) {
+                                    for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
+                                        $id = $newAvailableQty = $newRemainingQty = '';
+                                        if (!empty($this->param['ticketTypeIds'][$i])) {
+                                            $id = $this->param['ticketTypeIds'][$i];
+                                            $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
+                                            $getAvailableQty = $this->dbConn->prepare($getQty);
+                                            $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                            $getAvailableQty->execute();
+                                            $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
+                                            if (!empty($getAvailableQty['available_quantity'])) {
+                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
+                                                $updateNewQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':available_quantity', $newAvailableQty, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':remaining_quantity', $newRemainingQty, PDO::PARAM_STR);
+                                                $updateNewQty->execute();
+                                            }
+                                        }
+                                    }
+                                }
+                                $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked."];
+                                $this->returnResponse($response);
+                            }
+
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                            $this->returnResponse($response);
+                        }
+
+                    /*$ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
                     $ticketAmounts = implode(",", $this->param['ticketAmounts']);
                     $ticketQuantities = implode(",", $this->param['ticketQuantities']);
                     $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
@@ -3372,7 +3429,7 @@ class Api extends Rest
                             $this->returnResponse($response);
                         }
 
-                    }
+                    }*/
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
                     $this->returnResponse($response);
