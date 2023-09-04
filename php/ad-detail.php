@@ -7,10 +7,16 @@ if(!isset($_GET['id']))
 {
     error($lang['PAGE_NOT_FOUND'], __LINE__, __FILE__, 1);
     exit;
+} else {
+    $productId = $_GET['id'];
 }
 
 if(!empty($_GET['notification_id'])){
     update_notification_status($_GET['notification_id']);
+}
+
+if(isset($_SESSION['user']['id'])){
+    $loggedInUserId = $_SESSION['user']['id'];
 }
 
 $num_rows = ORM::for_table($config['db']['pre'].'product')
@@ -280,7 +286,7 @@ if($item_catid == 9){
         $trainingVideoArr = [];
     }
 } else if($item_catid == 10){
-    echo 'For Event';
+    // echo 'For Event';
 }
 
 $country_code = check_user_country();
@@ -493,6 +499,9 @@ $page->SetParameter ('ITEM_STATUS', $item_status);
 $page->SetParameter ('ITEM_TAG', $item_tag);
 $page->SetParameter ('SHOW_TAG', $show_tag);
 $page->SetParameter ('ITEM_VIEW', $item_view);
+$page->SetParameter ('LOGGEDINUSERID', $loggedInUserId);
+$page->SetParameter ('PRODUCTID', $productId);
+$page->SetParameter ('BOOKEVENT', $link['BOOKEVENT']);
 $page->SetParameter ('MAILSENT', $mailsent);
 $page->SetParameter('ERROR', $error);
 $page->SetParameter ('RECAPTCH_ERROR', $recaptcha_error);
