@@ -41,16 +41,27 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
         $orderId = $insert_so->id();
         // insert order item details
         if(!empty($orderId)) {
-            $ticketTypeIds = implode(",", $_POST['ticketId']);
-            $ticketAmounts = implode(",", $_POST['price']);
-            $ticketQuantities = implode(",", $_POST['quantity']);
-            $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
-            $insert_soi->order_id = $orderId;
-            $insert_soi->product_id = $_POST['pId'];
-            $insert_soi->event_type_id = $ticketTypeIds;
-            $insert_soi->item_price = $ticketAmounts;
-            $insert_soi->quantity = $ticketQuantities;
-            $insert_soi->save();
+            if(!empty($_POST['ticketId']) && !empty($_POST['price']) && !empty($_POST['quantity'])){
+                for ($i=0; $i < count($_POST['ticketId']) ; $i++) { 
+                    $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
+                    $insert_soi->order_id = $orderId;
+                    $insert_soi->product_id = $_POST['pId'];
+                    $insert_soi->event_type_id = $_POST['ticketId'][$i];
+                    $insert_soi->item_price = $_POST['price'][$i];
+                    $insert_soi->quantity = $_POST['quantity'][$i];
+                    $insert_soi->save();
+                }
+            }
+            // $ticketTypeIds = implode(",", $_POST['ticketId']);
+            // $ticketAmounts = implode(",", $_POST['price']);
+            // $ticketQuantities = implode(",", $_POST['quantity']);
+            // $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
+            // $insert_soi->order_id = $orderId;
+            // $insert_soi->product_id = $_POST['pId'];
+            // $insert_soi->event_type_id = $ticketTypeIds;
+            // $insert_soi->item_price = $ticketAmounts;
+            // $insert_soi->quantity = $ticketQuantities;
+            // $insert_soi->save();
         }
     }
    
