@@ -1928,7 +1928,7 @@ class Api extends Rest
                             $responseArr[$key]['full_address'] = trim($fullAddress);
 
                             //Check if product is purchased from logged in User
-                            $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            /*$getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
                             $getOrderData = $this->dbConn->prepare($getOrder);
                             $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
                             $getOrderData->execute();
@@ -1944,6 +1944,29 @@ class Api extends Rest
                                     $responseArr[$key]['is_purchased'] = True;
                                 } else {
                                     $responseArr[$key]['is_purchased'] = False;
+                                }
+                            } else {
+                                $responseArr[$key]['is_purchased'] = False;
+                            }*/
+
+                            $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrderData = $this->dbConn->prepare($getOrder);
+                            $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+                            $getOrderData->execute();
+                            $getOrderData = $getOrderData->fetchAll(PDO::FETCH_ASSOC);
+                            if(count($getOrderData) > 0){
+                                foreach ($getOrderData as $key => $row) {
+                                    //Check product purchase order status for logged in user
+                                    $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+                                    $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+                                    $getPurchaseStatusData->bindValue(':id', $row['order_id'], PDO::PARAM_STR);
+                                    $getPurchaseStatusData->execute();
+                                    $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+                                    if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
+                                        $responseArr[$key]['is_purchased'] = True;
+                                    } else {
+                                        $responseArr[$key]['is_purchased'] = False;
+                                    }
                                 }
                             } else {
                                 $responseArr[$key]['is_purchased'] = False;

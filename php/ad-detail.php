@@ -1,4 +1,6 @@
 <?php
+
+$isPurchased = "FALSE";
 if(checkloggedin()) {
     update_lastactive();
 }
@@ -264,6 +266,21 @@ if ($num_rows > 0) {
         $screen_classicsm = "";
     }
 
+    //Get Training Video Purchase status for Logged in User
+    $shopOrderItem = ORM::for_table($config['db']['pre'].'shop_order_item')->where('product_id',$_GET['id'])->find_many();
+    if(!empty($shopOrderItem)){
+        foreach ($shopOrderItem as $key => $row) {
+            $shopOrder = ORM::for_table($config['db']['pre'].'shop_order')->where('id',$row['order_id'])->find_one();
+            if($shopOrder['order_status'] == 'PAID' && $shopOrder['member_id'] == $_SESSION['user']['id']){
+                $isPurchased = "TRUE";
+            } else {
+                $isPurchased = "FALSE";
+            }
+        }
+    } else {
+        $isPurchased = "FALSE";
+    }
+
 
 }
 else {
@@ -401,7 +418,8 @@ if (isset($_POST['sendemail'])) {
     }
 
 }
-
+echo $isPurchased;
+die; 
 $key="BYTECIPHERPAYAKI";
 
 // Post Id
@@ -501,6 +519,7 @@ $page->SetParameter ('SHOW_TAG', $show_tag);
 $page->SetParameter ('ITEM_VIEW', $item_view);
 $page->SetParameter ('LOGGEDINUSERID', $loggedInUserId);
 $page->SetParameter ('PRODUCTID', $productId);
+$page->SetParameter ('TRAINING_VIDEO_PURCHASE_STATUS', $isPurchased);
 $page->SetParameter ('BOOKEVENT', $link['BOOKEVENT']);
 $page->SetParameter ('MAILSENT', $mailsent);
 $page->SetParameter('ERROR', $error);
