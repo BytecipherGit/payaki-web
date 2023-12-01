@@ -114,6 +114,8 @@ if (isset($_GET['action'])) {
                                     $success = "File " . htmlspecialchars(basename($_FILES["trainingVideo"]["name"])) . " has been uploaded successfully.";;
                                 }
                                 $tGInsert->save();
+                                header("Location: {$_SERVER['REQUEST_URI']}");
+                                exit;
                             } else {
                                 $customError = "Error moving the uploaded file.";
                             }
