@@ -418,8 +418,8 @@ if (isset($_POST['sendemail'])) {
     }
 
 }
-echo $isPurchased;
-die; 
+// echo $isPurchased;
+// die; 
 $key="BYTECIPHERPAYAKI";
 
 // Post Id
