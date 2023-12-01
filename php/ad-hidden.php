@@ -20,6 +20,8 @@ if(checkloggedin()) {
     $page->SetParameter ('FAVORITEADS', favorite_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('EXPIREADS', expire_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('MYADS', myads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYTRAININGADS', training_ads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYEVENTADS', event_ads_count($_SESSION['user']['id']));
     $page->SetLoop ('ITEM', $items);
     $page->SetLoop ('PAGES', $pagging);
     $page->SetParameter ('TOTALITEM', $total_item);

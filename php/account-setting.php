@@ -181,6 +181,8 @@ if(checkloggedin())
     $page->SetParameter ('FAVORITEADS', favorite_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('EXPIREADS', expire_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('MYADS', myads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYTRAININGADS', training_ads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYEVENTADS', event_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('AUTHORUNAME', ucfirst($ses_userdata['username']));
     $page->SetParameter ('AUTHORNAME', ucfirst($ses_userdata['name']));
     $page->SetParameter ('AUTHORIMG', $author_image);

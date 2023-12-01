@@ -379,6 +379,45 @@ ELSEIF({LOGGED_IN} && '{ZECHAT_ON_OFF}'=='on'){
 <link href="{SITE_URL}plugins/banner-admanager/css/ubm.css?ver=2.50" rel="stylesheet">
 <script src="{SITE_URL}plugins/banner-admanager/js/ubm-jsonp.js?ver=2.50"></script>
 <script type="text/javascript">
+$("#display_price").on("blur", function() {
+    // Define the user's country and currency code (Angola - AOA)
+    var userCountry = "AO";
+    var userCurrency = "AOA";
+    
+    // Define the locale for Angola
+    var angolaLocale = "pt-AO";
+    
+    // Get the input value
+    var inputValue = $(this).val();
+    $("#price").val(inputValue);
+    // Format the price based on Angola's locale and currency
+    var formattedValue = parseFloat(inputValue).toLocaleString(angolaLocale, {
+        style: "currency",
+        currency: userCurrency
+    });
+    // Replace non-breaking space with comma
+    formattedValue = formattedValue.replace(",00", ".00");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(" ", ",");
+    formattedValue = formattedValue.replace(",Kz", " Kz");
+    // Update the input field with the formatted value
+    $(this).val(formattedValue);
+});
 
 var intervalId = setInterval(function() {
     $.ajax({

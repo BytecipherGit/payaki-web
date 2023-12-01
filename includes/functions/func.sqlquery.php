@@ -166,6 +166,7 @@ function get_district_by_code($code)
 function get_countryCurrecny_by_code($code)
 {
     global $config;
+    $code = 'AO';
     $info = ORM::for_table($config['db']['pre'] . 'countries')
         ->select('currency_code')
         ->where('code', $code)
@@ -208,18 +209,18 @@ function price_format($number, $currency_code)
 
     // Currency format - Ex: USD 100,234.56 | EUR 100 234,56
     $number = number_format($number, (int) $currency['decimal_places'], $currency['decimal_separator'], $currency['thousand_separator']);
-
+   
     //$tmp = explode($currency['decimal_places'], $number);
 
     if ($currency['in_left'] == 1) {
-        $number = $currency['html_entity'] . $number;
+        $number = $currency['html_entity'] .' '. $number;
     } else {
         $number = $number . ' ' . $currency['html_entity'];
     }
 
     // Remove decimal value if it's null
-    $defaultDecimal = str_pad('', (int) $currency['decimal_places'], '0');
-    $number = str_replace($currency['decimal_separator'] . $defaultDecimal, '', $number);
+    // $defaultDecimal = str_pad('', (int) $currency['decimal_places'], '0');
+    // $number = str_replace($currency['decimal_separator'] . $defaultDecimal, '', $number);
 
     return $number;
 }
@@ -1665,7 +1666,7 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
 
     }
 
-    if ($status == "hide") {
+    /*if ($status == "hide") {
         if ($where == '') {
             $where .= "where p.hide = '1'";
         } else {
@@ -1679,7 +1680,7 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
             $where .= " AND p.hide = '0'";
         }
 
-    }
+    }*/
 
     if($premium){
         $grqry = "u.group_id in ('".implode("','",$listing_search_array)."')";
@@ -1700,6 +1701,9 @@ function get_items($userid = null, $status = null, $premium = false, $page = nul
             $where .= " AND p.country = '" . $country_code . "'";
         }
     }*/
+
+    // Adding checked in defualt post listing should not get event & training category product
+    $where .= " AND p.category != 9 AND p.category != 10";
 
     if ($order) {
     //     $order_by = "
@@ -1920,7 +1924,7 @@ function get_resubmited_items($userid = false, $status = null, $page = null, $li
         }
 
     }
-
+    $where .= " AND p.category != 9 AND p.category != 10";
     $pagelimit = "";
     if ($page != null && $limit != null) {
         $pagelimit = "LIMIT  " . ($page - 1) * $limit . "," . $limit;
@@ -2058,6 +2062,8 @@ function resubmited_ads_count($id)
     global $config;
     $num_rows = ORM::for_table($config['db']['pre'] . 'product_resubmit')
         ->where('user_id', $id)
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2070,7 +2076,33 @@ function myads_count($id)
             'status' => "active",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
+    return $num_rows;
+}
+
+function training_ads_count($id)
+{
+    global $config;
+    $num_rows = ORM::for_table($config['db']['pre'] . 'product')
+        ->where(array(
+            'status' => "active",
+            'user_id' => $id,
+            'category' => 9,
+        ))->count();
+    return $num_rows;
+}
+
+function event_ads_count($id)
+{
+    global $config;
+    $num_rows = ORM::for_table($config['db']['pre'] . 'product')
+        ->where(array(
+            'status' => "active",
+            'user_id' => $id,
+            'category' => 10,
+        ))->count();
     return $num_rows;
 }
 
@@ -2082,6 +2114,8 @@ function active_ads_count($id)
             'status' => "active",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2094,6 +2128,8 @@ function pending_ads_count($id)
             'status' => "pending",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2106,6 +2142,8 @@ function expire_ads_count($id)
             'status' => "expire",
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2118,6 +2156,8 @@ function hidden_ads_count($id)
             'hide' => '1',
             'user_id' => $id,
         ))
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2127,6 +2167,8 @@ function favorite_ads_count($id)
     global $config;
     $num_rows = ORM::for_table($config['db']['pre'] . 'favads')
         ->where('user_id', $id)
+        ->where_not_equal('category', 9)
+        ->where_not_equal('category', 10)
         ->count();
     return $num_rows;
 }
@@ -2476,13 +2518,13 @@ function payment_success_save_detail($access_token)
         if (check_valid_author($item_pro_id)) {
 
             $group_info = get_user_membership_detail($user_id);
-            $decodeSettingObj = json_decode($group_info['settings']);
-            $featured_duration = $decodeSettingObj->featured_duration;
-            $urgent_duration = $decodeSettingObj->urgent_duration;
-            $highlight_duration = $decodeSettingObj->highlight_duration;
-            // $featured_duration = $group_info['settings']['featured_duration'];
-            // $urgent_duration = $group_info['settings']['urgent_duration'];
-            // $highlight_duration = $group_info['settings']['highlight_duration'];
+            // $decodeSettingObj = json_decode($group_info['settings']);
+            // $featured_duration = $decodeSettingObj->featured_duration;
+            // $urgent_duration = $decodeSettingObj->urgent_duration;
+            // $highlight_duration = $decodeSettingObj->highlight_duration;
+            $featured_duration = $group_info['settings']['featured_duration'];
+            $urgent_duration = $group_info['settings']['urgent_duration'];
+            $highlight_duration = $group_info['settings']['highlight_duration'];
 
             $f_duration_timestamp = $featured_duration * 86400;
             $featured_exp_date = (time() + $f_duration_timestamp);
@@ -2766,7 +2808,7 @@ function get_items_count($userid = false, $status = null, $premium = false, $get
 
     }
 
-    if ($status == "hide") {
+    /*if ($status == "hide") {
         $where_array['status'] = "hide";
         if ($where == '') {
             $where .= "where hide = '1'";
@@ -2782,7 +2824,7 @@ function get_items_count($userid = false, $status = null, $premium = false, $get
             $where .= " AND hide = '0'";
         }
 
-    }
+    }*/
 
     if ($premium) {
         if ($where == '') {

@@ -102,7 +102,7 @@ if(checkloggedin()) {
         /*$country_code = check_user_country();
         $where.= "AND (country = '$country_code') ";*/
     }
-
+    $where.= "AND category != 9 AND category != 10";
     $sql = "SELECT *
 FROM `".$config['db']['pre']."product`
  WHERE status = 'active' AND hide = '0' AND user_id = '".$_SESSION['user']['id']."' ";
@@ -240,6 +240,8 @@ FROM `".$config['db']['pre']."product`
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['MY_ADS']));
     $page->SetParameter ('CAT_DROPDOWN',$cat_dropdown);
     $page->SetParameter ('MYADS', myads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYTRAININGADS', training_ads_count($_SESSION['user']['id']));
+    $page->SetParameter ('MYEVENTADS', event_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('ACTIVEADS', active_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('PENDINGADS', pending_ads_count($_SESSION['user']['id']));
     $page->SetParameter ('HIDDENADS', hidden_ads_count($_SESSION['user']['id']));

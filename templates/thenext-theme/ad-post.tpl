@@ -1,5 +1,12 @@
 {OVERALL_HEADER}
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .box {
+            flex: 1;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+    </style>
 <!-- orakuploader -->
 <link type="text/css" href="{SITE_URL}plugins/orakuploader/orakuploader.css" rel="stylesheet"/>
 <script type="text/javascript" src="{SITE_URL}plugins/orakuploader/jquery.min.js"></script>
@@ -229,6 +236,10 @@ IF("{POST_WATERMARK}"=="0"){
                                         <input type="hidden" id="input-subcatid" name="subcatid" value="">
                                     </div>
                                     <div class="submit-field">
+                                        <h5>Seller Name *</h5>
+                                        <input type="text" class="with-border" name="seller_name" placeholder="Enter the seller name" required>
+                                    </div>
+                                    <div class="submit-field">
                                         <h5>{LANG_TITLE} *</h5>
                                         <input type="text" class="with-border" name="title" placeholder="{LANG_AD_TITLE}" required>
                                     </div>
@@ -239,6 +250,44 @@ IF("{POST_WATERMARK}"=="0"){
                                     <div class="submit-field" id="quickad-photo-field">
                                         <div id="item_screen" orakuploader="on"></div>
                                     </div>
+                                    <div class="submit-field" id="training_upload_container" style="display:none;">
+                                        <h5>Upload training promo video / image *</h5>
+                                        <h6 style="color:#9C5FA3; font-weight: bold;">Video size should not more then (500MB) & allowed extension ("mp4", "avi", "mov", "mkv")</h6>
+                                        <div id="input-container">
+                                            <div class="file-input-container">
+                                                <input type="file" name="trainingPromoVideo" accept="video/*" class="training-file-input">
+                                                <input type="hidden" name="max_size" value="500">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<div class="submit-field" id="event_container" style="display:none;">
+                                        <h5>Event Ticket Selling Details</h5>
+                                        <div id="container">
+                                            <div class="container">
+                                                <div class="column">
+                                                    <label class="label">Ticket Type:</label>
+                                                    <input type="text" name="ticket_type[]" placeholder="Delux">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Ticket Price:</label>
+                                                    <input type="text" name="ticket_price[]" placeholder="200">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Ticket Quantity:</label>
+                                                    <input type="text" name="available_quantity[]" placeholder="10">
+                                                </div>
+                                                <div class="column">
+                                                    <label class="label">Selling Mode:</label>
+                                                    <select name="selling_mode[]">
+                                                        <option value="offline">Offline</option>
+                                                        <option value="online">Online</option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" style="width: 79px;" class="add-button" onclick="addFields()">+</button>    
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                    
                                     <div id="ResponseCustomFields">
 
                                     {LOOP: CUSTOMFIELDS}
@@ -279,13 +328,31 @@ IF("{POST_WATERMARK}"=="0"){
                                     {:IF}
                                     {/LOOP: CUSTOMFIELDS}
                                     </div>
+                                    
+                                    <div class="submit-field" id="event_date_time_container" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-xl-12">
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="box">
+                                                        <h5>Select Event Date</h5>
+                                                        <input type="date" id="event_date" name="event_date">
+                                                    </div>
+                                                    <div class="box">
+                                                        <h5>Select Event Time</h5>
+                                                        <input type="time" id="event_time" name="event_time">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>   
+                                    </div>
                                     <div class="submit-field" id="quickad-price-field">
                                         <h5>{LANG_PRICE}</h5>
                                         <div class="row">
                                             <div class="col-xl-6 col-md-12">
                                                 <div class="input-with-icon">
-                                                    <input class="with-border" type="text" placeholder="{LANG_PRICE}" name="price">
-                                                    <i class="currency">{USER_CURRENCY_SIGN}</i>
+                                                    <input class="with-border" type="text" id="display_price" placeholder="{LANG_PRICE}" name="display_price">
+                                                    <input class="with-border" type="hidden" id="price" name="price">
+                                                    <!--<i class="currency">{USER_CURRENCY_SIGN}</i>-->
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-md-12 margin-top-12">
@@ -341,11 +408,11 @@ IF("{POST_WATERMARK}"=="0"){
                                     </div>
                                     {:IF}
                                     IF("{POST_TAGS_MODE}"=="1"){
-                                    <div class="submit-field form-group">
+                                    <!--<div class="submit-field form-group">
                                         <h5>{LANG_TAGS}</h5>
                                         <input class="with-border" type="text" name="tags">
                                         <small>{LANG_TAGS_DETAIL}</small>
-                                    </div>
+                                    </div>-->
                                     {:IF}
 
                                     <div class="submit-field form-group">

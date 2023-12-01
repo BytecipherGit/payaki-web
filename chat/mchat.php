@@ -12,6 +12,11 @@ require_once('classes/Login.php');
 require_once('classes/Image.php');
 require_once('templates/header.php');
 
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$domain = $_SERVER['HTTP_HOST'];
+$base_url = $protocol . $domain . '/payaki-web';
+$profile_image_url = $protocol . $domain . '/payaki-web/storage/profile/';
+
 $key = "BYTECIPHERPAYAKI";
 
 //Sender id jiska post hai
@@ -67,101 +72,122 @@ if ($user_id) {
 	</nav>
 
 	<div class="container conversations" style="padding-top: 80px;">
-	<div class="chat-page">
-		<div class="row">
-			<?php
-			if (!empty($senderId) && !empty($receiverId)) {
-				$postOwnderUser = DB::_query('SELECT id,username FROM ad_user WHERE id=:user_id', ['user_id' => $senderId]);
-				?>
-				<section id="messages_container" class="col-md-4 conversations-section">
-					<ul class="user-list">
-
-						<li class="user-who-wrote-you">
-							<a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>"
-								data-senderid="<?php echo $receiverId; ?>" class="user-list-item"></a>
-
-							<span class="messager-name">
-								<div class="uers-icon">
-									<img src="assets/avatars/profile-default.png" alt="Avatars" />
-								</div>
-								<p>
-									<?php echo ucfirst($postOwnderUser[0]['username']); ?>
-								</p>
-							</span>
-						</li>
-					</ul>
-				</section>
+		<div class="chat-page">
+			<div class="row">
 				<?php
-			} else {
-				
-				?>
-				<!-- List of users who wrote you or you wrote them. -->
-				<section id="messages_container" class="col-md-4 conversations-section chat-box-left">
-					<h2 class="chatheadingleft">Chat</h2>
-					<!-- Search users -->
-					<div class="search-user">
+				if (!empty($senderId) && !empty($receiverId)) {
+					$postOwnderUser = DB::_query('SELECT id,username,image FROM ad_user WHERE id=:user_id', ['user_id' => $senderId]);
+					?>
+					<section id="messages_container" class="col-md-4 conversations-section">
+						<ul class="user-list">
+
+							<li class="user-who-wrote-you">
+								<a href="#" data-id="<?php echo $postOwnderUser[0]['id']; ?>"
+									data-senderid="<?php echo $receiverId; ?>" class="user-list-item"></a>
+
+								<span class="messager-name">
+									<?php
+									if (!empty($postOwnderUser[0]['image'])) {
+										$image = $profile_image_url . $postOwnderUser[0]['image'];
+									} else {
+										$image = 'assets/avatars/profile-default.png';
+									}
+									?>
+									<img src="<?php echo $image; ?>" alt="Avatars" />
+									<p>
+										<?php echo ucfirst($postOwnderUser[0]['username']); ?>
+									</p>
+								</span>
+							</li>
+						</ul>
+					</section>
+					<?php
+				} else {
+
+					?>
+					<!-- List of users who wrote you or you wrote them. -->
+					<section id="messages_container" class="col-md-4 conversations-section chat-box-left">
+						<!-- <h2 class="chatheadingleft">Chat</h2> -->
+						<!-- Search users -->
+						<!-- <div class="search-user">
 
 						<input class="form-control mr-sm-2 ph-searchbar" id="js-searchUser" type="search" placeholder="Search"
 							aria-label="Search">
 						<div class="list-group list-results"></div>
-					</div>
-					<ul class="user-list">
-						<?php
-						$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-						$host_url = $_SERVER['HTTP_HOST'];
-						$current_url = $protocol . "://" . $host_url . $_SERVER['REQUEST_URI'];
-						$display_chat_image_url = str_replace("chat.php", "", $current_url);
+					</div> -->
+						<ul class="user-list">
+							<?php
+							$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+							$host_url = $_SERVER['HTTP_HOST'];
+							$current_url = $protocol . "://" . $host_url . $_SERVER['REQUEST_URI'];
+							$display_chat_image_url = str_replace("chat.php", "", $current_url);
 
-						// List of users who wrote you or you wrote them.
-						if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $senderId])) {
-							// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
-							$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', [ 'userid' => $receiverId ]);
-							foreach ($usernames as $single_username) {
-								if ($single_username['id'] != Login::isLogged()) {
-									echo '<li class="user-who-wrote-you" >
-									<a href="#" data-id="' . $single_username['id'] . '" class="user-list-item"></a>';
-									echo '<span class="messager-name"> <div class="uers-icon">
-									<img src="assets/avatars/profile-default.png" alt="Avatars" />
-                      				</div> <p>' . $single_username['username'] . '</p>
-                      				</span></li>';
+							// List of users who wrote you or you wrote them.
+							if (DB::_query('SELECT ad_user.username FROM ad_user, ad_custom_messages WHERE ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id AND ad_user.id = :user_id', ['user_id' => $senderId])) {
+								// $usernames = DB::_query('SELECT * FROM t1, ad_user WHERE (ad_custom_messages.sender = :user_id OR ad_custom_messages.receiver = :user_id) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id) GROUP BY users.id', ['user_id' => Login::isLogged()]);
+								$usernames = DB::_query('SELECT DISTINCT ad_user.id,ad_user.username,ad_user.image FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)', ['userid' => $receiverId]);
+								if (count($usernames) > 0) {
+									foreach ($usernames as $single_username) {
+										if ($single_username['id'] != $receiverId) {
+											if (!empty($single_username['image'])) {
+												$image = $profile_image_url . $single_username['image'];
+											} else {
+												$image = 'assets/avatars/profile-default.png';
+											}
+											echo '<li class="user-who-wrote-you" >
+										<a href="#" data-id="' . $single_username['id'] . '" data-senderid="' . $receiverId . '" class="user-list-item"></a>';
+											echo '<span class="messager-name"> <div class="uers-icon">
+										<img src="' . $image . '" alt="Avatars" />
+										</div> <p>' . $single_username['username'] . '</p>
+										</span></li>';
+										}
+									}
+								} else {
+									?>
+									<li> No conversations found.</li>
+									<?php
 								}
 							}
-						}
-						?>
-					</ul>
-				</section>
-				<?php
-			}
+							?>
+						</ul>
+					</section>
+					<?php
+				}
 
-			?>
+				?>
 
 
-			<!-- Actual messages. -->
-			<section id="messages_container_1" class="col-sm-12 col-md-8 clearfix messages">
-				<div class="msg-headar">
-              <i class="fa fa-arrow-left" id="back_arrow"></i>
-              <!-- <div class="uers-icon">
-                <img src="assets/avatars/profile-default.png" alt="Patient" />
-              </div>
-              <div class="uers-details">
-                <h2>Dr. Jessica Jane</h2>
-              </div> -->
-            </div>
-				<div class="messages-show" id="js-messagesContainer"></div>
+				<!-- Actual messages. -->
+				<section id="messages_container_1" class="col-sm-12 col-md-8 clearfix messages">
+					<div class="msg-headar" id="msg-headar">
 
-				<div class="write-your-message">
-					<form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
-						<input type="text" class="input-phchat" id="js-messageBody" name="message"
-							placeholder="Write your message" style="display:none" />
-						<button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
-								src="assets/avatars/send.png" alt="send" /></button>
-					</form>
-
+					</div>
+					<!--<div class="msg-headar">
+				<i class="fa fa-arrow-left" id="back_arrow"></i>
+				<div class="uers-icon">
+					<img src="assets/avatars/profile-default.png" alt="Patient" />
 				</div>
-			</section>
+				<div class="uers-details">
+					<h2>Dr. Jessica Jane</h2>
+				</div>
+				</div> -->
+					<div class="messages-show" id="js-messagesContainer"></div>
+
+					<div class="write-your-message">
+						<form action="<?php htmlentities($_SERVER['PHP_SELF']) ?>" method="POST" id="js-sendMessage">
+							<!-- <input type="text" class="input-phchat" id="js-messageBody" name="message"
+							placeholder="Write your message" style="display:none" /> -->
+							<textarea type="text" class="input-phchat textInputBx" id="js-messageBody" name="message"
+								placeholder="Write your message" style="display:none"></textarea>
+							<button type="submit" id="js-messageSubmitButton" name="submit" style="display:none;"><img
+									src="assets/avatars/send.png" alt="send" /></button>
+						</form>
+
+					</div>
+				</section>
+			</div>
+
 		</div>
-	
-	</div>
 	</div>
 
 	<script>
@@ -170,11 +196,13 @@ if ($user_id) {
 		};
 	</script>
 
-<?php }  ?>
+<?php } ?>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="assets/js/mscripts.js"></script>
-	
-	</body>
+
+</body>
+
 </html>

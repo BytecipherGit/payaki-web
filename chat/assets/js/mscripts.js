@@ -122,13 +122,15 @@ $(document).ready(function () {
     $("#messages_container").addClass("newClass1");
     $("#messages_container_1").addClass("newClass2");
 
-    // t = setInterval(function () {
+    t = setInterval(function () {
       $.ajax({
         type: "POST",
         url: "majax.php",
         data: { receiver, sender },
+        dataType: 'json',
         success: function (data) {
-          $(".messages-show").html(data);
+          $('.msg-headar').html(data.rsp_header);
+					$('.messages-show').html(data.rsp_message);
 
           let messageContainer = document.getElementById(
             "js-messagesContainer"
@@ -136,7 +138,7 @@ $(document).ready(function () {
           messageContainer.scrollTop = messageContainer.scrollHeight;
         },
       });
-    // }, 100);
+    }, 100);
   });
 
   // Send AJAX request to send a message once you submit the related form.
@@ -194,8 +196,8 @@ $(document).ready(function () {
     });
   });
 
-  $("#back_arrow").click(function () {
-    $("#messages_container").removeClass("newClass1");
-    $("#messages_container_1").removeClass("newClass2");
-  });
+  $(document).on('click', '#back_arrow', (e) => {
+		$('#messages_container').removeClass('newClass1');
+		$('#messages_container_1').removeClass('newClass2');
+	});
 });

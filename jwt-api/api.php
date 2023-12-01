@@ -1,5 +1,7 @@
 <?php
-
+// error_reporting(E_ALL); // Report all types of errors
+// ini_set('display_errors', 1); // Display errors in the output
+error_reporting(0);
 use JWT as GlobalJWT;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -25,6 +27,8 @@ class Api extends Rest
 
     protected $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
     protected $fcmServerKey = 'AAAAcdsalcE:APA91bE-UusISpW-YJ6QKQAjAwC6O4pCP1AAIvfsR7Dul6-JL2yGh6qAi418dCBxYqy0DvMWp67d2rLmfHZ8EQVbM0ysKbyBlQIipPoATHuyfQTKkhYw9SLtUmJ--HegoumMFGJM6lJL';
+
+    protected $key = "BYTECIPHERPAYAKI";
 
     public function __construct()
     {
@@ -87,12 +91,17 @@ class Api extends Rest
                 $user['device_token'] = $device_token;
                 $user['device_type'] = $device_type;
             }
-
+            $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+            $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
             $paylod = [
                 'iat' => time(),
                 'iss' => 'localhost',
                 'exp' => time() + (14400000),
                 'userId' => $user['id'],
+                'name' => $user['name'],
+                'address' => $user['address'],
+                'phone' => $user['phone'],
+                'email' => $user['email'],
             ];
 
             $token = GlobalJWT::encode($paylod, SECRETE_KEY);
@@ -172,8 +181,16 @@ class Api extends Rest
                         'iss' => 'localhost',
                         'exp' => time() + (14400000),
                         'userId' => $user['id'],
+                        'name' => $user['name'],
+                        'address' => $user['address'],
+                        'phone' => $user['phone'],
+                        'email' => $user['email'],
                     ];
                     $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+
+                    $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                    $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
+
                     $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                     $this->returnResponse($response);
                 } else {
@@ -292,19 +309,31 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user_id];
+                $paylod = [
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
+                    'userId' => $user_id,
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
+
+                $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
 
                 /*SEND CONFIRMATION EMAIL*/
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-											                <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-											                hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-											                <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-											                ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-											                <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-											                <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+		                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+		                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+		                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+		                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+		                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+		                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -421,7 +450,7 @@ class Api extends Rest
             $mobile = $this->validateParameter('mobile', $this->param['mobile'], STRING);
             $countryCode = $this->validateParameter('country_code', $this->param['country_code'], STRING);
             if (!empty($mobile) && !empty($countryCode)) {
-                $phone = $countryCode.$mobile;
+                $phone = $countryCode . $mobile;
                 $getuser = "SELECT `id` FROM `ad_user` WHERE `phone`=:phone";
                 $userData = $this->dbConn->prepare($getuser);
                 // $userData->bindValue(':country_code', $countryCode, PDO::PARAM_STR);
@@ -739,7 +768,19 @@ class Api extends Rest
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $user['id']];
+                $lcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $this->key, 0));
+                $user['chat_url'] = $this->display_image_url . "chat/mchat.php?receiverId=$lcuserid";
+
+                $paylod = [
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
+                    'userId' => $user['id'],
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
 
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
@@ -768,7 +809,16 @@ class Api extends Rest
                 $stmt->execute();
                 // Fetch the row
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                $paylod = ['iat' => time(), 'iss' => 'localhost', 'exp' => time() + (14400000), 'userId' => $last_id];
+                $paylod = [
+                    'iat' => time(),
+                    'iss' => 'localhost',
+                    'exp' => time() + (14400000),
+                    'userId' => $last_id,
+                    'name' => $user['name'],
+                    'address' => $user['address'],
+                    'phone' => $user['phone'],
+                    'email' => $user['email'],
+                ];
                 $token = GlobalJWT::encode($paylod, SECRETE_KEY);
                 $response = ["status" => true, "code" => 200, "Message" => "Login successfully.", "token" => $token, "data" => $user];
                 $this->returnResponse($response);
@@ -799,7 +849,9 @@ class Api extends Rest
                 $featured = isset($_POST['featured']) ? $_POST['featured'] : 0;
                 $urgent = isset($_POST['urgent']) ? $_POST['urgent'] : 0;
                 $highlight = isset($_POST['highlight']) ? $_POST['highlight'] : 0;
+                $seller_name = $_POST['seller_name'];
                 $productName = $_POST['product_name'];
+
                 if (!empty($productName)) {
                     $slug = $this->createSlug($productName);
                 } else {
@@ -808,17 +860,19 @@ class Api extends Rest
                 $description = $_POST['description'];
                 $category = $_POST['category'];
                 $subCategory = $_POST['sub_category'];
-                $price = $_POST['price'];
-                $negotiable = $_POST['negotiable'];
+                $price = isset($_POST['price']) ? $_POST['price'] : 0;
+                $negotiable = isset($_POST['negotiable']) ? $_POST['negotiable'] : 0;
                 $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
                 $hidePhone = isset($_POST['hide_phone']) ? $_POST['hide_phone'] : 0;
-                $location = $_POST['location'];
-                $city = $_POST['city'];
-                $country = $_POST['country'];
-                $latlong = $_POST['latlong'];
-                $state = $_POST['state'];
+                $location = isset($_POST['location']) ? $_POST['location'] : '';
+                $city = isset($_POST['city']) ? $_POST['city'] : '';
+                $country = isset($_POST['country']) ? $_POST['country'] : '';
+                $latlong = isset($_POST['latlong']) ? $_POST['latlong'] : '';
+                $state = isset($_POST['state']) ? $_POST['state'] : '';
                 $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
                 $view = isset($_POST['view']) ? $_POST['view'] : 0;
+                $event_date = $_POST['event_date'];
+                $event_time = $_POST['event_time'];
                 // $expire_date = $_POST['expire_date'];
                 // $featured_exp_date = $_POST['featured_exp_date'];
                 // $urgent_exp_date = $_POST['urgent_exp_date'];
@@ -828,8 +882,17 @@ class Api extends Rest
                 $hide = isset($_POST['hide']) ? $_POST['hide'] : 0;
                 $expire_days = isset($_POST['available_days']) ? $_POST['available_days'] : 7;
 
+                if ($category == 9) {
+                    $postType = 'training';
+                } else if ($category == 10) {
+                    $postType = 'event';
+                } else {
+                    $postType = 'other';
+                }
+
                 //Upload Images gally
                 $total_count = count($_FILES['product_images']['name']);
+
                 if ($total_count > 0) {
                     $screenShot = '';
                     for ($i = 0; $i < $total_count; $i++) {
@@ -860,8 +923,47 @@ class Api extends Rest
                 $expire_time = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $ad_duration . ' day'));
                 $expire_timestamp = strtotime($expire_time);
                 $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +' . $expire_days . ' day'));
-                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, product_name, slug, description, category, sub_category, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :product_name, :slug, :description, :category, :sub_category, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
-                $status = 'pending';
+                $promoVideoFileName = '';
+                if (isset($_FILES["promo_video"]) && ($category == 9 || $category == 10)) {
+                    // Define the target directory for storing video files
+                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                    // Create the target directory if it doesn't exist
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                    $maxSizeMB = (int) $_POST["max_size"];
+
+                    // Check if the file has no errors
+                    if ($_FILES["promo_video"]["error"] === UPLOAD_ERR_OK) {
+                        // Validate file size
+                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                        if ($_FILES["promo_video"]["size"] <= $maxSizeBytes) {
+                            // Validate file extension
+                            $fileExtension = strtolower(pathinfo($_FILES["promo_video"]["name"], PATHINFO_EXTENSION));
+                            if (in_array($fileExtension, $allowedExtensions)) {
+                                $trainingPromoVideoFileName = $_FILES['promo_video']['name'];
+                                $trainingPromoVideoTempFileName = $_FILES['promo_video']['tmp_name'];
+                                if ($trainingPromoVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingPromoVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingPromoVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingPromoVideoNewFileName)) {
+                                        $trainingPromoVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingPromoVideoNewFileName;
+                                        if (move_uploaded_file($trainingPromoVideoTempFileName, $trainingPromoVideoFilePath)) {
+                                            $promoVideoFileName = $trainingPromoVideoNewFileName;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                $sql = 'INSERT INTO ad_product (id, status, user_id, featured, urgent, highlight, seller_name, product_name, slug, description, category, sub_category, post_type, event_date, event_time, price, negotiable, phone, hide_phone, location, city, state, country, latlong, screen_shot, promo_video, tag, view, created_at, updated_at, expire_days, expired_date, expire_date, featured_exp_date, urgent_exp_date, highlight_exp_date, admin_seen, emailed, hide) VALUES(null, :status, :user_id, :featured, :urgent, :highlight, :seller_name, :product_name, :slug, :description, :category, :sub_category, :post_type, :event_date, :event_time, :price, :negotiable, :phone, :hide_phone, :location, :city, :state, :country, :latlong, :screen_shot, :promo_video, :tag, :view, :created_at, :updated_at, :expire_days, :expired_date, :expire_date, :featured_exp_date, :urgent_exp_date, :highlight_exp_date, :admin_seen, :emailed, :hide)';
+                if ($category == 9 || $category == 10) {
+                    $status = 'active';
+                } else {
+                    $status = 'pending';
+                }
                 $createdDate = date('Y-m-d H:i:s');
                 $featuredExpDate = null;
                 $stmt = $this->dbConn->prepare($sql);
@@ -870,11 +972,15 @@ class Api extends Rest
                 $stmt->bindParam(':featured', $featured);
                 $stmt->bindParam(':urgent', $urgent);
                 $stmt->bindParam(':highlight', $highlight);
+                $stmt->bindParam(':seller_name', $seller_name);
                 $stmt->bindParam(':product_name', $productName);
                 $stmt->bindParam(':slug', $slug);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':category', $category);
                 $stmt->bindParam(':sub_category', $subCategory);
+                $stmt->bindParam(':event_date', $event_date);
+                $stmt->bindParam(':event_time', $event_time);
+                $stmt->bindParam(':post_type', $postType);
                 $stmt->bindParam(':price', $price);
                 $stmt->bindParam(':negotiable', $negotiable);
                 $stmt->bindParam(':phone', $phone);
@@ -885,6 +991,7 @@ class Api extends Rest
                 $stmt->bindParam(':country', $country);
                 $stmt->bindParam(':latlong', $latlong);
                 $stmt->bindParam(':screen_shot', $screenShot);
+                $stmt->bindParam(':promo_video', $promoVideoFileName);
                 $stmt->bindParam(':tag', $tag);
                 $stmt->bindParam(':view', $view);
                 $stmt->bindParam(':created_at', $createdDate);
@@ -904,6 +1011,71 @@ class Api extends Rest
                     $last_id = $this->dbConn->lastInsertId();
                     //Send Custom Notification to user
                     if (!empty($last_id)) {
+                        //Insert record into event table
+                        if (!empty($_POST['events']) && $category == 10) {
+                            foreach (json_decode($_POST['events']) as $key => $event) {
+                                $ticket_type = $event->ticket_title;
+                                $ticket_price = $event->ticket_price;
+                                $available_quantity = $event->ticket_quantity;
+                                $remaining_quantity = $event->ticket_quantity;
+                                $selling_mode = $event->selling_mode;
+                                $created_at = date("Y-m-d H:i:s");
+
+                                //Insert code here
+                                $sql = 'INSERT INTO ad_product_event_types (id, product_id, ticket_type, ticket_price, available_quantity, remaining_quantity, selling_mode, created_at) VALUES(null, :product_id, :ticket_type, :ticket_price, :available_quantity, :remaining_quantity, :selling_mode, :created_at)';
+                                $stmt = $this->dbConn->prepare($sql);
+                                $stmt->bindParam(':product_id', $last_id);
+                                $stmt->bindParam(':ticket_type', $ticket_type);
+                                $stmt->bindParam(':ticket_price', $ticket_price);
+                                $stmt->bindParam(':available_quantity', $available_quantity);
+                                $stmt->bindParam(':remaining_quantity', $remaining_quantity);
+                                $stmt->bindParam(':selling_mode', $selling_mode);
+                                $stmt->bindParam(':created_at', $created_at);
+                                $stmt->execute();
+                            }
+                        }
+
+                        // if (validate_input($_POST['catid']) == 9) {
+                        //     // Check if files were uploaded
+                        //     if (isset($_FILES['trainingVideo'])) {
+                        //         $video = '';
+                        //         // Define the target directory for storing video files
+                        //         $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                        //         // Create the target directory if it doesn't exist
+                        //         if (!file_exists($targetDir)) {
+                        //             mkdir($targetDir, 0777, true);
+                        //         }
+                        //         $countTrainingVidoe = 0;
+                        //         // Loop through the uploaded files
+                        //         foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                        //             $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
+                        //             $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
+                        //             if ($trainingVideoTempFileName != '') {
+                        //                 $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                        //                 $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                        //                 if (!empty($trainingVideoNewFileName)) {
+                        //                     if ($countTrainingVidoe == 0) {
+                        //                         $video = $trainingVideoNewFileName;
+                        //                     } elseif ($countTrainingVidoe >= 1) {
+                        //                         $video = $video . "," . $trainingVideoNewFileName;
+                        //                     }
+                        //                 }
+                        //                 $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $id_proof_new_file_name;
+                        //                 move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
+                        //                 $countTrainingVidoe++;
+                        //             }
+                        //         }
+
+                        //     }
+                        //     //Insert record in Training Gallery
+                        //     $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
+                        //     $tGInsert->product_id = $product_id;
+                        //     $tGInsert->training_video = $video;
+                        //     $tGInsert->save();
+                        // } else if (validate_input($_POST['catid']) == 10) {
+                        //     //Write Insert Event code here
+                        // }
+
                         $notification_id = $last_id;
                         $title = $productName;
                         //Fetch all active user who's status = 1
@@ -964,6 +1136,79 @@ class Api extends Rest
                         }
 
                     }
+
+                    // Add record into transaction table
+                    if ($featured == 1 || $urgent == 1 || $highlight == 1) {
+                        $productName = !empty($productName) ? $productName : '';
+                        $productId = !empty($last_id) ? $last_id : '';
+                        $userId = !empty($userId) ? $userId : '';
+                        $amount = !empty($_POST['amount']) ? $_POST['amount'] : '';
+                        $currencyCode = !empty($_POST['currency']) ? $_POST['currency'] : 'USD';
+                        $baseAmount = !empty($_POST['amount']) ? $_POST['amount'] : '';
+                        $transactionTime = time();
+                        // Status should be enum('pending', 'success', 'failed', 'cancel')
+                        $status = !empty($_POST['status']) ? $_POST['status'] : '';
+                        $paymentId = !empty($_POST['paymentId']) ? $_POST['paymentId'] : '';
+                        $paymentGatway = !empty($_POST['payment_method']) ? $_POST['payment_method'] : 'paypal';
+                        $transactionIpAddress = !empty($_POST['transaction_ip_address']) ? $_POST['transaction_ip_address'] : null;
+
+                        // Package Featured Urgent Highlight
+                        $transactionDescription = 'Package';
+                        if ($featured == 1) {
+                            $transactionDescription .= ' Featured';
+                        }
+                        if ($urgent == 1) {
+                            $transactionDescription .= ' Urgent';
+                        }
+                        if ($highlight == 1) {
+                            $transactionDescription .= ' Highlight';
+                        }
+
+                        // $transactionDescription = !empty($_POST['transaction_description']) ? $_POST['transaction_description'] : '';
+                        // Premium Ad
+                        $transactionMethod = 'Premium Ad';
+                        // Frequency enum('MONTHLY', 'YEARLY', 'LIFETIME')
+                        // $frequency = !empty($_POST['frequency']) ? $_POST['frequency'] : null;
+                        $frequency = null;
+
+                        $billing = array(
+                            'type' => $this->getUserOptions($userId, 'billing_details_type'),
+                            'tax_id' => $this->getUserOptions($userId, 'billing_tax_id'),
+                            'name' => $this->getUserOptions($userId, 'billing_name'),
+                            'address' => $this->getUserOptions($userId, 'billing_address'),
+                            'city' => $this->getUserOptions($userId, 'billing_city'),
+                            'state' => $this->getUserOptions($userId, 'billing_state'),
+                            'zipcode' => $this->getUserOptions($userId, 'billing_zipcode'),
+                            'country' => $this->getUserOptions($userId, 'billing_country'),
+                        );
+                        $billing = !empty($billing) ? json_encode($billing) : '';
+                        // $taxesIds = !empty($_POST['taxes_ids']) ? $_POST['taxes_ids'] : '';
+                        $taxesIds = null;
+
+                        $insert_query = "INSERT INTO `ad_transaction` (`product_name`,`product_id`,`seller_id`,`amount`,`currency_code`,`base_amount`,`featured`,`urgent`,`highlight`,`transaction_time`,`status`,`payment_id`,`transaction_gatway`,`transaction_ip`,`transaction_description`,`transaction_method`,`frequency`,`billing`,`taxes_ids`) VALUES(:product_name,:product_id,:seller_id,:amount,:currency_code,:base_amount,:featured,:urgent,:highlight,:transaction_time,:status,:payment_id,:transaction_gatway,:transaction_ip,:transaction_description,:transaction_method,:frequency,:billing,:taxes_ids)";
+                        $stmt = $this->dbConn->prepare($insert_query);
+                        $stmt->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                        $stmt->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                        $stmt->bindValue(':seller_id', $userId, PDO::PARAM_STR);
+                        $stmt->bindValue(':amount', $amount, PDO::PARAM_STR);
+                        $stmt->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
+                        $stmt->bindValue(':base_amount', $baseAmount, PDO::PARAM_STR);
+                        $stmt->bindValue(':featured', $featured, PDO::PARAM_STR);
+                        $stmt->bindValue(':urgent', $urgent, PDO::PARAM_STR);
+                        $stmt->bindValue(':highlight', $highlight, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_time', $transactionTime, PDO::PARAM_STR);
+                        $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+                        $stmt->bindValue(':payment_id', $paymentId, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_gatway', $paymentGatway, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_ip', $transactionIpAddress, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_description', $transactionDescription, PDO::PARAM_STR);
+                        $stmt->bindValue(':transaction_method', $transactionMethod, PDO::PARAM_STR);
+                        $stmt->bindValue(':frequency', $frequency, PDO::PARAM_STR);
+                        $stmt->bindValue(':billing', $billing, PDO::PARAM_STR);
+                        $stmt->bindValue(':taxes_ids', $taxesIds, PDO::PARAM_STR);
+                        $stmt->execute();
+                    }
+
                     $response = ["status" => true, "code" => 200, "Message" => "Advertisement successfuly posted.", "data" => $product];
                     $this->returnResponse($response);
                 } else {
@@ -980,6 +1225,124 @@ class Api extends Rest
         }
     }
 
+    public function addTrainingVideo()
+    {
+        try {
+            $productId = $_POST['product_id'];
+            if (!empty($productId) && !empty($_POST["max_size"]) && isset($_FILES["trainingVideo"])) {
+                // Define the target directory for storing video files
+                $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                // Create the target directory if it doesn't exist
+                if (!file_exists($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+                $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                $maxSizeMB = (int) $_POST["max_size"];
+
+                // Check if the file has no errors
+                if ($_FILES["trainingVideo"]["error"] === UPLOAD_ERR_OK) {
+                    // Validate file size
+                    $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                    if ($_FILES["trainingVideo"]["size"] <= $maxSizeBytes) {
+                        // Validate file extension
+                        $fileExtension = strtolower(pathinfo($_FILES["trainingVideo"]["name"], PATHINFO_EXTENSION));
+                        if (in_array($fileExtension, $allowedExtensions)) {
+                            $trainingVideoFileName = $_FILES['trainingVideo']['name'];
+                            $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'];
+                            if ($trainingVideoTempFileName != '') {
+                                $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                if (!empty($trainingVideoNewFileName)) {
+                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
+                                    if (move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath)) {
+                                        //Insert record in Training Gallery
+                                        $sql = 'INSERT INTO ad_training_gallery (id, product_id, training_video) VALUES(null, :product_id, :training_video)';
+                                        $stmt = $this->dbConn->prepare($sql);
+                                        $stmt->bindParam(':product_id', $productId);
+                                        $stmt->bindParam(':training_video', $trainingVideoNewFileName);
+                                        if ($stmt->execute()) {
+                                            $response = ["status" => true, "code" => 200, "Message" => "Training video successfuly uploaded."];
+                                            $this->returnResponse($response);
+                                        } else {
+                                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                                            $this->returnResponse($response);
+                                        }
+                                    } else {
+                                        $response = ["status" => false, "code" => 400, "Message" => "Error moving the uploaded file."];
+                                        $this->returnResponse($response);
+                                    }
+                                }
+                            }
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Invalid file extension. Allowed extensions: " . implode(", ", $allowedExtensions)];
+                            $this->returnResponse($response);
+                        }
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "File size exceeds the maximum allowed size of {$maxSizeMB} MB."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Error uploading the file."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "productId required"];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function addAndUpdateEvent()
+    {
+        try {
+            if (!empty($this->param['events']) && !empty($this->param['product_id'])) {
+                $product_id = $this->param['product_id'];
+                foreach ($this->param['events'] as $key => $event) {
+                    $ticket_type = $event['ticket_title'];
+                    $ticket_price = $event['ticket_price'];
+                    $available_quantity = $event['ticket_quantity'];
+                    $remaining_quantity = $event['ticket_quantity'];
+                    $selling_mode = $event['selling_mode'];
+                    $created_at = date("Y-m-d H:i:s");
+                    if (!empty($event['id']) && $event['id'] != null) {
+                        //Update code
+                        $stmt = $this->dbConn->prepare('UPDATE ad_product_event_types SET ticket_type = :ticket_type,ticket_price = :ticket_price,available_quantity = :available_quantity,selling_mode = :selling_mode WHERE id = :id');
+                        // Bind the parameters and execute the statement
+                        $stmt->bindValue(':id', $event['id'], PDO::PARAM_STR);
+                        $stmt->bindValue(':ticket_type', $ticket_type, PDO::PARAM_STR);
+                        $stmt->bindValue(':ticket_price', $ticket_price, PDO::PARAM_STR);
+                        $stmt->bindValue(':available_quantity', $available_quantity, PDO::PARAM_STR);
+                        $stmt->bindValue(':selling_mode', $selling_mode, PDO::PARAM_STR);
+                        $stmt->execute();
+                    } else {
+                        //Insert code here
+                        $sql = 'INSERT INTO ad_product_event_types (id, product_id, ticket_type, ticket_price, available_quantity, remaining_quantity, selling_mode, created_at) VALUES(null, :product_id, :ticket_type, :ticket_price, :available_quantity, :remaining_quantity, :selling_mode, :created_at)';
+                        $stmt = $this->dbConn->prepare($sql);
+                        $stmt->bindParam(':product_id', $product_id);
+                        $stmt->bindParam(':ticket_type', $ticket_type);
+                        $stmt->bindParam(':ticket_price', $ticket_price);
+                        $stmt->bindParam(':available_quantity', $available_quantity);
+                        $stmt->bindParam(':remaining_quantity', $remaining_quantity);
+                        $stmt->bindParam(':selling_mode', $selling_mode);
+                        $stmt->bindParam(':created_at', $created_at);
+                        $stmt->execute();
+                    }
+                }
+                $response = ["status" => true, "code" => 200, "Message" => "events successfully updated."];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "events & product_id is required."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+    }
     public function getPostDetails()
     {
         try {
@@ -1016,21 +1379,20 @@ class Api extends Rest
                     } else {
                         $postData['post_url'] = '';
                     }
-                    $key="BYTECIPHERPAYAKI";
+
                     //$this->param['userId'] // Logged In User Id
                     //$postData['user_id'] // Item AuthorId mean post owner id
                     if (!empty($postData['user_id']) && !empty($this->param['userId']) && ($postData['user_id'] != $this->param['userId'])) {
                         // Post Owner Id jiski post hai
-                        $qcuserid = base64_encode(openssl_encrypt($postData['user_id'], 'AES-256-CBC', $key, 0));
+                        $qcuserid = base64_encode(openssl_encrypt($postData['user_id'], 'AES-256-CBC', $this->key, 0));
                         // $qcuserid = base64_encode($postData['user_id']);
                         // Logged In User id
-                        $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $key, 0));
+                        $lcuserid = base64_encode(openssl_encrypt($this->param['userId'], 'AES-256-CBC', $this->key, 0));
                         // $lcuserid = base64_encode($this->param['userId']);
-                        $postData['chat_url'] = $this->display_image_url."chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                        $postData['chat_url'] = $this->display_image_url . "chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
                     } else {
                         $postData['chat_url'] = null;
                     }
-                    
 
                     if (!empty($this->param['userId'])) {
                         //Check Is favourite
@@ -1152,6 +1514,48 @@ class Api extends Rest
 
     }
 
+    public function getTrainingVideo()
+    {
+        try {
+            $postId = $this->validateParameter('postId', $this->param['postId'], INTEGER);
+            if (!empty($postId)) {
+                $responseArr = array();
+                // $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id=:id AND ap.status='active' AND ap.expired_date >= :expired_date";
+                $getpost = "SELECT ap.* FROM ad_training_gallery AS ap WHERE ap.product_id=:postId";
+                $postData = $this->dbConn->prepare($getpost);
+                $postData->bindValue(':postId', $postId, PDO::PARAM_STR);
+                $postData->execute();
+                // echo "Last executed query: " . $postData->queryString;
+                // exit;
+                $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                if (count($postData) > 0) {
+                    foreach ($postData as $key => $post) {
+                        $responseArr[$key]['id'] = $post['id'];
+                        $responseArr[$key]['product_id'] = $post['product_id'];
+                        if (!empty($post['training_video'])) {
+                            $responseArr[$key]['training_video'] = $this->display_image_url . 'storage/training_video/' . $post['training_video'];
+                        } else {
+                            $responseArr[$key]['training_video'] = '';
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "Training video successfully fetched.", "data" => $responseArr];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Training vidoe not found."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "postId required."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
     public function getUserPost()
     {
         try {
@@ -1175,7 +1579,7 @@ class Api extends Rest
                             }
                             // Create the placeholders string
                             $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
-                            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id IN ($placeholders) AND ap.status='active'";
+                            $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.id IN ($placeholders) AND ap.status='active' AND ap.category != 9 AND ap.category != 10";
                             $postData = $this->dbConn->prepare($getpost);
                             // Bind the values to the statement
                             foreach ($postIds as $key => $value) {
@@ -1187,15 +1591,15 @@ class Api extends Rest
                             $this->returnResponse($response);
                         }
                     } elseif (!empty($listType) && $listType == 'expire') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='expire' AND ap.user_id=:userId";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='expire' AND ap.user_id=:userId AND ap.category != 9 AND ap.category != 10";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                     } elseif (!empty($listType) && $listType == 'pending') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='pending' AND ap.user_id=:userId";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='pending' AND ap.user_id=:userId AND ap.category != 9 AND ap.category != 10";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                     } elseif (!empty($listType) && $listType == 'all') {
-                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date";
+                        $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id=:userId AND ap.expired_date >= :expired_date AND ap.category != 9 AND ap.category != 10";
                         $postData = $this->dbConn->prepare($getpost);
                         $postData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
                         $postData->bindValue(':expired_date', $now, PDO::PARAM_STR);
@@ -1360,6 +1764,8 @@ class Api extends Rest
             }
             if (!empty($this->param['category'])) {
                 $getpost .= " AND ap.category=:categoryId";
+            } else {
+                $getpost .= " AND ap.category != 9 AND ap.category != 10 ";
             }
             if (!empty($this->param['sub_category'])) {
                 $getpost .= " AND ap.sub_category=:subCategoryId";
@@ -1483,6 +1889,207 @@ class Api extends Rest
 
     }
 
+    public function getTrainingPost()
+    {
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $now = date("Y-m-d H:i:s");
+                    $responseArr = array();
+                    if (!empty($this->param['user_id'])) {
+                        $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id = '" . $this->param['user_id'] . "' AND ap.category = 9 ORDER BY ap.created_at DESC";
+                    } else {
+                        $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
+                    }
+                    $postData = $this->dbConn->prepare($getpost);
+                    $postData->execute();
+                    // echo "Last executed query: " . $postData->queryString;
+                    // exit;
+                    $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($postData) > 0) {
+                        foreach ($postData as $key => $post) {
+                            $responseArr[$key] = $post;
+                            // Get location,City, State, Country
+                            $fullAddress = '';
+                            if (!empty($post['location'])) {
+                                $fullAddress .= $post['location'];
+                            }
+                            if (!empty($post['city_name'])) {
+                                $fullAddress .= " " . $post['city_name'];
+                            }
+                            if (!empty($post['state_name'])) {
+                                $fullAddress .= " " . $post['state_name'];
+                            }
+                            if (!empty($post['country_name'])) {
+                                $fullAddress .= " " . $post['country_name'];
+                            }
+                            $responseArr[$key]['full_address'] = trim($fullAddress);
+
+                            //Check if product is purchased from logged in User
+                            /*$getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrderData = $this->dbConn->prepare($getOrder);
+                            $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+                            $getOrderData->execute();
+                            $getOrderData = $getOrderData->fetch(PDO::FETCH_ASSOC);
+                            if(!empty($getOrderData['order_id'])){
+                                //Check product purchase order status for logged in user
+                                $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+                                $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+                                $getPurchaseStatusData->bindValue(':id', $getOrderData['order_id'], PDO::PARAM_STR);
+                                $getPurchaseStatusData->execute();
+                                $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+                                if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
+                                    $responseArr[$key]['is_purchased'] = True;
+                                } else {
+                                    $responseArr[$key]['is_purchased'] = False;
+                                }
+                            } else {
+                                $responseArr[$key]['is_purchased'] = False;
+                            }*/
+
+                            $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrderData = $this->dbConn->prepare($getOrder);
+                            $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+                            $getOrderData->execute();
+                            $getOrderData = $getOrderData->fetchAll(PDO::FETCH_ASSOC);
+                            if(count($getOrderData) > 0){
+                                foreach ($getOrderData as $key => $row) {
+                                    //Check product purchase order status for logged in user
+                                    $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+                                    $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+                                    $getPurchaseStatusData->bindValue(':id', $row['order_id'], PDO::PARAM_STR);
+                                    $getPurchaseStatusData->execute();
+                                    $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+                                    if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
+                                        $responseArr[$key]['is_purchased'] = True;
+                                    } else {
+                                        $responseArr[$key]['is_purchased'] = False;
+                                    }
+                                }
+                            } else {
+                                $responseArr[$key]['is_purchased'] = False;
+                            }
+                            
+                            if (!empty($post['screen_shot'])) {
+                                $screenShotArr = explode(",", $post['screen_shot']);
+                                if (count($screenShotArr) > 0) {
+                                    for ($i = 0; $i < count($screenShotArr); $i++) {
+                                        $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                                    }
+                                }
+                            } else {
+                                $responseArr[$key]['image'] = [];
+                            }
+                            if (!empty($post['promo_video'])) {
+                                $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
+                            }
+                            // Fetched Training Vidoe From Training Gallery table for response
+                            $getTrainingVideo = "SELECT tv.* FROM ad_training_gallery AS tv WHERE tv.product_id='" . $post['id'] . "'";
+                            $trainingVideoData = $this->dbConn->prepare($getTrainingVideo);
+                            $trainingVideoData->execute();
+                            $trainingVideoData = $trainingVideoData->fetchAll(PDO::FETCH_ASSOC);
+                            if (count($trainingVideoData) > 0) {
+                                foreach ($trainingVideoData as $key1 => $video) {
+                                    $responseArr[$key]['gallery'][$key1] = $video;
+                                    $responseArr[$key]['gallery'][$key1]['training_video'] = $this->display_image_url . 'storage/training_video/' . $video['training_video'];
+                                }
+                            }
+                        }
+                        $response = ["status" => true, "code" => 200, "Message" => "Training listing successfully fetched.", "data" => $responseArr];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getEventPost()
+    {
+        try {
+            $now = date("Y-m-d H:i:s");
+            $responseArr = array();
+            if (!empty($this->param['user_id'])) {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.user_id='" . $this->param['user_id'] . "' AND ap.category = 10 ORDER BY ap.created_at DESC";
+            } else {
+                $getpost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.category = 10 ORDER BY ap.created_at DESC";
+            }
+            $postData = $this->dbConn->prepare($getpost);
+            $postData->execute();
+            // echo "Last executed query: " . $postData->queryString;
+            // exit;
+            $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+            if (count($postData) > 0) {
+                foreach ($postData as $key => $post) {
+                    $responseArr[$key] = $post;
+                    // Get location,City, State, Country
+                    $fullAddress = '';
+                    if (!empty($post['location'])) {
+                        $fullAddress .= $post['location'];
+                    }
+                    if (!empty($post['city_name'])) {
+                        $fullAddress .= " " . $post['city_name'];
+                    }
+                    if (!empty($post['state_name'])) {
+                        $fullAddress .= " " . $post['state_name'];
+                    }
+                    if (!empty($post['country_name'])) {
+                        $fullAddress .= " " . $post['country_name'];
+                    }
+                    $responseArr[$key]['full_address'] = trim($fullAddress);
+                    if (!empty($post['screen_shot'])) {
+                        $screenShotArr = explode(",", $post['screen_shot']);
+                        if (count($screenShotArr) > 0) {
+                            for ($i = 0; $i < count($screenShotArr); $i++) {
+                                $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+                            }
+                        }
+                    } else {
+                        $responseArr[$key]['image'] = [];
+                    }
+                    if (!empty($post['promo_video'])) {
+                        $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
+                    }
+                    // Fetched Event Seats details From Event Types table for response
+                    $getEvent = "SELECT e.* FROM ad_product_event_types AS e WHERE e.product_id='" . $post['id'] . "' ORDER BY e.created_at DESC";
+                    $eventData = $this->dbConn->prepare($getEvent);
+                    $eventData->execute();
+                    $eventData = $eventData->fetchAll(PDO::FETCH_ASSOC);
+                    if (count($eventData) > 0) {
+                        foreach ($eventData as $key1 => $event) {
+                            $responseArr[$key]['event'][$key1] = $event;
+                        }
+                    }
+                }
+                $response = ["status" => true, "code" => 200, "Message" => "Event listing successfully fetched.", "data" => $responseArr];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
     public function getPremiumAndLatestPost()
     {
         try {
@@ -1490,7 +2097,7 @@ class Api extends Rest
             $responseArr = array();
 
             //Get Premium Post
-            $getPremiumPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight) ORDER BY ap.created_at DESC LIMIT 10";
+            $getPremiumPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date AND ap.category != 9 AND ap.category != 10 AND (ap.featured = :featured OR ap.urgent = :urgent OR ap.highlight = :highlight) ORDER BY ap.created_at DESC LIMIT 10";
             $premiumPostData = $this->dbConn->prepare($getPremiumPost);
             $premiumPostData->bindValue(':expired_date', $now, PDO::PARAM_STR);
             $premiumPostData->bindValue(':featured', 1, PDO::PARAM_STR);
@@ -1534,7 +2141,7 @@ class Api extends Rest
             }
 
             //Get Latest Post
-            $getLatestPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date ORDER BY ap.created_at DESC LIMIT 10";
+            $getLatestPost = "SELECT ap.*,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE status='active' AND ap.expired_date >= :expired_date AND ap.category != 9 AND ap.category != 10 ORDER BY ap.created_at DESC LIMIT 10";
             $latestPostData = $this->dbConn->prepare($getLatestPost);
             $latestPostData->bindValue(':expired_date', $now, PDO::PARAM_STR);
             $latestPostData->execute();
@@ -2093,7 +2700,6 @@ class Api extends Rest
                                 $deviceToken = $userData['device_token'];
                                 $this->pushNotificationForApp($deviceToken, $title, $message);
 
-
                                 $notificationSql = 'INSERT INTO ad_custom_notification (id, notification_id, type, title, redirect_url, user_id, status, created_at) VALUES(null, :notification_id, :type, :title, :redirect_url, :user_id, :status, :created_at)';
                                 $type = 'quote';
                                 $user_id = $postData['user_id'];
@@ -2110,7 +2716,6 @@ class Api extends Rest
                                 $notifivationStmt->bindParam(':created_at', $createdDate);
                                 $notifivationStmt->execute();
 
-                                
                             }
                         }
                         $response = ["status" => true, "code" => 200, "Message" => "Quote successfully placed."];
@@ -2129,6 +2734,170 @@ class Api extends Rest
             }
         } else {
             $response = ["status" => false, "code" => 400, "Message" => "Auth token not found!"];
+            $this->returnResponse($response);
+        }
+    }
+
+    public function chatUserListing()
+    {
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $listUserArr = array();
+                $getChatUserList = "SELECT DISTINCT ad_user.id,ad_user.username,ad_user.image FROM ad_custom_messages, ad_user WHERE (ad_custom_messages.receiver = :userid OR ad_custom_messages.sender = :userid) AND (ad_custom_messages.receiver = ad_user.id OR ad_custom_messages.sender = ad_user.id)";
+                $getChatUserListData = $this->dbConn->prepare($getChatUserList);
+                $getChatUserListData->bindValue(':userid', $payload->userId, PDO::PARAM_STR);
+                $getChatUserListData->execute();
+                $getChatUserListData = $getChatUserListData->fetchAll(PDO::FETCH_ASSOC);
+
+                if (count($getChatUserListData) > 0) {
+                    $returnArr = array();
+
+                    foreach ($getChatUserListData as $user) {
+                        if ($user['id'] != $payload->userId) {
+                            $listUserArr['id'] = $user['id'];
+                            $listUserArr['username'] = $user['username'];
+                            $key = "BYTECIPHERPAYAKI";
+                            $qcuserid = base64_encode(openssl_encrypt($user['id'], 'AES-256-CBC', $key, 0));
+                            $lcuserid = base64_encode(openssl_encrypt($payload->userId, 'AES-256-CBC', $key, 0));
+                            $listUserArr['chat_url'] = $this->display_image_url . "chat/mchat.php?senderId=$qcuserid&receiverId=$lcuserid";
+                            $listUserArr['image'] = $this->display_image_url . 'storage/profile/' . $user['image'];
+                            // receiver id $payload->userId
+                            // Sender id $user['id']
+                            // Need to fetch last record order by desc id from ad_custom_messages
+                            $getUserLastChat = "SELECT body,date_time FROM `ad_custom_messages` WHERE (`receiver`=:receiver OR `receiver`=:sender) AND (`sender`=:sender or `sender`=:receiver)  ORDER BY id DESC";
+                            $getUserLastChatData = $this->dbConn->prepare($getUserLastChat);
+                            $getUserLastChatData->bindValue(':receiver', $payload->userId, PDO::PARAM_STR);
+                            $getUserLastChatData->bindValue(':sender', $user['id'], PDO::PARAM_STR);
+                            $getUserLastChatData->execute();
+                            $getUserLastChatData = $getUserLastChatData->fetch(PDO::FETCH_ASSOC);
+
+                            if (!empty($getUserLastChatData['body'])) {
+                                $listUserArr['last_message'] = $getUserLastChatData['body'];
+                            } else {
+                                $listUserArr['last_message'] = '';
+                            }
+                            if (!empty($getUserLastChatData['date_time'])) {
+                                $listUserArr['last_message_time'] = $getUserLastChatData['date_time'];
+                            } else {
+                                $listUserArr['last_message_time'] = '';
+                            }
+
+                            $returnArr[] = $listUserArr;
+                        }
+                    }
+                    $response = ["status" => true, "code" => 200, "Message" => "Chat user list successfully fetched.", "data" => $returnArr];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => true, "code" => 200, "Message" => "No user listing found", "data" => $listUserArr];
+                    $this->returnResponse($response);
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function getUserOptions($userId, $userOptions)
+    {
+        $stmt = $this->dbConn->prepare("SELECT * FROM ad_user_options WHERE user_id =:user_id AND option_name LIKE CONCAT( '%', :option_name, '%') ");
+        $stmt->bindParam(":user_id", $userId);
+        $stmt->bindParam(":option_name", $userOptions);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!empty($user["option_value"])) {
+            return $user["option_value"];
+        } else {
+            return '';
+        }
+    }
+
+    //We are not using this api
+    public function payment()
+    {
+        try {
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $productName = !empty($this->param['product_name']) ? $this->param['product_name'] : '';
+                    $productId = !empty($this->param['product_id']) ? $this->param['product_id'] : '';
+                    $userId = !empty($this->param['seller_id']) ? $this->param['seller_id'] : '';
+                    $amount = !empty($this->param['amount']) ? $this->param['amount'] : '';
+                    $currencyCode = !empty($this->param['currency_code']) ? $this->param['currency_code'] : 'USD';
+                    $baseAmount = !empty($this->param['amount']) ? $this->param['amount'] : '';
+                    $featured = !empty($this->param['featured']) ? $this->param['featured'] : 0;
+                    $urgent = !empty($this->param['urgent']) ? $this->param['urgent'] : 0;
+                    $highlight = !empty($this->param['highlight']) ? $this->param['highlight'] : 0;
+                    $transactionTime = !empty($this->param['transaction_time']) ? $this->param['transaction_time'] : time();
+                    // Status should be enum('pending', 'success', 'failed', 'cancel')
+                    $status = !empty($this->param['status']) ? $this->param['status'] : '';
+                    $paymentId = !empty($this->param['payment_id']) ? $this->param['payment_id'] : '';
+                    $paymentGatway = !empty($this->param['payment_gatway']) ? $this->param['payment_gatway'] : 'paypal';
+                    $transactionIpAddress = !empty($this->param['transaction_ip_address']) ? $this->param['transaction_ip_address'] : '';
+
+                    // Package Featured Urgent Highlight
+                    $transactionDescription = !empty($this->param['transaction_description']) ? $this->param['transaction_description'] : '';
+                    // Premium Ad
+                    $transactionMethod = !empty($this->param['transaction_method']) ? $this->param['transaction_method'] : '';
+                    // Frequency enum('MONTHLY', 'YEARLY', 'LIFETIME')
+                    $frequency = !empty($this->param['frequency']) ? $this->param['frequency'] : null;
+
+                    $billing = array(
+                        'type' => $this->getUserOptions($payload->userId, 'billing_details_type'),
+                        'tax_id' => $this->getUserOptions($payload->userId, 'billing_tax_id'),
+                        'name' => $this->getUserOptions($payload->userId, 'billing_name'),
+                        'address' => $this->getUserOptions($payload->userId, 'billing_address'),
+                        'city' => $this->getUserOptions($payload->userId, 'billing_city'),
+                        'state' => $this->getUserOptions($payload->userId, 'billing_state'),
+                        'zipcode' => $this->getUserOptions($payload->userId, 'billing_zipcode'),
+                        'country' => $this->getUserOptions($payload->userId, 'billing_country'),
+                    );
+                    $billing = !empty($billing) ? json_encode($billing) : '';
+                    $taxesIds = !empty($this->param['taxes_ids']) ? $this->param['taxes_ids'] : '';
+
+                    $insert_query = "INSERT INTO `ad_transaction` (`product_name`,`product_id`,`seller_id`,`amount`,`currency_code`,`base_amount`,`featured`,`urgent`,`highlight`,`transaction_time`,`status`,`payment_id`,`transaction_gatway`,`transaction_ip`,`transaction_description`,`transaction_method`,`frequency`,`billing`,`taxes_ids`) VALUES(:product_name,:product_id,:seller_id,:amount,:currency_code,:base_amount,:featured,:urgent,:highlight,:transaction_time,:status,:payment_id,:transaction_gatway,:transaction_ip,:transaction_description,:transaction_method,:frequency,:billing,:taxes_ids)";
+                    $stmt = $this->dbConn->prepare($insert_query);
+                    $stmt->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                    $stmt->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                    $stmt->bindValue(':seller_id', $userId, PDO::PARAM_STR);
+                    $stmt->bindValue(':amount', $amount, PDO::PARAM_STR);
+                    $stmt->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
+                    $stmt->bindValue(':base_amount', $baseAmount, PDO::PARAM_STR);
+                    $stmt->bindValue(':featured', $featured, PDO::PARAM_STR);
+                    $stmt->bindValue(':urgent', $urgent, PDO::PARAM_STR);
+                    $stmt->bindValue(':highlight', $highlight, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_time', $transactionTime, PDO::PARAM_STR);
+                    $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+                    $stmt->bindValue(':payment_id', $paymentId, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_gatway', $paymentGatway, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_ip', $transactionIpAddress, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_description', $transactionDescription, PDO::PARAM_STR);
+                    $stmt->bindValue(':transaction_method', $transactionMethod, PDO::PARAM_STR);
+                    $stmt->bindValue(':frequency', $frequency, PDO::PARAM_STR);
+                    $stmt->bindValue(':billing', $billing, PDO::PARAM_STR);
+                    $stmt->bindValue(':taxes_ids', $taxesIds, PDO::PARAM_STR);
+                    $stmt->execute();
+                    // Get the last insert ID
+                    $transactionId = $this->dbConn->lastInsertId();
+                    if (!empty($transactionId)) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done"];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong"];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Requst token not found"];
+                $this->returnResponse($response);
+            }
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
             $this->returnResponse($response);
         }
     }
@@ -2300,5 +3069,484 @@ class Api extends Rest
         $response = ["status" => true, "code" => 200, "Message" => "Notification successfully send.", "data" => $fields, "result" => $decode_result];
         $this->returnResponse($response);
 
+    }
+
+    public function addToCart()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $getItem = "SELECT * FROM `ad_product_add_to_cart_mobile` WHERE `user_id`=:user_id AND `product_id`=:product_id";
+                $getItemData = $this->dbConn->prepare($getItem);
+                $getItemData->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $getItemData->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $getItemData->execute();
+                $getItemData = $getItemData->fetch(PDO::FETCH_ASSOC);
+                if (!empty($getItemData)) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product already added into your cart list."];
+                    $this->returnResponse($response);
+                }
+
+                $getProduct = "SELECT id,product_name,price,screen_shot FROM `ad_product` WHERE `id`=:product_id";
+                $getProductDetails = $this->dbConn->prepare($getProduct);
+                $getProductDetails->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $getProductDetails->execute();
+                $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
+                if (empty($getProductDetails['id'])) {
+                    $response = ["status" => false, "code" => 400, "Message" => "Product not found."];
+                    $this->returnResponse($response);
+                }
+                $product_qty = 1;
+                if (!empty($getProductDetails['screen_shot'])) {
+                    $screenShotArr = explode(",", $getProductDetails['screen_shot']);
+                    if (count($screenShotArr) > 0) {
+                        $product_image = $this->display_image_url . 'storage/products/' . $screenShotArr[0];
+                    }
+                } else {
+                    $product_image = '';
+                }
+                $insert_query = "INSERT INTO `ad_product_add_to_cart_mobile` (`user_id`,`product_id`,`product_name`,`product_price`,`product_qty`,`product_image`) VALUES(:user_id,:product_id,:product_name,:product_price,:product_qty,:product_image)";
+                $stmt = $this->dbConn->prepare($insert_query);
+                $stmt->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $stmt->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                $stmt->bindValue(':product_name', $getProductDetails['product_name'], PDO::PARAM_STR);
+                $stmt->bindValue(':product_price', $getProductDetails['price'], PDO::PARAM_STR);
+                $stmt->bindValue(':product_qty', $product_qty, PDO::PARAM_STR);
+                $stmt->bindValue(':product_image', $product_image, PDO::PARAM_STR);
+                $stmt->execute();
+                // Get the last insert ID
+                $transactionId = $this->dbConn->lastInsertId();
+                if (!empty($transactionId)) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product successfully added into your cart list."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong."];
+                    $this->returnResponse($response);
+                }
+
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteFromCart()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id AND product_id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product has been removed from your cart list."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function getCartItems()
+    {
+        $responseArr = array();
+        $totalAmt = 0;
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $getItem = "SELECT * FROM `ad_product_add_to_cart_mobile` WHERE `user_id`=:user_id";
+                $getItemData = $this->dbConn->prepare($getItem);
+                $getItemData->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
+                $getItemData->execute();
+                $getItemData = $getItemData->fetchAll(PDO::FETCH_ASSOC);
+                // $totalItem = count($getItemData);
+                if (count($getItemData) > 0) {
+                    $responseArr['products'] = $getItemData;
+                    foreach ($getItemData as $key => $row) {
+                        $totalAmt = $totalAmt + $row['product_price'];
+                    }
+                    $responseArr['total'] = $totalAmt;
+                } else {
+                    $responseArr['products'] = [];
+                    $responseArr['total'] = 0;
+                }
+                $response = ["status" => true, "code" => 200, "Message" => "Cart listing", "data" => $responseArr];
+                $this->returnResponse($response);
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function checkoutPaypal()
+    {
+        // $product_id = $this->validateParameter('product_id', $this->param['product_id'], 'array');
+        if (count($this->param['productIds']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['productIds'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for productIds. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "productIds should not be empty array");
+        }
+
+        if (count($this->param['amounts']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['amounts'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for amounts. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amounts should not be empty array");
+        }
+
+        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
+        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        // $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $order_status = 'PAID';
+                $order_at = date("Y-m-d H:i:s");
+                $payment_type = 'PAYPAL';
+                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSOST = $this->dbConn->prepare($insertSO);
+                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
+                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
+                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
+                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
+                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
+                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
+                $insertSOST->execute();
+                // Get the last insert ID
+                $orderId = $this->dbConn->lastInsertId();
+                if (!empty($orderId)) {
+                    $qty = 1;
+                    if (count($this->param['productIds']) > 0) {
+                        for ($i = 0; $i < count($this->param['productIds']); $i++) {
+                            $productId = !empty($this->param['productIds'][$i]) ? $this->param['productIds'][$i] : 0;
+                            $amount = !empty($this->param['amounts'][$i]) ? $this->param['amounts'][$i] : 0;
+                            // echo $this->param['product_id'][$i].'<br>';
+                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
+                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':item_price', $amount, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':quantity', $qty, PDO::PARAM_STR);
+                            $insertSOSTIT->execute();
+                        }
+                    }
+                    $payment_response = 'VERIFIED';
+                    $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                    $insertSPST = $this->dbConn->prepare($insertSP);
+                    $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                    $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
+                    $insertSPST->execute();
+                    // Get the last insert ID
+                    $shopPaymentId = $this->dbConn->lastInsertId();
+                    if (!empty($shopPaymentId)) {
+                        $stmt = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id');
+                        $stmt->bindParam(":user_id", $payload->userId);
+                        $stmt->execute();
+
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function checkoutEventPaypal()
+    {
+        $productId = $this->validateParameter('productId', $this->param['productId'], INTEGER);
+        if (count($this->param['ticketTypeIds']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['ticketTypeIds'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketTypeIds. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketTypeIds should not be empty array");
+        }
+        if (count($this->param['ticketAmounts']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['ticketAmounts'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketAmounts. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketAmounts should not be empty array");
+        }
+        if (count($this->param['ticketQuantities']) > 0) {
+            // Check if the variables are arrays or not
+            if (!is_array($this->param['ticketQuantities'])) {
+                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketQuantities. It should be type array.");
+            }
+        } else {
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketQuantities should not be empty array");
+        }
+
+        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
+        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $order_status = 'PAID';
+                $order_at = date("Y-m-d H:i:s");
+                $payment_type = 'PAYPAL';
+                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSOST = $this->dbConn->prepare($insertSO);
+                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
+                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
+                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
+                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
+                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
+                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
+                $insertSOST->execute();
+                // Get the last insert ID
+                $orderId = $this->dbConn->lastInsertId();
+                if (!empty($orderId)) {
+                    if(!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketAmounts']) && !empty($this->param['ticketQuantities'])){
+                        for ($i=0; $i < count($this->param['ticketTypeIds']) ; $i++) { 
+                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
+                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':event_type_id', $this->param['ticketTypeIds'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':item_price', $this->param['ticketAmounts'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->bindValue(':quantity', $this->param['ticketQuantities'][$i], PDO::PARAM_STR);
+                            $insertSOSTIT->execute();
+                        }
+                    }
+
+                    $payment_response = 'VERIFIED';
+                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                        $insertSPST = $this->dbConn->prepare($insertSP);
+                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
+                        if ($insertSPST->execute()) {
+                            if (!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])) {
+                                // $eventTypeIdArr = explode(",",$eventTypeId);
+                                // $eventQuantityArr = explode(",",$eventQuantity);
+                                if (count($this->param['ticketTypeIds']) > 0) {
+                                    for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
+                                        $id = $newAvailableQty = $newRemainingQty = '';
+                                        if (!empty($this->param['ticketTypeIds'][$i])) {
+                                            $id = $this->param['ticketTypeIds'][$i];
+                                            $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
+                                            $getAvailableQty = $this->dbConn->prepare($getQty);
+                                            $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                            $getAvailableQty->execute();
+                                            $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
+                                            if (!empty($getAvailableQty['available_quantity'])) {
+                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
+                                                $updateNewQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':available_quantity', $newAvailableQty, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':remaining_quantity', $newRemainingQty, PDO::PARAM_STR);
+                                                $updateNewQty->execute();
+                                            }
+                                        }
+                                    }
+                                }
+                                $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked."];
+                                $this->returnResponse($response);
+                            }
+
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                            $this->returnResponse($response);
+                        }
+
+                    /*$ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
+                    $ticketAmounts = implode(",", $this->param['ticketAmounts']);
+                    $ticketQuantities = implode(",", $this->param['ticketQuantities']);
+                    $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
+                    $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
+                    $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                    //$eventTypeId comma seperated id from ad_product_event_types
+                    $insertSOSTIT->bindValue(':event_type_id', $ticketTypeIds, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':item_price', $ticketAmounts, PDO::PARAM_STR);
+                    $insertSOSTIT->bindValue(':quantity', $ticketQuantities, PDO::PARAM_STR);
+                    if ($insertSOSTIT->execute()) {
+                        $payment_response = 'VERIFIED';
+                        $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
+                        $insertSPST = $this->dbConn->prepare($insertSP);
+                        $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':txn_id', $txn_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payer_id', $payer_id, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                        $insertSPST->bindValue(':total_amount', $totalAmount, PDO::PARAM_STR);
+                        if ($insertSPST->execute()) {
+                            if (!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketQuantities'])) {
+                                // $eventTypeIdArr = explode(",",$eventTypeId);
+                                // $eventQuantityArr = explode(",",$eventQuantity);
+                                if (count($this->param['ticketTypeIds']) > 0) {
+                                    for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
+                                        $id = $newAvailableQty = $newRemainingQty = '';
+                                        if (!empty($this->param['ticketTypeIds'][$i])) {
+                                            $id = $this->param['ticketTypeIds'][$i];
+                                            $getQty = "SELECT available_quantity,remaining_quantity FROM `ad_product_event_types` WHERE `id`=:id";
+                                            $getAvailableQty = $this->dbConn->prepare($getQty);
+                                            $getAvailableQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                            $getAvailableQty->execute();
+                                            $getAvailableQty = $getAvailableQty->fetch(PDO::FETCH_ASSOC);
+                                            if (!empty($getAvailableQty['available_quantity'])) {
+                                                $newAvailableQty = $getAvailableQty['available_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $newRemainingQty = $getAvailableQty['remaining_quantity'] - $this->param['ticketQuantities'][$i];
+                                                $updateNewQty = $this->dbConn->prepare('UPDATE ad_product_event_types SET available_quantity = :available_quantity,remaining_quantity = :remaining_quantity WHERE id = :id');
+                                                $updateNewQty->bindValue(':id', $id, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':available_quantity', $newAvailableQty, PDO::PARAM_STR);
+                                                $updateNewQty->bindValue(':remaining_quantity', $newRemainingQty, PDO::PARAM_STR);
+                                                $updateNewQty->execute();
+                                            }
+                                        }
+                                    }
+                                }
+                                $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked."];
+                                $this->returnResponse($response);
+                            }
+
+                        } else {
+                            $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
+                            $this->returnResponse($response);
+                        }
+
+                    }*/
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteUserPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $response = ["status" => true, "code" => 200, "Message" => "Product successfully deleted."];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteUserEventPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $stmt = $this->dbConn->prepare('DELETE FROM ad_product_event_types WHERE product_id=:product_id');
+                    $stmt->bindParam(":product_id", $product_id);
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Event successfully deleted."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => true, "code" => 200, "Message" => "Event successfully deleted."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
+    }
+
+    public function deleteUserTrainingPost()
+    {
+        $product_id = $this->validateParameter('product_id', $this->param['product_id'], INTEGER);
+        $token = $this->getBearerToken();
+        if (!empty($token)) {
+            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+            if (!empty($payload->userId)) {
+                $stmt = $this->dbConn->prepare('DELETE FROM ad_product WHERE user_id =:user_id AND id =:product_id');
+                $stmt->bindParam(":user_id", $payload->userId);
+                $stmt->bindParam(":product_id", $product_id);
+                if ($stmt->execute()) {
+                    $stmt = $this->dbConn->prepare('DELETE FROM ad_training_gallery WHERE product_id=:product_id');
+                    $stmt->bindParam(":product_id", $product_id);
+                    if ($stmt->execute()) {
+                        $response = ["status" => true, "code" => 200, "Message" => "Training successfully deleted."];
+                        $this->returnResponse($response);
+                    } else {
+                        $response = ["status" => true, "code" => 200, "Message" => "Training successfully deleted."];
+                        $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "Something is wrong."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $this->returnResponse($response);
+            }
+        }
     }
 }

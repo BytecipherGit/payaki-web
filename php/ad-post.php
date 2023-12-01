@@ -57,12 +57,14 @@ function ajax_post_advertise()
 
     global $config, $lang, $link;
     if (isset($_POST['submit'])) {
-
         $errors = array();
         $item_screen = "";
 
         if (empty($_POST['subcatid']) or empty($_POST['catid'])) {
             $errors[]['message'] = $lang['CAT_REQ'];
+        }
+        if (empty($_POST['seller_name'])) {
+            $errors[]['message'] = "Seller name is required";
         }
         if (empty($_POST['title'])) {
             $errors[]['message'] = $lang['ADTITLE_REQ'];
@@ -276,7 +278,13 @@ function ajax_post_advertise()
                     $tags = '';
                 }
 
-                if ($config['post_auto_approve'] == 1) {
+                /*if ($config['post_auto_approve'] == 1) {
+                    $status = "active";
+                } else {
+                    $status = "pending";
+                }*/
+
+                if ($_POST['catid'] == 9 || $_POST['catid'] == 10) {
                     $status = "active";
                 } else {
                     $status = "pending";
@@ -331,13 +339,69 @@ function ajax_post_advertise()
                     $expired_date = date('Y-m-d H:i:s', strtotime($timenow . ' +7 day'));
                 }
 
+                if (validate_input($_POST['catid']) == 9) {
+                    $postType = 'training';
+                } else if (validate_input($_POST['catid']) == 10) {
+                    $postType = 'event';
+                } else {
+                    $postType = 'other';
+                }
+
+                $promoVideoFileName = '';
+                if (isset($_FILES["trainingPromoVideo"]) && ($_POST['catid'] == 9 || $_POST['catid'] == 10)) {
+                    // Define the target directory for storing video files
+                    $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                    // Create the target directory if it doesn't exist
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $allowedExtensions = ["mp4", "avi", "mov", "mkv"];
+                    $maxSizeMB = (int)$_POST["max_size"];
+                
+                    // Check if the file has no errors
+                    if ($_FILES["trainingPromoVideo"]["error"] === UPLOAD_ERR_OK) {
+                        // Validate file size
+                        $maxSizeBytes = $maxSizeMB * 1024 * 1024; // Convert MB to bytes
+                        if ($_FILES["trainingPromoVideo"]["size"] <= $maxSizeBytes) {
+                            // Validate file extension
+                            $fileExtension = strtolower(pathinfo($_FILES["trainingPromoVideo"]["name"], PATHINFO_EXTENSION));
+                            if (in_array($fileExtension, $allowedExtensions)) {
+                                $trainingPromoVideoFileName = $_FILES['trainingPromoVideo']['name'];
+                                $trainingPromoVideoTempFileName = $_FILES['trainingPromoVideo']['tmp_name'];
+                                if ($trainingPromoVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingPromoVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingPromoVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingPromoVideoNewFileName)) {
+                                        $trainingPromoVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingPromoVideoNewFileName;
+                                        if (move_uploaded_file($trainingPromoVideoTempFileName, $trainingPromoVideoFilePath)) {
+                                            $promoVideoFileName = $trainingPromoVideoNewFileName; 
+                                        } 
+                                    }
+                                }
+                            } 
+                        } 
+                    } 
+                }
+                
+                if(isset($_POST['event_date']) && validate_input($_POST['catid']) == 10){
+                    $event_date = $_POST['event_date'];
+                } 
+
+                if(isset($_POST['event_time']) && validate_input($_POST['catid']) == 10){
+                    $event_time = date("h:i A", strtotime($_POST['event_time']));
+                } 
+                
                 $item_insrt = ORM::for_table($config['db']['pre'] . 'product')->create();
                 $item_insrt->user_id = $_SESSION['user']['id'];
+                $item_insrt->seller_name = validate_input($_POST['seller_name']);
                 $item_insrt->product_name = validate_input($post_title);
                 $item_insrt->slug = $slug;
                 $item_insrt->status = validate_input($status);
                 $item_insrt->category = validate_input($_POST['catid']);
                 $item_insrt->sub_category = validate_input($_POST['subcatid']);
+                $item_insrt->post_type = $postType;
+                $item_insrt->event_date = !empty($event_date) ? $event_date : date("Y-m-d");
+                $item_insrt->event_time = !empty($event_time) ? $event_time : date("h:i A");
                 $item_insrt->description = $description;
                 $item_insrt->price = validate_input($price);
                 $item_insrt->negotiable = validate_input($negotiable);
@@ -349,6 +413,7 @@ function ajax_post_advertise()
                 $item_insrt->country = validate_input($country);
                 $item_insrt->latlong = validate_input($latlong);
                 $item_insrt->screen_shot = $item_screen;
+                $item_insrt->promo_video = $promoVideoFileName;
                 $item_insrt->tag = validate_input($tags);
                 $item_insrt->created_at = $timenow;
                 $item_insrt->updated_at = $timenow;
@@ -356,7 +421,10 @@ function ajax_post_advertise()
                 $item_insrt->expired_date = $expired_date;
                 $item_insrt->expire_date = $expire_timestamp;
                 $item_insrt->save();
-
+                // Print last executed query
+                // $lastQuery = ORM::getLastQuery();
+                // echo $lastQuery;
+                // die;
                 $product_id = $item_insrt->id();
                 //Send Custom Notification to user
                 if (!empty($product_id)) {
@@ -374,6 +442,74 @@ function ajax_post_advertise()
                             $insert_notification->save();
                         }
                     }
+                    /*if (validate_input($_POST['catid']) == 10) {
+                        // Loop through submitted data and insert into the database
+                        if (isset($_POST['ticket_type']) && isset($_POST['ticket_price']) && isset($_POST['available_quantity']) && isset($_POST['selling_mode'])) {
+                            $ticketTypes = $_POST['ticket_type'];
+                            $ticketPrices = $_POST['ticket_price'];
+                            $availableQuantities = $_POST['available_quantity'];
+                            $sellingModes = $_POST['selling_mode'];
+
+                            foreach ($ticketTypes as $key => $ticketType) {
+                                $ticketPrice = $ticketPrices[$key];
+                                $availableQuantity = $availableQuantities[$key];
+                                $sellingMode = $sellingModes[$key];
+                                
+                                //Insert record in Training Gallery
+                                $tGInsert = ORM::for_table($config['db']['pre'] . 'product_event_types')->create();
+                                $tGInsert->product_id = $product_id;
+                                $tGInsert->ticket_type = $ticketType;
+                                $tGInsert->ticket_price = $ticketPrice;
+                                $tGInsert->available_quantity = $availableQuantity;
+                                $tGInsert->remaining_quantity = $availableQuantity;
+                                $tGInsert->selling_mode = $sellingMode;
+                                $tGInsert->created_at = date("Y-m-d H:i:s");
+                                $tGInsert->save();
+                            }
+                        }
+                    }*/
+
+                    /*if (validate_input($_POST['catid']) == 9) {
+                        // Check if files were uploaded
+                        if (isset($_FILES['trainingVideo'])) {
+                            $video = '';
+                            // Define the target directory for storing video files
+                            $targetDir = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/';
+                            // Create the target directory if it doesn't exist
+                            if (!file_exists($targetDir)) {
+                                mkdir($targetDir, 0777, true);
+                            }
+                            $countTrainingVidoe = 0;
+                            // Loop through the uploaded files
+                            foreach ($_FILES['trainingVideo']['tmp_name'] as $key => $tmp_name) {
+                                $trainingVideoFileName = $_FILES['trainingVideo']['name'][$key];
+                                $trainingVideoTempFileName = $_FILES['trainingVideo']['tmp_name'][$key];
+                                if ($trainingVideoTempFileName != '') {
+                                    $extension = pathinfo($trainingVideoFileName, PATHINFO_EXTENSION);
+                                    $trainingVideoNewFileName = microtime(true) . '.' . $extension;
+                                    if (!empty($trainingVideoNewFileName)) {
+                                        if ($countTrainingVidoe == 0) {
+                                            $video = $trainingVideoNewFileName;
+                                        } elseif ($countTrainingVidoe >= 1) {
+                                            $video = $video . "," . $trainingVideoNewFileName;
+                                        }
+                                    }
+                                    $trainingVideoFilePath = $_SERVER['DOCUMENT_ROOT'] . '/payaki-web/storage/training_video/' . $trainingVideoNewFileName;
+                                    move_uploaded_file($trainingVideoTempFileName, $trainingVideoFilePath);
+                                    $countTrainingVidoe++;
+                                }
+                            }
+
+                        }
+                        //Insert record in Training Gallery
+                        $tGInsert = ORM::for_table($config['db']['pre'] . 'training_gallery')->create();
+                        $tGInsert->product_id = $product_id;
+                        $tGInsert->training_video = $video;
+                        $tGInsert->save();
+                    } else if (validate_input($_POST['catid']) == 10) {
+                        //Write Insert Event code here
+                    }*/
+
                 }
                 add_post_customField_data($_POST['catid'], $_POST['subcatid'], $product_id);
 
@@ -444,9 +580,14 @@ function ajax_post_advertise()
                     echo json_encode($response, JSON_UNESCAPED_SLASHES);
                     die();
                 } else {
+                    if (validate_input($_POST['catid']) == 9) {
+                        $ad_link = $link['POST-TRAINING-VIDEO'] . "/" . $product_id;
+                    } else if (validate_input($_POST['catid']) == 10) {
+                        $ad_link = $link['POST-EVENT'] . "/" . $product_id;
+                    } else {
+                        $ad_link = $link['POST-DETAIL'] . "/" . $product_id;
+                    }
                     unset($_POST);
-                    $ad_link = $link['POST-DETAIL'] . "/" . $product_id;
-
                     $json = '{"status" : "success","ad_type" : "free","redirect" : "' . $ad_link . '"}';
                     echo $json;
                     die();

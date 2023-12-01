@@ -125,6 +125,51 @@
             });
         });
 
+        $('.set-item-cart').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            var adId = $(this).data('item-id');
+            var userId = $(this).data('userid');
+            var action = $(this).data('action');
+            var $item = $(this).closest('.fav-listing');
+            var $this = $(this);
+
+            if (userId == 0) {
+                //window.location.href = loginurl;
+                $('[href="#sign-in-dialog"]').trigger('click');
+                return;
+            }
+            $this.addClass('button-loader');
+            var data = {action: action, id: adId, userId: userId};
+            $.ajax({
+                type: "POST",
+                url: ajaxurl,
+                data: data,
+                success: function (result) {
+                    window.location.reload();
+                    /*if (result == 1) {
+                        if (action == 'removeFavAd') {
+                            $item.remove();
+                            var val = $('.fav-ad-count').text();
+                            var favcount = val - 1;
+                            $('.fav-ad-count').html(favcount);
+                        }
+                        else {
+                            $this.removeClass('button-loader').addClass('added');
+                        }
+
+                    }
+                    else if (result == 2) {
+                        $this.removeClass('button-loader').removeClass('added');
+                    }
+                    else {
+                        //alert("else");
+                    }*/
+                }
+            });
+        });
+
         $("a.close").removeAttr("href").on('click', function () {
             function slideFade(elem) {
                 var fadeOut = {opacity: 0, transition: 'opacity 0.5s'};

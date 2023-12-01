@@ -50,6 +50,8 @@ $(document).ready(function () {
     // The id of the searched user and his/her username.
     let user_id = $(e.target).attr("data-id");
 
+	
+
     // Data passed from the PHP AJAX call that determines whether a user has a profile pic setted or not.
     let hasProfilePic = $(e.target).attr("data-image");
 
@@ -81,118 +83,119 @@ $(document).ready(function () {
           user_id +
           `" class='user-list-item'></a>
 					<span class="messager-name"> <div class="uers-icon">
-				<img src="assets/avatars/profile-default.png" alt="Avatars">
-				</div> <p>` +
-          username +
-          `</p>
-				</span></li>`
-      );
+				<img src="`+hasProfilePic+`" alt="Avatars">
+				</div> <p>`+username+`</p>
+				</span></li>`);
 
-      // Add the current user to the array... prevents duplicate listed user.
-      insertedUserListItem.push("profile-" + user_id);
-    }
-  });
+			// Add the current user to the array... prevents duplicate listed user.
+			insertedUserListItem.push('profile-' + user_id);
+		}
+	});
 
-  // Interval in which the messages are dynamically loaded.
-  var t;
+	// Interval in which the messages are dynamically loaded.
+	var t;
 
-  // Send AJAX request to display messages once you click on a listed user.
-  $(document).on("click", ".user-list-item", (e) => {
-    e.preventDefault();
+	// Send AJAX request to display messages once you click on a listed user.
+	$(document).on('click', '.user-list-item', (e) => {
+		e.preventDefault();
 
-    if (t) clearInterval(t);
-    else console.log("nope");
+		if(t) clearInterval(t);
+		else console.log('nope');
 
-    // The id of the clicked user.
-    let receiver = $(e.target).attr("data-id");
+		// The id of the clicked user.
+		let receiver = $(e.target).attr('data-id');
 
-    // Pass the id of the clicked user to the form, it will be the receiver of your messages.
-    $("#js-sendMessage").attr("data-id", receiver);
+		// Pass the id of the clicked user to the form, it will be the receiver of your messages.
+		$('#js-sendMessage').attr('data-id', receiver);
 
-    // When you click on a listed user, empty the textbox value.
-    $("#js-messageBody").val("");
+		// When you click on a listed user, empty the textbox value.
+		$('#js-messageBody').val('');
 
-    // When you click on a listed user, display the textbox to chat him/her.
-    $("#js-messageBody").show();
+		// When you click on a listed user, display the textbox to chat him/her.
+		$('#js-messageBody').show();
 
-    $("#js-messageSubmitButton").show();
+		$('#js-messageSubmitButton').show();
 
-    $("#messages_container").addClass("newClass1");
-    $("#messages_container_1").addClass("newClass2");
+		$('#messages_container').addClass('newClass1');
+		$('#messages_container_1').addClass('newClass2');
 
-    t = setInterval(function () {
-      $.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data: { receiver },
-        success: function (data) {
-          $(".messages-show").html(data);
 
-          let messageContainer = document.getElementById(
-            "js-messagesContainer"
-          );
-          messageContainer.scrollTop = messageContainer.scrollHeight;
-        },
-      });
-    }, 100);
-  });
+		t = setInterval(function() {
+			$.ajax({
+				type: 'POST',
+				url: 'ajax.php',
+				data: { receiver },
+				dataType: 'json',
+				success: function(data) {
+					// console.log(data);
+					$('.msg-headar').html(data.rsp_header);
+					$('.messages-show').html(data.rsp_message);
 
-  // Send AJAX request to send a message once you submit the related form.
-  $("#js-sendMessage").on("submit", (e) => {
-    e.preventDefault();
+					let messageContainer = document.getElementById('js-messagesContainer');
+					messageContainer.scrollTop = messageContainer.scrollHeight;
+				}
+			});
+		}, 100);
+	});
 
-    // Your input in the textbox.
-    let messageBody = $("#js-messageBody").val();
+	// Send AJAX request to send a message once you submit the related form.
+	$('#js-sendMessage').on('submit', (e) =>  {
+		e.preventDefault();
 
-    // The receiver, hence the clicked user you are writing to.
-    let user_id = $(e.target).attr("data-id");
+		// Your input in the textbox.
+		let messageBody = $('#js-messageBody').val();
+		
+		// The receiver, hence the clicked user you are writing to.
+		let user_id = $(e.target).attr('data-id');
 
-    $.ajax({
-      type: "POST",
-      url: "ajax.php",
-      data: { messageBody, user_id },
-      success: function (data) {
-        $(".messages-show").html($(".messages-show").html() + data);
+		$.ajax({
+			type: 'POST',
+			url: 'ajax.php',
+			data: { messageBody, user_id },
+			success: function(data) {
+				$('.messages-show').html($('.messages-show').html() + data);
 
-        // Force scrollbar to the bottom.
-        let messageContainer = document.getElementById("js-messagesContainer");
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+				// Force scrollbar to the bottom.
+				let messageContainer = document.getElementById('js-messagesContainer');
+				messageContainer.scrollTop = messageContainer.scrollHeight;
 
-        // Empty the textbox value.
-        $("#js-messageBody").val("");
-      },
-    });
-  });
+				// Empty the textbox value.
+				$('#js-messageBody').val('');
+			}
+		});
+	});
 
-  $(document).on("click", ".group-box", (e) => {
-    e.preventDefault();
-    console.log("hiiii");
-    // Your input in the textbox.
-    let messageBody = $("#js-messageBody").val();
-    $("#js-messageBody").show();
+	$(document).on('click', '.group-box', (e) => {
+		e.preventDefault();
+		console.log('hiiii');
+		// Your input in the textbox.
+		let messageBody = $('#js-messageBody').val();
+		$('#js-messageBody').show();
 
-    // The receiver, hence the clicked user you are writing to.
-    let user_id = $(e.target).attr("data-id");
+		
+		// The receiver, hence the clicked user you are writing to.
+		let user_id = $(e.target).attr('data-id');
 
-    $.ajax({
-      type: "POST",
-      url: "ajax.php",
-      data: { messageBody },
-      success: function (data) {
-        $(".messages-show").html($(".messages-show").html() + data);
+		$.ajax({
+			type: 'POST',
+			url: 'ajax.php',
+			data: { messageBody },
+			success: function(data) {
+				$('.messages-show').html($('.messages-show').html() + data);
 
-        // Force scrollbar to the bottom.
-        let messageContainer = document.getElementById("js-messagesContainer");
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+				// Force scrollbar to the bottom.
+				let messageContainer = document.getElementById('js-messagesContainer');
+				messageContainer.scrollTop = messageContainer.scrollHeight;
 
-        // Empty the textbox value.
-        $("#js-messageBody").val("");
-      },
-    });
-  });
+				// Empty the textbox value.
+				$('#js-messageBody').val('');
+			}
+		});
+	});
 
-  $("#back_arrow").click(function () {
-    $("#messages_container").removeClass("newClass1");
-    $("#messages_container_1").removeClass("newClass2");
-  });
+	$(document).on('click', '#back_arrow', (e) => {
+		$('#messages_container').removeClass('newClass1');
+		$('#messages_container_1').removeClass('newClass2');
+	});
+
 });

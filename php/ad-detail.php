@@ -1,4 +1,6 @@
 <?php
+
+$isPurchased = "FALSE";
 if(checkloggedin()) {
     update_lastactive();
 }
@@ -7,10 +9,16 @@ if(!isset($_GET['id']))
 {
     error($lang['PAGE_NOT_FOUND'], __LINE__, __FILE__, 1);
     exit;
+} else {
+    $productId = $_GET['id'];
 }
 
 if(!empty($_GET['notification_id'])){
     update_notification_status($_GET['notification_id']);
+}
+
+if(isset($_SESSION['user']['id'])){
+    $loggedInUserId = $_SESSION['user']['id'];
 }
 
 $num_rows = ORM::for_table($config['db']['pre'].'product')
@@ -27,6 +35,10 @@ if ($num_rows > 0) {
     update_itemview($_GET['id']);
 
     $item_id = $info['id'];
+    $seller_name = $info['seller_name'];
+    $event_date = $info['event_date'];
+    $event_time = $info['event_time'];
+    $promo_video = $info['promo_video'];
     $item_title = $info['product_name'];
     $item_status = $info['status'];
     $item_featured = $info['featured'];
@@ -79,7 +91,6 @@ if ($num_rows > 0) {
             $item_hide_phone = "yes";
         }
     }
-
 
     $currency_code = get_countryCurrecny_by_code($info['country']);
     $price = price_format($info['price'],$currency_code);
@@ -255,11 +266,44 @@ if ($num_rows > 0) {
         $screen_classicsm = "";
     }
 
+    //Get Training Video Purchase status for Logged in User
+    $shopOrderItem = ORM::for_table($config['db']['pre'].'shop_order_item')->where('product_id',$_GET['id'])->find_many();
+    if(!empty($shopOrderItem)){
+        foreach ($shopOrderItem as $key => $row) {
+            $shopOrder = ORM::for_table($config['db']['pre'].'shop_order')->where('id',$row['order_id'])->find_one();
+            if($shopOrder['order_status'] == 'PAID' && $shopOrder['member_id'] == $_SESSION['user']['id']){
+                $isPurchased = "TRUE";
+            } else {
+                $isPurchased = "FALSE";
+            }
+        }
+    } else {
+        $isPurchased = "FALSE";
+    }
+
 
 }
 else {
     error($lang['PAGE_NOT_FOUND'], __LINE__, __FILE__, 1);
     exit;
+}
+$trainingVideoArr = array();
+// Check if category id 9 that means for Training Video & if 10 that means for Event
+if($item_catid == 9){
+    $trainingResult = ORM::for_table($config['db']['pre'].'training_gallery')
+        ->where('product_id', $item_id)
+        ->find_many();
+    if(count($trainingResult) > 0){
+        foreach($trainingResult as $key => $training){
+            // $trainingVideoArr[$training['id']]['id'] = $training['id'];
+            // $trainingVideoArr[$training['id']]['product_id'] = $training['product_id'];
+            $trainingVideoArr[$training['id']]['training_video'] = $training['training_video'];
+        }
+    } else {
+        $trainingVideoArr = [];
+    }
+} else if($item_catid == 10){
+    // echo 'For Event';
 }
 
 $country_code = check_user_country();
@@ -283,6 +327,7 @@ if (count($result1) > 0) {
         $item[$info1['id']]['id'] = $info1['id'];
         $item[$info1['id']]['featured'] = $info1['featured'];
         $item[$info1['id']]['urgent'] = $info1['urgent'];
+        $item[$info1['id']]['seller_name'] = $info1['seller_name'];
         $item[$info1['id']]['product_name'] = $info1['product_name'];
         $item[$info1['id']]['location'] = $info1['location'];
         $item[$info1['id']]['city'] = $info1['city'];
@@ -373,7 +418,8 @@ if (isset($_POST['sendemail'])) {
     }
 
 }
-
+echo $isPurchased;
+die; 
 $key="BYTECIPHERPAYAKI";
 
 // Post Id
@@ -407,6 +453,8 @@ $page->SetParameter ('ITEM_CUSTOMFIELD', $item_custom_field);
 $page->SetLoop ('ITEM_CUSTOM', $item_custom);
 $page->SetLoop ('ITEM_CUSTOM_TEXTAREA', $item_custom_textarea);
 $page->SetLoop ('ITEM_CUSTOM_CHECKBOX', $item_checkbox);
+$page->SetParameter ('CATEGORYID', $item_catid);
+$page->SetLoop ('TRAINING_VIDEO', $trainingVideoArr);
 $page->SetParameter ('QUICKCHAT_URL', $quickchat_url);
 $page->SetParameter ('CUSTOMCHAT_URL', $customChatUrl);
 $page->SetParameter ('POST_AUTHOR_ID', $item_author_id);
@@ -450,6 +498,10 @@ $page->SetParameter ('ITEM_LONG', $long);
 $page->SetParameter ('ITEM_CREATED', $item_created_at);
 $page->SetParameter ('ITEM_DESC', $item_description);
 $page->SetParameter ('ITEM_SHOWMORE', $showmore);
+$page->SetParameter ('SELLER_NAME', $seller_name);
+$page->SetParameter ('ITEM_EVENT_DATE', $event_date);
+$page->SetParameter ('ITEM_EVENT_TIME', $event_time);
+$page->SetParameter ('PROMO_VIDEO', $promo_video);
 $page->SetParameter ('ITEM_PRICE', $item_price);
 $page->SetParameter ('ITEM_NEGOTIATE', $item_negotiable);
 $page->SetParameter ('ITEM_PHONE', $item_phone);
@@ -465,6 +517,10 @@ $page->SetParameter ('ITEM_STATUS', $item_status);
 $page->SetParameter ('ITEM_TAG', $item_tag);
 $page->SetParameter ('SHOW_TAG', $show_tag);
 $page->SetParameter ('ITEM_VIEW', $item_view);
+$page->SetParameter ('LOGGEDINUSERID', $loggedInUserId);
+$page->SetParameter ('PRODUCTID', $productId);
+$page->SetParameter ('TRAINING_VIDEO_PURCHASE_STATUS', $isPurchased);
+$page->SetParameter ('BOOKEVENT', $link['BOOKEVENT']);
 $page->SetParameter ('MAILSENT', $mailsent);
 $page->SetParameter('ERROR', $error);
 $page->SetParameter ('RECAPTCH_ERROR', $recaptcha_error);

@@ -1,4 +1,11 @@
 {OVERALL_HEADER}
+<style>
+        .box {
+            flex: 1;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+    </style>
 <div id="titlebar" class="margin-bottom-0">
     <div class="container">
         <div class="row">
@@ -60,7 +67,23 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
 
         <!-- Content -->
         <div class="col-xl-8 col-lg-8 content-right-offset">
-
+            IF("{CATEGORYID}"=="9" || "{CATEGORYID}"=="10"){
+            <div class="single-page-section">
+                <h3>Promo Video</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="job-property">
+                            <!-- Use the video element to embed a video -->
+                            <video width="600px;" height="auto" controls>
+                                IF("{PROMO_VIDEO}"!=""){
+                                    <source src="{SITE_URL}/storage/training_video/{PROMO_VIDEO}" type="video/mp4">
+                                {:IF}
+                            </video>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+             {:IF}
             <div class="single-page-section">
                 <h3>{LANG_ADS_DETAILS}</h3>
                 <div class="row">
@@ -103,11 +126,18 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             <div class="single-page-section">
                 <h3>{LANG_ADDITIONAL_DETAILS}</h3>
                 <div class="row">
-                    <div class="col-md-6">
+                    <!--<div class="col-md-6">
                         <div class="job-property">
                             <i class="icon-feather-hash"></i>
                             <span>{LANG_AD_ID}</span>
                             <h5>{ITEM_ID}</h5>
+                        </div>
+                    </div>-->
+                    <div class="col-md-6">
+                        <div class="job-property">
+                            <i class="icon-feather-user"></i>
+                            <span>Seller Name</span>
+                            <h5>{SELLER_NAME}</h5>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -173,13 +203,52 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                     IF('{ITEM_SHOWMORE}'=='1'){ <a href="#" class="show-more-button">{LANG_SHOW_MORE} <i class="fa fa-angle-down"></i></a> {:IF}
                 </div>
             </div>
-            IF({SHOW_TAG}){
+            IF("{CATEGORYID}"=="10"){
             <div class="single-page-section">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="d-flex justify-content-between">
+                            <div class="box">
+                                <h3>Event Date</h3>
+                                {ITEM_EVENT_DATE}
+                            </div>
+                            <div class="box">
+                                <h3>Event Title</h3>
+                                {ITEM_EVENT_TIME}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {:IF}
+            IF("{CATEGORYID}"=="9"){
+                <div class="row">
+            {LOOP: TRAINING_VIDEO}
+                <div class="col-md-4">
+                    <div class="job-property videopLeft">
+                    IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}" && "{TRAINING_VIDEO_PURCHASE_STATUS}"!="TRUE"){
+                        <div class="overlay"></div>
+                    {:IF}
+                    <!-- Use the video element to embed a video -->
+                        <video width="100%" height="auto" controls>
+                            IF("{TRAINING_VIDEO.training_video}"!=""){
+                                <source src="{SITE_URL}storage/training_video/{TRAINING_VIDEO.training_video}" type="video/mp4">
+                            {:IF}
+                        </video>    
+                    </div>
+                </div>
+            
+            {/LOOP: TRAINING_VIDEO}
+            </div>       
+            {:IF}
+
+            IF({SHOW_TAG}){
+            <!--<div class="single-page-section">
                 <h3>{LANG_TAGS}</h3>
                 <ul class="job-tags">
                     {ITEM_TAG}
                 </ul>
-            </div>
+            </div>-->
             {:IF}
             IF(('{POST_ADDRESS_MODE}'=='1') && ('{ITEM_LAT}'!='')){
             <div class="single-page-section">
@@ -191,14 +260,14 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             </div>
             {:IF}
             <div class="single-page-section">
-                <h3>{LANG_REVIEWS} ({ITEMREVIEW})</h3>
+                <!--<h3>{LANG_REVIEWS} ({ITEMREVIEW})</h3>-->
 
                 <!-- **** Start reviews **** -->
                 <div class="starReviews text-widget">
                     <!-- This is where your product ID goes -->
-                    <div id="review-productId" class="review-productId" style="">{ITEM_ID}</div>
+                    <!--<div id="review-productId" class="review-productId" style="">{ITEM_ID}</div>-->
                     <!-- Show current reviews -->
-                    <div class="show-reviews"><div class="loader" style="margin: 0 auto;"></div></div>
+                    <!--<div class="show-reviews"><div class="loader" style="margin: 0 auto;"></div></div>-->
                     <hr>
 
                     IF("{LOGGED_IN}"=="0"){
@@ -278,14 +347,23 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                 IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}"){
                                     <a href="{CUSTOMCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
                                 {:IF}
-                                <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
+                                IF("{CATEGORYID}"!="10" && "{CATEGORYID}"!="9"){
+                                    <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
+                                {:IF}
+                                IF("{CATEGORYID}"=="9"){
+                                    <span class="button ripple-effect full-width margin-top-10 zechat-show-under-768px set-item-cart" data-item-id="{ITEM_ID}" data-userid="{LOGGEDIN_USER_ID}" data-action="setCartItem">Add to cart</span>
+                                {:IF}
+                                IF("{CATEGORYID}"=="10"){
+                                    <a href="{BOOKEVENT}/{PRODUCTID}/{LOGGEDINUSERID}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Book Event</a>
+                                {:IF}
+
                             {ELSE}
                                 <a href="#sign-in-dialog" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10">{LANG_LOGIN_CHAT} <i class="icon-feather-message-circle"></i></a>
                             {:IF}
                             IF("{NON_LOGIN_SENDEMAIL_ALLOW}"=="1"){
-                                <a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>
+                                <!--<a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>-->
                             ELSEIF({LOGGED_IN}){
-                                <a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>
+                                <!--<a href="#emailToSeller" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10 apply-dialog-button">{LANG_REPLY_MAIL} <i class="icon-feather-mail"></i></a>-->
                             {:IF}
                         </div>
                     </div>

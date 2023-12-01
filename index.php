@@ -54,6 +54,8 @@ $router->map('GET|POST','/message/?', 'message.php');
 $router->map('GET|POST','/forgot/?', 'forgot.php');
 $router->map('GET|POST','/dashboard/?', 'dashboard.php');
 $router->map('GET|POST','/myads/[*:page]?/?', 'ad-my.php');
+$router->map('GET|POST','/my-training-ads/[*:page]?/?', 'ad-my-training.php');
+$router->map('GET|POST','/my-event-ads/[*:page]?/?', 'ad-my-events.php');
 $router->map('GET|POST','/pending/[*:page]?/?', 'ad-pending.php');
 $router->map('GET|POST','/expire/[*:page]?/?', 'ad-expire.php');
 $router->map('GET|POST','/favourite/[*:page]?/?', 'ad-favourite.php');
@@ -94,6 +96,16 @@ $router->map('GET|POST','/blog/[i:id]?/[*:slug]?/?', 'blog-single.php');
 $router->map('GET|POST','/webhook/[*:i]?/?', 'webhook.php');
 $router->map('GET|POST','/invoice/[i:id]?/?', 'invoice.php');
 $router->map('GET|POST','/post-quote/[i:post_id]?/[*:post_user_id]?/?', 'quote.php');
+$router->map('GET|POST','/viewcart/?', 'viewcart.php');
+$router->map('GET|POST','/checkout/?', 'checkout.php');
+$router->map('GET|POST','/placeorder/?', 'placeorder.php');
+$router->map('GET|POST','/custompayment/?', 'custompayment.php');
+$router->map('GET|POST','/customnotify/?', 'customnotify.php');
+$router->map('GET|POST','/customsuccess/?', 'customsuccess.php');
+$router->map('GET|POST','/training/[i:id]?', 'ad-training-video.php');
+$router->map('GET|POST','/event/[i:id]?', 'ad-event.php');
+$router->map('GET|POST','/bookevent/[i:id]?/[i:uId]?', 'bookevent.php');
+$router->map('GET|POST','/customeventpayment/?', 'customeventpayment.php');
 // API Routes
 
 /* Match the current request */

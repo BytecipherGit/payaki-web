@@ -43,6 +43,8 @@
 
                                     <ul data-submenu-title="{LANG_MY_ADS}">
                                         <li><a href="{LINK_MYADS}"><i class="icon-feather-briefcase"></i> {LANG_MY_ADS} <span class="nav-tag">{MYADS}</span></a></li>
+                                        <li><a href="{LINK_MYTRAININGADS}"><i class="icon-feather-briefcase"></i> Training Ads <span class="nav-tag">{MYTRAININGADS}</span></a></li>
+<li><a href="{LINK_MYEVENTADS}"><i class="icon-feather-briefcase"></i> Event Ads <span class="nav-tag">{MYEVENTADS}</span></a></li>
                                         <li><a href="{LINK_FAVADS}"><i class="icon-feather-heart"></i> {LANG_FAVOURITE_ADS} <span class="nav-tag">{FAVORITEADS}</span></a></li>
 
                                         <li><a href="{LINK_PENDINGADS}"><i class="icon-feather-clock"></i> {LANG_PENDING_ADS} <span class="nav-tag">{PENDINGADS}</span></a></li>
@@ -53,7 +55,7 @@
 
                                     <ul data-submenu-title="{LANG_MY_ACCOUNT}">
                                         IF('{WCHAT_ON_OFF}'=='on' || '{QUICKCHAT_AJAX_ON_OFF}'=='on' || '{QUICKCHAT_SOCKET_ON_OFF}'=='on'){
-                                        <li><a href="{LINK_MESSAGE}"><i class="icon-feather-message-circle"></i> {LANG_MESSAGE}</a></li>
+                                        <!--<li><a href="{LINK_MESSAGE}"><i class="icon-feather-message-circle"></i> {LANG_MESSAGE}</a></li>-->
                                         {:IF}
                                         <li><a href="{LINK_TRANSACTION}"><i class="icon-feather-file-text"></i> {LANG_TRANSACTION}</a></li>
                                         <li class="active"><a href="{LINK_ACCOUNT_SETTING}"><i class="icon-feather-settings"></i> {LANG_ACCOUNT_SETTING}</a></li>
