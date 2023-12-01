@@ -1004,7 +1004,8 @@ function searchCityFromCountry()
 {
     global $config;
     $dataString = isset($_GET['q']) ? $_GET['q'] : "";
-    $sortname = check_user_country();
+    // $sortname = check_user_country();
+    $sortname = 'AO';
 
     $perPage = 10;
     $page = isset($_GET['page']) ? $_GET['page'] : "1";
