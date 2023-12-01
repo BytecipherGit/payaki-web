@@ -368,8 +368,9 @@ IF("{POST_WATERMARK}"=="0"){
                                         <div class="row">
                                             <div class="col-xl-6 col-md-12">
                                                  <div class="input-with-icon-left">
-                                                    <i class="flag-img"><img src="{SITE_URL}includes/assets/plugins/flags/images/{USER_COUNTRY}.png"></i>
+                                                    <i class="flag-img"><img src="{SITE_URL}includes/assets/plugins/flags/images/ao.png"></i>
                                                     <input type="text" class="with-border" name="phone">
+                                                    <input type="hidden" id="country_code" name="country_code" value="+244"/>
                                                 </div>
                                                 <!-- <div>
                                                     <input type="phone" class="input-text with-border" placeholder="Enter valid phone number" id="verify-mobile" name="phone" required/>
