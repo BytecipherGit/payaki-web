@@ -53,8 +53,10 @@ $link['VIEWCART']       = $config['site_url'].'viewcart';
 $link['CHECKOUT']       = $config['site_url'].'checkout';
 $link['PLACEORDER']     = $config['site_url'].'placeorder';
 $link['CUSTOMPAYMENT']  = $config['site_url'].'custompayment';
-$link['CUSTOMNOTIFY']  = $config['site_url'].'customnotify';
+$link['CUSTOMNOTIFY']   = $config['site_url'].'customnotify';
 $link['CUSTOMSUCCESS']  = $config['site_url'].'customsuccess';
 $link['POST-TRAINING-VIDEO']  = $config['site_url'].'training';
-$link['POST-EVENT']  = $config['site_url'].'event';
+$link['POST-EVENT']     = $config['site_url'].'event';
+$link['BOOKEVENT']      = $config['site_url'].'bookevent';
+$link['CUSTOMEVENTPAYMENT']  = $config['site_url'].'customeventpayment';
 ?>

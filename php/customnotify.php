@@ -117,7 +117,7 @@ if (strcmp ($res, "VERIFIED") == 0) {
 		$getAllOrders = ORM::for_table($config['db']['pre'].'shop_order_item')->where('order_id', $item_number)->find_many();
 		if(count($getAllOrders) > 0){
 			foreach ($getAllOrders as $row) {
-				$totalAmount = $totalAmount + $row['item_price'];
+				$totalAmount = $totalAmount + ($row['item_price'] * $row['quantity']);
 			}
 		}
 	}

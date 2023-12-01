@@ -224,16 +224,15 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
             IF("{CATEGORYID}"=="9"){
                 <div class="row">
             {LOOP: TRAINING_VIDEO}
-            
                 <div class="col-md-4">
                     <div class="job-property videopLeft">
-                    IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}"){
+                    IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}" && "{TRAINING_VIDEO_PURCHASE_STATUS}"!="TRUE"){
                         <div class="overlay"></div>
                     {:IF}
                     <!-- Use the video element to embed a video -->
                         <video width="100%" height="auto" controls>
                             IF("{TRAINING_VIDEO.training_video}"!=""){
-                                <source src="{SITE_URL}/storage/training_video/{TRAINING_VIDEO.training_video}" type="video/mp4">
+                                <source src="{SITE_URL}storage/training_video/{TRAINING_VIDEO.training_video}" type="video/mp4">
                             {:IF}
                         </video>    
                     </div>
@@ -348,7 +347,16 @@ IF("{SHOW_IMAGE_SLIDER}"=="1"){
                                 IF("{POST_AUTHOR_ID}"!="{LOGGEDIN_USER_ID}"){
                                     <a href="{CUSTOMCHAT_URL}" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">{LANG_CHAT_NOW} <i class="icon-feather-message-circle"></i></a>
                                 {:IF}
-                                <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
+                                IF("{CATEGORYID}"!="10" && "{CATEGORYID}"!="9"){
+                                    <a href="{QUOTE_LINK}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Place your quote</a>
+                                {:IF}
+                                IF("{CATEGORYID}"=="9"){
+                                    <span class="button ripple-effect full-width margin-top-10 zechat-show-under-768px set-item-cart" data-item-id="{ITEM_ID}" data-userid="{LOGGEDIN_USER_ID}" data-action="setCartItem">Add to cart</span>
+                                {:IF}
+                                IF("{CATEGORYID}"=="10"){
+                                    <a href="{BOOKEVENT}/{PRODUCTID}/{LOGGEDINUSERID}" style="display:block !important" class="button ripple-effect full-width margin-top-10 zechat-show-under-768px">Book Event</a>
+                                {:IF}
+
                             {ELSE}
                                 <a href="#sign-in-dialog" class="button ripple-effect popup-with-zoom-anim full-width margin-top-10">{LANG_LOGIN_CHAT} <i class="icon-feather-message-circle"></i></a>
                             {:IF}

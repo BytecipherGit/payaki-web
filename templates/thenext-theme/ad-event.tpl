@@ -99,7 +99,7 @@
                                                     </div>
                                                 </div>    
                                                 <div class="col-md-1">
-                                                    <button type="button" class="add-button" onclick="addFields()">+</button>    
+                                                    <button type="button" style="width: 79px;" class="add-button" onclick="addFields()">+</button>    
                                                 </div>
                                             </div>
                                         </div>
