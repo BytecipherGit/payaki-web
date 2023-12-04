@@ -44,7 +44,11 @@
                                 {/LOOP: ITEM}
                                 <tr>
                                     <td colspan="2">Total Amount : {TOTALAMOUNT}</td>
-                                    <td><a href="{CHECKOUT}" class="button">Checkout</a></td>
+                                    <td>
+                                    <!--<a href="{CHECKOUT}" class="button">Checkout</a>-->
+                                    <a href="#" class="btn button btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalCheckoutForm">
+                                   Checkout</a>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3"><a href="{SITE_URL}" class="button">Countinue Shopping</a></td>
@@ -66,6 +70,34 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="modalCheckoutForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Proceed To Pay</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                        <label data-error="wrong" data-success="right" for="defaultForm-email">Enter mobile number</label>
+                        <input type="text" name="mobile_number" class="form-control" id="mobile_number" placeholder="Enter mobile number" />
+                        </div>
+
+                        <div class="md-form mb-4">
+                        <label data-error="wrong" data-success="right" for="defaultForm-pass">Amount paid :- </label> {TOTALAMOUNT}
+                        <input type="hidden" value="{TOTALAMOUNT}" name="paid_amount" class="form-control" id="paid_amount"/>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer justify-content-right">
+                        <button class="btn button" style="float: right !important;" >Proceed</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
         </div>
     </div>
 </div>
