@@ -26,6 +26,7 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "removeAdImg") {removeAdImg();}
     if ($_POST['action'] == "setFavAd") {setFavAd();}
     if ($_POST['action'] == "removeFavAd") {removeFavAd();}
+    if ($_POST['action'] == "setCartItem") {setCartItem();}
     if ($_POST['action'] == "getsubcatbyidList") {getsubcatbyidList();}
     if ($_POST['action'] == "getsubcatbyid") {getsubcatbyid();}
     if ($_POST['action'] == "getCustomFieldByCatID") {getCustomFieldByCatID();}
@@ -41,7 +42,29 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "email_verify") {email_verify();}
     if ($_POST['action'] == "quickad_ajax_home_search") {quickad_ajax_home_search();}
     if ($_POST['action'] == "get_notification") {get_notification();}
+    if ($_POST['action'] == "removeTrainingVideo") {removeTrainingVideo();}
 
+}
+
+
+function removeTrainingVideo()
+{
+    global $config, $lang;
+    // Check if this is an Name availability check from signup page using ajax
+    if (isset($_POST["videoId"]) && isset($_POST["productId"])) {
+        $result = ORM::for_table($config['db']['pre'] . 'training_gallery')
+            ->where(array(
+                'id' => $_POST['videoId'],
+                'product_id' => $_POST['productId'],
+            ))
+            ->delete_many();
+        if ($result) {
+            echo 'success';
+        } else {
+            echo 'failed';
+        }
+    }
+    die();
 }
 
 function check_availability()
@@ -1227,6 +1250,40 @@ function setFavAd()
             echo 0;
         }
 
+    }
+    die();
+}
+
+function setCartItem()
+{
+    global $config;
+    if(isset($_POST["id"])) {
+        foreach($_POST as $key => $value){
+            $product[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+        }
+        $productDetails = ORM::for_table($config['db']['pre'] . 'product')
+                    ->where('id', $_POST['id'])
+                    ->find_one();
+        if(!empty($productDetails['id'])){
+            $product["product_name"] = $productDetails['product_name'];
+            $currency_code = get_countryCurrecny_by_code($productDetails['country']);
+            $product["display_price"] = price_format($productDetails['price'],$currency_code);
+            $subTotal = $productDetails['price'] * 1;
+            $product["sub_total"] = price_format($subTotal,$currency_code);
+            $product["product_price"] = $productDetails['price'];
+            $product["product_qty"] = 1;
+            if(isset($_SESSION["products"])){ 
+                if(isset($_SESSION["products"][$product['id']])) {				
+                    $_SESSION["products"][$product['id']]["product_qty"] = 1;				
+                } else {
+                    $_SESSION["products"][$product['id']] = $product;
+                }			
+            } else {
+                $_SESSION["products"][$product['id']] = $product;
+            }	
+        }
+        $total_product = count($_SESSION["products"]);
+        die(json_encode(array('products'=>$total_product)));
     }
     die();
 }
