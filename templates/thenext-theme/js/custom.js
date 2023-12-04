@@ -84,7 +84,6 @@
         $('.set-item-fav').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
-
             var adId = $(this).data('item-id');
             var userId = $(this).data('userid');
             var action = $(this).data('action');
@@ -128,7 +127,7 @@
         $('.set-item-cart').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
-
+           
             var adId = $(this).data('item-id');
             var userId = $(this).data('userid');
             var action = $(this).data('action');
