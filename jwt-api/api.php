@@ -3211,16 +3211,16 @@ class Api extends Rest
             $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amounts should not be empty array");
         }
 
-        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
-        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
-        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
-        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        // $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
+        // $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        // $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        // $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
         // $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
         $token = $this->getBearerToken();
         if (!empty($token)) {
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
             if (!empty($payload->userId)) {
-                $order_status = 'PAID';
+                $order_status = 'PENDING';
                 $order_at = date("Y-m-d H:i:s");
                 $payment_type = 'PAYPAL';
                 $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
@@ -3252,7 +3252,9 @@ class Api extends Rest
                             $insertSOSTIT->execute();
                         }
                     }
-                    $payment_response = 'VERIFIED';
+                    $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId];
+                    $this->returnResponse($response);
+                    /*$payment_response = 'VERIFIED';
                     $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                     $insertSPST = $this->dbConn->prepare($insertSP);
                     $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
@@ -3274,7 +3276,7 @@ class Api extends Rest
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                         $this->returnResponse($response);
-                    }
+                    }*/
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
                     $this->returnResponse($response);
