@@ -3222,7 +3222,6 @@ class Api extends Rest
             if (!empty($payload->userId)) {
                 $order_status = 'PENDING';
                 $order_at = date("Y-m-d H:i:s");
-                $payment_type = 'PAYPAL';
                 $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
                 $insertSOST = $this->dbConn->prepare($insertSO);
                 $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
@@ -3232,7 +3231,6 @@ class Api extends Rest
                 $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
                 $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
                 $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
-                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
                 $insertSOST->execute();
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
@@ -3326,7 +3324,6 @@ class Api extends Rest
             if (!empty($payload->userId)) {
                 $order_status = 'PENDING';
                 $order_at = date("Y-m-d H:i:s");
-                $payment_type = 'PAYPAL';
                 $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
                 $insertSOST = $this->dbConn->prepare($insertSO);
                 $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
@@ -3336,7 +3333,6 @@ class Api extends Rest
                 $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
                 $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
                 $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
-                $insertSOST->bindValue(':payment_type', $payment_type, PDO::PARAM_STR);
                 $insertSOST->execute();
                 // Get the last insert ID
                 $orderId = $this->dbConn->lastInsertId();
