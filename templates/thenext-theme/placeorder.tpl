@@ -46,7 +46,7 @@
 
                                 <div class="form-group">
                                     <div class="col-sm-12" >
-                                        <span class="button set-checkout-item-cart" data-amount="{TOTALAMOUNT}" data-item-id="{ITEM}" data-userid="{USER_ID}" data-action="setCheckoutCartItem">Proceed to payment</span>
+                                        <span class="button set-checkout-item-cart" data-type="{TYPE}" data-amount="{TOTALAMOUNT}" data-item-id="{ITEM}" data-userid="{USER_ID}" data-action="setCheckoutCartItem">Proceed to payment</span>
                                         <!--<input class="btn btn-primary right" style="float:right;" type="submit" name="proceedPayment" value="Proceed to payment"/>-->
                                     </div>
                                 </div>

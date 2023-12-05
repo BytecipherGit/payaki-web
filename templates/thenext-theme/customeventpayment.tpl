@@ -19,47 +19,46 @@
 <div class="section gray padding-bottom-50">
     <div class="container">
         <div class="row">
+            
             <div class="col-lg-12 col-md-12">
                 <div class="dashboard-box margin-top-0">
                     <!-- Headline -->
-                    <div class="headline">
+                    <!--<div class="headline">
                         <h3>Shipping Details </h3>
-                    </div>
+                    </div>-->
                     <div class="content with-padding">
                         <div class="row">
                         <div class="col-md-4">
                         </div>
-                        
-                            <div class="col-md-6">
-                            <div class="text-left">	
-                            <h4>Payable Amount : {DISPLAYTOTALAMOUNTPAYBLE}	</h4>
-                            <strong>Shipping Address:</strong> <br>
-                            <h5>Full Name: {NAME}	</h5>
-                            <h5>Address : {ADDRESS}	</h5>
-                            <h5>Contact Number : {PHONE}	</h5>
-                            <h5>Contact Email : {EMAIL}	</h5>
-                            
-                            <form class="form-horizontal" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="POST">
-                                <input type='hidden' name='business' value='tiwarilalit601@gmail.com'>
-                                <input type='hidden' name='item_name' value='{CARTITEM}'> 
-                                <input type='hidden' name='item_number' value="{ORDERID}">
-                                <input type='hidden' name='amount' value='{TOTALAMOUNTPAYBLE}'> 
-                                <input type='hidden' name='currency_code' value='USD'> 
-                                <input type='hidden' name='notify_url' value='{SITE_URL}customnotify'>
-                                <input type='hidden' name='return' value='{SITE_URL}customsuccess'>
-                                <input type="hidden" name="cmd" value="_xclick"> 
-                                <input type="hidden" name="order" value="1">
-                                <br>
+                        <div class="col-md-4">
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data" action="{CUSTOMPAYMENT}">
                                 <div class="form-group">
-                                    <div class="col-sm-6"> 
-                                        <input type="submit" class="btn btn-lg btn-block btn-danger" name="continue_payment" value="Pay Now">				 
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control" min="9" placeholder="Enter Mobile Number" name="mobile" id="mobile" value="{PHONE}"/>
+                                        <span id="mobile_msg" class="text-danger" style="display:none;">Enter mobile number</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12"> 
+                                        <label><strong>Amount paid :-</strong> Kz {TOTALAMOUNTPAYBLE}.00</label> 
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-12" >
+                                        <span class="button set-checkout-item-cart" data-type="{TYPE}" data-amount="{TOTALAMOUNTPAYBLE}" data-item-id="{ITEM}" data-userid="{USER_ID}" data-action="setCheckoutCartItem">Proceed to payment</span>
+                                        <!--<input class="btn btn-primary right" style="float:right;" type="submit" name="proceedPayment" value="Proceed to payment"/>-->
                                     </div>
                                 </div>
                             </form>
-	                        </div>
+                            <div id="displayTimeForLoader" style="display:none">
+                                <span class="button">Wait for authorized payment:</span>
+                                    <div id="timer">Loading...</div>
+                                </div>
                             </div>
-                            <div class="col-md-2">
                         </div>
+                        <div class="col-md-4">
+                        
                         </div>
                     </div>
                 </div>

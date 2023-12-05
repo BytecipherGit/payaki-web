@@ -182,6 +182,7 @@
                 var userId = $(this).data('userid');
                 var action = $(this).data('action');
                 var amount = $(this).data('amount');
+                var type = $(this).data('type');
                 var $this = $(this);
 
                 if (userId == 0) {
@@ -190,7 +191,7 @@
                     return;
                 }
                 $this.addClass('button-loader');
-                var data = {action: action, productIds: productIds, userId: userId, mobile:mobile, amount:amount};
+                var data = {action: action, productIds: productIds, userId: userId, mobile:mobile, amount:amount, type:type};
                 $.ajax({
                     type: "POST",
                     url: ajaxurl,

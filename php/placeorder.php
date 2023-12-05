@@ -16,6 +16,7 @@ if(isset($_SESSION['user']['id']) && isset($_SESSION["products"])){
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/placeorder.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
     $page->SetParameter ('ITEM', $productId);
+    $page->SetParameter ('TYPE', "other");
     // $page->SetParameter('TOTALITEM', count($_SESSION["products"]));
     // $page->SetParameter('NAME', $user['name']);
     // $page->SetParameter('EMAIL', $user['email']);
