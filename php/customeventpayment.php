@@ -36,7 +36,6 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
         $insert_so->email = $_POST['emailAddress'];
         $insert_so->order_status = "PENDING";
         $insert_so->order_at = date("Y-m-d H:i:s");
-        $insert_so->payment_type = "PAYPAL";
         $insert_so->save();
         $orderId = $insert_so->id();
         // insert order item details
@@ -68,7 +67,8 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
     $payableAmount = price_format($totalAmount,'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/customeventpayment.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
-    $page->SetLoop ('ITEM', $title);
+    $page->SetParameter ('ITEM', $orderId);
+    $page->SetParameter ('TYPE', "event");
     $page->SetParameter('TOTALAMOUNTPAYBLE', $totalAmount);
     $page->SetParameter('DISPLAYTOTALAMOUNTPAYBLE', $payableAmount);
     $page->SetParameter('NAME', $_POST["name"]);

@@ -169,6 +169,73 @@
             });
         });
 
+        $('.set-checkout-item-cart').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var mobile = $('#mobile').val();
+            if(mobile == ''){
+                $('#mobile_msg').show();
+                return false;
+            } else {
+                $('#mobile_msg').hide();
+                var productIds = $(this).data('item-id');
+                var userId = $(this).data('userid');
+                var action = $(this).data('action');
+                var amount = $(this).data('amount');
+                var type = $(this).data('type');
+                var $this = $(this);
+
+                if (userId == 0) {
+                    //window.location.href = loginurl;
+                    $('[href="#sign-in-dialog"]').trigger('click');
+                    return;
+                }
+                $this.addClass('button-loader');
+                var data = {action: action, productIds: productIds, userId: userId, mobile:mobile, amount:amount, type:type};
+                $.ajax({
+                    type: "POST",
+                    url: ajaxurl,
+                    data: data,
+                    dataType: 'json',
+                    success: function (response) {
+                        if(response.success){
+                            $('#displayTimeForLoader').show();
+                            // Display time
+                            const timerElement = document.getElementById('timer');
+                            let seconds = 0;
+                            function updateTimer() {
+                                timerElement.innerText = `Time: ${seconds} seconds`;
+                                seconds++;
+                                // Stop the interval after 90 seconds
+                                if (seconds > 90) {
+                                    clearInterval(timerInterval);
+                                    console.log('Interval stopped.');
+                                }
+                            }
+                            const timerInterval = setInterval(updateTimer, 1000);
+                            // Make AJAX call after 90 seconds
+                            setTimeout(function() {
+                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, accessToken:response.accessToken,orderId: response.orderId};
+                                $.ajax({
+                                    type: "POST",
+                                    url: ajaxurl,
+                                    data: appyPayData,
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        if(response.status){
+                                            alert('AppyPay Api Successfully Called');
+                                            clearInterval(timerInterval);
+                                        }
+                                    }
+                                });
+                            }, 10000); // 90 seconds
+                        }
+                        
+                    }
+                });
+            }
+        });
+
         $("a.close").removeAttr("href").on('click', function () {
             function slideFade(elem) {
                 var fadeOut = {opacity: 0, transition: 'opacity 0.5s'};

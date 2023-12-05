@@ -27,6 +27,8 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "setFavAd") {setFavAd();}
     if ($_POST['action'] == "removeFavAd") {removeFavAd();}
     if ($_POST['action'] == "setCartItem") {setCartItem();}
+    if ($_POST['action'] == "setCheckoutCartItem") {setCheckoutCartItem();}
+    if ($_POST['action'] == "finalCallAppyPayApi") {finalCallAppyPayApi();}
     if ($_POST['action'] == "getsubcatbyidList") {getsubcatbyidList();}
     if ($_POST['action'] == "getsubcatbyid") {getsubcatbyid();}
     if ($_POST['action'] == "getCustomFieldByCatID") {getCustomFieldByCatID();}
@@ -45,7 +47,6 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "removeTrainingVideo") {removeTrainingVideo();}
 
 }
-
 
 function removeTrainingVideo()
 {
@@ -1254,36 +1255,290 @@ function setFavAd()
     die();
 }
 
+function finalCallAppyPayApi()
+{
+    global $config;
+    if (isset($_POST["transactionId"]) && isset($_POST["accessToken"]) && isset($_POST["orderId"])) {
+        // $response = [
+        //     "status" => true,
+        //     "code" => 200,
+        //     "Message" => "Transaction successfully done.",
+        //     "transactionId" => $_POST["transactionId"],
+        //     "accessToken" => $_POST["accessToken"],
+        //     "orderId" => $_POST["orderId"],
+        //     "url"=>'https://gwy-api-tst.appypay.co.ao/v2.0/charges/'.$_POST["transactionId"]
+        // ];
+        // die(json_encode($response));
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges/' . $_POST["transactionId"],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_POST["accessToken"] . '',
+                'Cookie: ARRAffinity=61d869b39c80b800fa66bdafa3089846c090ff86f5d67f887aa34253e56405fb; ARRAffinitySameSite=61d869b39c80b800fa66bdafa3089846c090ff86f5d67f887aa34253e56405fb',
+            ),
+        ));
+
+        $appyPayApiResponse = curl_exec($curl);
+        // Decode the JSON response
+        $appyPayApiResponseData = json_decode($appyPayApiResponse, true);
+        curl_close($curl);
+        $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
+        $insert_shop_payment->order_id = $_POST['orderId'];
+        $insert_shop_payment->txn_id = !empty($appyPayApiResponseData['payment']['id']) ? $appyPayApiResponseData['payment']['id'] : '';
+        $insert_shop_payment->payer_id = '';
+        $insert_shop_payment->payment_status = !empty($appyPayApiResponseData['payment']['status']) ? $appyPayApiResponseData['payment']['status'] : '';
+        $insert_shop_payment->payment_response = json_encode($appyPayApiResponseData);
+        $insert_shop_payment->total_amount = !empty($appyPayApiResponseData['payment']['amount']) ? $appyPayApiResponseData['payment']['amount'] : 0;
+        $insert_shop_payment->create_at = !empty($appyPayApiResponseData['payment']['createdDate']) ? $appyPayApiResponseData['payment']['createdDate'] : '';
+        $insert_shop_payment->save();
+        $shopPaymentId = $insert_shop_payment->id();
+        if ($shopPaymentId > 0) {
+            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "shopPaymentId" => $shopPaymentId];
+            die(json_encode($response));
+        }
+
+    }
+}
+
+function setCheckoutCartItem()
+{
+    global $config;
+    if (isset($_POST["productIds"]) && $_POST["userId"] && $_POST["mobile"] && $_POST["amount"] && $_POST["type"]) {
+        $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
+        $order_status = 'PENDING';
+        $order_at = date("Y-m-d H:i:s");
+        if ($_POST["type"] == 'event') {
+            $orderId = $_POST["productIds"];
+            if (!empty($orderId)) {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://login.microsoftonline.com/appypaydev.onmicrosoft.com/oauth2/token',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=5afeadcb-dd1c-4ad1-b5e7-84c9599b6b86&client_secret=LWW8Q~EL3cQ_cfBPmE37DeGVSSOaMj~zFYTxsdBX&resource=2aed7612-de64-46b5-9e59-1f48f8902d14',
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: application/x-www-form-urlencoded',
+                        'Cookie: fpc=AncQbIi-FMVBpMA3DQ_OhVe4iW3OAQAAAFmX_9wOAAAA',
+                    ),
+                ));
+                $responseFromFirstApi = curl_exec($curl);
+                curl_close($curl);
+
+                // Decode the JSON response
+                $jsonDecodeDataForFirstApi = json_decode($responseFromFirstApi, true);
+                // Access the access token
+                $tokenType = $jsonDecodeDataForFirstApi['token_type'];
+                // $expiresIn = $jsonDecodeDataForFirstApi['expires_in'];
+                // $extExpiresIn = $jsonDecodeDataForFirstApi['ext_expires_in'];
+                // $expiresOn = $jsonDecodeDataForFirstApi['expires_on'];
+                // $notBefore = $jsonDecodeDataForFirstApi['not_before'];
+                // $resource = $jsonDecodeDataForFirstApi['resource'];
+                $accessToken = $jsonDecodeDataForFirstApi['access_token'];
+                if (!empty($accessToken)) {
+                    $authorization = $tokenType . ' ' . $accessToken;
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => '{
+                        "amount": "' . $_POST["amount"] . '",
+                        "currency": "AOA",
+                        "description": "Purchased Product",
+                        "merchantTransactionId": "' . $orderId . '",
+                        "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
+                        "paymentInfo": {
+                            "phoneNumber": "' . $_POST["mobile"] . '"
+                        },
+                        "notify": {
+                            "name": "' . $user->name . '",
+                            "telephone": "' . $user->phone . '",
+                            "email": "' . $user->email . '"
+                        }
+                    }',
+                        CURLOPT_HTTPHEADER => array(
+                            'Accept: application/json',
+                            'Accept-Language: ',
+                            'Assertion: ',
+                            'Content-Type: application/json',
+                            'Authorization: ' . $authorization . '',
+                        ),
+                    ));
+                    $responseFromSecondApi = curl_exec($curl);
+                    // Decode the JSON response
+                    $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
+                    curl_close($curl);
+                    if (!empty($jsonDecodeDataForSecondApi['id'])) {
+                        if ($jsonDecodeDataForSecondApi['responseStatus']['successful']) {
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                            die(json_encode($response));
+                        } else {
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => true, "accessToken" => $authorization, 'orderId' => $orderId];
+                            die(json_encode($response));
+                        }
+                    }
+
+                }
+
+            }
+        } else {
+            $insert_shop_order = ORM::for_table($config['db']['pre'] . 'shop_order')->create();
+            $insert_shop_order->member_id = $_POST['userId'];
+            $insert_shop_order->name = $user->name;
+            $insert_shop_order->address = $user->address;
+            $insert_shop_order->mobile = $user->phone;
+            $insert_shop_order->email = $user->email;
+            $insert_shop_order->order_status = $order_status;
+            $insert_shop_order->order_at = $order_at;
+            $insert_shop_order->save();
+            $orderId = $insert_shop_order->id();
+            if (!empty($orderId)) {
+                $productArr = explode(',', $_POST["productIds"]);
+                foreach ($productArr as $key => $productId) {
+                    $qty = 1;
+                    $productDetails = ORM::for_table($config['db']['pre'] . 'product')->find_one($productId);
+                    $insertSOIT = ORM::for_table($config['db']['pre'] . 'shop_order_item')->create();
+                    $insertSOIT->order_id = $orderId;
+                    $insertSOIT->product_id = $productDetails->id;
+                    $insertSOIT->item_price = $productDetails->price;
+                    $insertSOIT->quantity = $qty;
+                    $insertSOIT->save();
+                }
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://login.microsoftonline.com/appypaydev.onmicrosoft.com/oauth2/token',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=5afeadcb-dd1c-4ad1-b5e7-84c9599b6b86&client_secret=LWW8Q~EL3cQ_cfBPmE37DeGVSSOaMj~zFYTxsdBX&resource=2aed7612-de64-46b5-9e59-1f48f8902d14',
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: application/x-www-form-urlencoded',
+                        'Cookie: fpc=AncQbIi-FMVBpMA3DQ_OhVe4iW3OAQAAAFmX_9wOAAAA',
+                    ),
+                ));
+                $responseFromFirstApi = curl_exec($curl);
+                curl_close($curl);
+
+                // Decode the JSON response
+                $jsonDecodeDataForFirstApi = json_decode($responseFromFirstApi, true);
+                // Access the access token
+                $tokenType = $jsonDecodeDataForFirstApi['token_type'];
+                // $expiresIn = $jsonDecodeDataForFirstApi['expires_in'];
+                // $extExpiresIn = $jsonDecodeDataForFirstApi['ext_expires_in'];
+                // $expiresOn = $jsonDecodeDataForFirstApi['expires_on'];
+                // $notBefore = $jsonDecodeDataForFirstApi['not_before'];
+                // $resource = $jsonDecodeDataForFirstApi['resource'];
+                $accessToken = $jsonDecodeDataForFirstApi['access_token'];
+                if (!empty($accessToken)) {
+                    $authorization = $tokenType . ' ' . $accessToken;
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => '{
+                        "amount": "' . $_POST["amount"] . '",
+                        "currency": "AOA",
+                        "description": "Purchased Product",
+                        "merchantTransactionId": "' . $orderId . '",
+                        "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
+                        "paymentInfo": {
+                            "phoneNumber": "' . $_POST["mobile"] . '"
+                        },
+                        "notify": {
+                            "name": "' . $user->name . '",
+                            "telephone": "' . $user->phone . '",
+                            "email": "' . $user->email . '"
+                        }
+                    }',
+                        CURLOPT_HTTPHEADER => array(
+                            'Accept: application/json',
+                            'Accept-Language: ',
+                            'Assertion: ',
+                            'Content-Type: application/json',
+                            'Authorization: ' . $authorization . '',
+                        ),
+                    ));
+                    $responseFromSecondApi = curl_exec($curl);
+                    // Decode the JSON response
+                    $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
+                    curl_close($curl);
+                    if (!empty($jsonDecodeDataForSecondApi['id'])) {
+                        if ($jsonDecodeDataForSecondApi['responseStatus']['successful']) {
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                            die(json_encode($response));
+                        } else {
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => true, "accessToken" => $authorization, 'orderId' => $orderId];
+                            die(json_encode($response));
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+    }
+    die();
+}
+
 function setCartItem()
 {
     global $config;
-    if(isset($_POST["id"])) {
-        foreach($_POST as $key => $value){
+    if (isset($_POST["id"])) {
+        foreach ($_POST as $key => $value) {
             $product[$key] = filter_var($value, FILTER_SANITIZE_STRING);
         }
         $productDetails = ORM::for_table($config['db']['pre'] . 'product')
-                    ->where('id', $_POST['id'])
-                    ->find_one();
-        if(!empty($productDetails['id'])){
+            ->where('id', $_POST['id'])
+            ->find_one();
+        if (!empty($productDetails['id'])) {
             $product["product_name"] = $productDetails['product_name'];
             $currency_code = get_countryCurrecny_by_code($productDetails['country']);
-            $product["display_price"] = price_format($productDetails['price'],$currency_code);
+            $product["display_price"] = price_format($productDetails['price'], $currency_code);
             $subTotal = $productDetails['price'] * 1;
-            $product["sub_total"] = price_format($subTotal,$currency_code);
+            $product["sub_total"] = price_format($subTotal, $currency_code);
             $product["product_price"] = $productDetails['price'];
             $product["product_qty"] = 1;
-            if(isset($_SESSION["products"])){ 
-                if(isset($_SESSION["products"][$product['id']])) {				
-                    $_SESSION["products"][$product['id']]["product_qty"] = 1;				
+            if (isset($_SESSION["products"])) {
+                if (isset($_SESSION["products"][$product['id']])) {
+                    $_SESSION["products"][$product['id']]["product_qty"] = 1;
                 } else {
                     $_SESSION["products"][$product['id']] = $product;
-                }			
+                }
             } else {
                 $_SESSION["products"][$product['id']] = $product;
-            }	
+            }
         }
         $total_product = count($_SESSION["products"]);
-        die(json_encode(array('products'=>$total_product)));
+        die(json_encode(array('products' => $total_product)));
     }
     die();
 }
