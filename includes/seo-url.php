@@ -26,6 +26,7 @@ $link['RESUBMITADS']    = $config['site_url'].'resubmission';
 $link['DASHBOARD']      = $config['site_url'].'dashboard';
 $link['PROFILE']        = $config['site_url'].'profile';
 $link['TRANSACTION']    = $config['site_url'].'transaction';
+$link['ORDER']          = $config['site_url'].'order';
 $link['EDIT-PROFILE']   = $config['site_url'].'profile-edit';
 $link['ACCOUNT_SETTING'] = $config['site_url'].'account-setting';
 $link['REPORT']         = $config['site_url'].'report';

@@ -263,7 +263,7 @@
                                     {:IF}
                                     <li><a href="{LINK_MEMBERSHIP}"><i class="icon-feather-gift"></i> {LANG_MEMBERSHIP}</a></li>
                                     <li><a href="{LINK_TRANSACTION}"><i class="icon-feather-file-text"></i> {LANG_TRANSACTION}</a></li>
-
+                                    <li><a href="{LINK_ORDER}"><i class="icon-feather-file-text"></i> My Orders</a></li>
                                     <li><a href="{LINK_LOGOUT}"><i class="icon-feather-log-out"></i> {LANG_LOGOUT}</a>
                                     </li>
                                 </ul>

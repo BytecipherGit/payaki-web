@@ -62,6 +62,7 @@ $router->map('GET|POST','/favourite/[*:page]?/?', 'ad-favourite.php');
 $router->map('GET|POST','/hidden/[*:page]?/?', 'ad-hidden.php');
 $router->map('GET|POST','/resubmission/[*:page]?/?', 'ad-resubmission.php');
 $router->map('GET|POST','/transaction/?', 'transaction.php');
+$router->map('GET|POST','/order/?', 'order.php');
 $router->map('GET|POST','/account-setting/?', 'account-setting.php');
 $router->map('GET|POST','/report/?', 'report.php');
 $router->map('GET|POST','/contact/?', 'contact.php');
