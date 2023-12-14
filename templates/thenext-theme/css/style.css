@@ -15511,7 +15511,7 @@ ul.prop_details li {
 
 .mainNotification {
   position: relative;
-  width: 200px;
+  /* width: 200px; */
   margin-left: 200px;
 }
 .toggleNotifi {
