@@ -1285,13 +1285,16 @@ function finalCallAppyPayApi()
                 'Cookie: ARRAffinity=61d869b39c80b800fa66bdafa3089846c090ff86f5d67f887aa34253e56405fb; ARRAffinitySameSite=61d869b39c80b800fa66bdafa3089846c090ff86f5d67f887aa34253e56405fb',
             ),
         ));
-
+        
         $appyPayApiResponse = curl_exec($curl);
         // Decode the JSON response
         $appyPayApiResponseData = json_decode($appyPayApiResponse, true);
         curl_close($curl);
+        //Get Product Id 
+        $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $_POST['orderId'])->find_one();
         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
         $insert_shop_payment->order_id = $_POST['orderId'];
+        $insert_shop_payment->product_id = $productInfo['product_id'];
         $insert_shop_payment->txn_id = !empty($appyPayApiResponseData['payment']['id']) ? $appyPayApiResponseData['payment']['id'] : '';
         $insert_shop_payment->payer_id = '';
         $insert_shop_payment->payment_status = !empty($appyPayApiResponseData['payment']['status']) ? $appyPayApiResponseData['payment']['status'] : '';
