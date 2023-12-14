@@ -41,6 +41,24 @@
     </script>
     <style>
         :root{{LOOP: COLORS}--theme-color-{COLORS.id}: {COLORS.value};{/LOOP: COLORS}}
+        img.goog-te-gadget-icon {
+            display: none !important;
+        }
+        .goog-te-gadget-simple {
+            background-color: #FFF; 
+            border-left: 1px solid #844193 !important;
+            border-top: 1px solid #844193 !important;
+            border-bottom: 1px solid #844193 !important;
+            border-right: 1px solid #844193 !important;
+            font-size: 10pt;
+            display: inline-block;
+            padding-top: 1px;
+            padding-bottom: 2px;
+            cursor: pointer;
+        }
+        #google_translate_element{
+            margin-top:5px !important;
+        }
     </style>
     <link rel="stylesheet" href="{SITE_URL}includes/assets/css/icons.css">
     <link rel="stylesheet" href="{SITE_URL}includes/assets/plugins/flags/flags.min.css">
@@ -50,7 +68,13 @@
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/color.css">
     <script src="{SITE_URL}templates/{TPL_NAME}/js/jquery-3.4.1.min.js"></script>
     <script src='{SITE_URL}includes/assets/plugins/styleswitcher/jquery.style-switcher.js'></script>
-    
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+    }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     IF("{LANGUAGE_DIRECTION}"=="rtl"){
     <link rel="stylesheet" href="{SITE_URL}templates/{TPL_NAME}/css/rtl.css">
     {:IF}
@@ -251,6 +275,7 @@
                     <div class="header-widget d-none d-lg-block">
                         <nav class="navigation">
                             <ul>
+                            
                                 IF(!{LOGGED_IN}){
                                 <li>
                                     <a href="#sign-in-dialog" class="popup-with-zoom-anim"><i
@@ -273,6 +298,10 @@
                                     </a>
                                 </li>
                                  {:IF}
+                                 <li>
+                                    <div id="google_translate_element"></div>
+                                </li>
+                            
                             </ul>
                         </nav>
                     </div>
