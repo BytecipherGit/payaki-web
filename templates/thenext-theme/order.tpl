@@ -23,12 +23,11 @@
         <thead>
         <tr>
             <th class="small-width"></th>
-            <th>{LANG_TITLE}</th>
+            <th>Product Name</th>
             <th class="small-width">{LANG_AMOUNT}</th>
-            <th class="small-width">{LANG_PREMIUM}</th>
-            <th>{LANG_PAYMENT_METHOD}</th>
-            <th>{LANG_DATE}</th>
-            <th class="small-width">{LANG_STATUS}</th>
+            <th>Transaction Id</th>
+            <th>Order Date</th>
+            <th class="small-width">Order Status</th>
             <th class="small-width"></th>
         </tr>
         </thead>
@@ -47,8 +46,7 @@
                 <td>
                     {TRANSACTIONS.amount}
                 </td>
-                <td>{TRANSACTIONS.premium}</td>
-                <td>{TRANSACTIONS.payment_by}</td>
+                <td>{TRANSACTIONS.txn_id}</td>
                 <td>{TRANSACTIONS.time}</td>
                 <td>{TRANSACTIONS.status}</td>
                 <td>
