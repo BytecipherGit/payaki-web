@@ -1293,11 +1293,13 @@ function finalCallAppyPayApi()
         //Get Product Id 
         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $_POST['orderId'])->find_one();
         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
+        $insert_shop_payment->member_id = $_SESSION['user']['id'];
         $insert_shop_payment->order_id = $_POST['orderId'];
         $insert_shop_payment->product_id = $productInfo['product_id'];
         $insert_shop_payment->txn_id = !empty($appyPayApiResponseData['payment']['id']) ? $appyPayApiResponseData['payment']['id'] : '';
         $insert_shop_payment->payer_id = '';
         $insert_shop_payment->payment_status = !empty($appyPayApiResponseData['payment']['status']) ? $appyPayApiResponseData['payment']['status'] : '';
+        $insert_shop_payment->order_status = 'panding';
         $insert_shop_payment->payment_response = json_encode($appyPayApiResponseData);
         $insert_shop_payment->total_amount = !empty($appyPayApiResponseData['payment']['amount']) ? $appyPayApiResponseData['payment']['amount'] : 0;
         $insert_shop_payment->create_at = !empty($appyPayApiResponseData['payment']['createdDate']) ? $appyPayApiResponseData['payment']['createdDate'] : '';
