@@ -1320,7 +1320,10 @@ function setCheckoutCartItem()
         $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
         $order_status = 'PENDING';
         $order_at = date("Y-m-d H:i:s");
-        if ($_POST["type"] == 'event') {
+        if($_POST["type"] == 'post_product'){
+            echo $_POST["type"];
+            die;
+        } else if ($_POST["type"] == 'event') {
             $orderId = $_POST["productIds"];
             if (!empty($orderId)) {
                 $curl = curl_init();

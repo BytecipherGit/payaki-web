@@ -100,6 +100,7 @@ $router->map('GET|POST','/post-quote/[i:post_id]?/[*:post_user_id]?/?', 'quote.p
 $router->map('GET|POST','/viewcart/?', 'viewcart.php');
 $router->map('GET|POST','/checkout/?', 'checkout.php');
 $router->map('GET|POST','/placeorder/?', 'placeorder.php');
+$router->map('GET|POST','/productplaceorder/[*:userId]?/[*:productId]?/[*:totalAmount]?/?', 'add-product-placeorder.php');
 $router->map('GET|POST','/custompayment/?', 'custompayment.php');
 $router->map('GET|POST','/customnotify/?', 'customnotify.php');
 $router->map('GET|POST','/customsuccess/?', 'customsuccess.php');

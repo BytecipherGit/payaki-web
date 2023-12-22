@@ -468,6 +468,7 @@ IF("{POST_WATERMARK}"=="0"){
                                                 {HIGHLIGHT_FEE} {LANG_FOR} {HIGHLIGHT_DURATION} {LANG_DAYS}
                                             </div>
                                         </div>
+                                        
                                     </div>
                                 </div>
 
@@ -478,6 +479,7 @@ IF("{POST_WATERMARK}"=="0"){
                     <input type="hidden" name="submit">
                     <div class="row margin-top-30 margin-bottom-80" style="align-items: center;">
                         <div class="col-6">
+                            <input type="hidden" name="totalAmount" id="totalAmount">
                             <button type="submit" id="submit_job_button" name="Submit" class="button ripple-effect big"><i class="icon-feather-plus"></i> {LANG_POST_AD}</button>
                         </div>
                         <div class="col-6">

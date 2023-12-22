@@ -323,6 +323,7 @@ function fillPrice(obj, val) {
         $('#ad_total_cost_container').fadeOut();
     }
     $('#totalPrice').html(c);
+    $('#totalAmount').val(c);
 }
 
 // JavaScript to add more file input fields and handle removal
