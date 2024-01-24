@@ -3324,7 +3324,7 @@ class Api extends Rest
             if (!empty($payload->userId)) {
                 $order_status = 'PENDING';
                 $order_at = date("Y-m-d H:i:s");
-                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
+                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at)";
                 $insertSOST = $this->dbConn->prepare($insertSO);
                 $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
                 $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
