@@ -570,7 +570,8 @@ function ajax_post_advertise()
                     $_SESSION['quickad'][$access_token]['highlight'] = $highlight;
                     /*End These details save in session and get on payment sucecess*/
 
-                    $url = $link['PAYMENT'] . "/" . $access_token;
+                    // $url = $link['PAYMENT'] . "/" . $access_token;
+                    $url = $link['PRODUCTPLACEORDER'] . "/" .  $_SESSION['user']['id']."/".$product_id."/".$_POST['totalAmount'];
                     $response = array();
                     $response['status'] = "success";
                     $response['ad_type'] = "package";
