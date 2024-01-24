@@ -3189,6 +3189,7 @@ class Api extends Rest
             }
         }
     }
+
     public function checkoutPaypal()
     {
         // $product_id = $this->validateParameter('product_id', $this->param['product_id'], 'array');
@@ -3211,10 +3212,10 @@ class Api extends Rest
         }
 
         $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
-        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
-        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
-        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
-        $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
+        // $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        // $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        // $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        // $payment_response = $this->validateParameter('payment_response', $this->param['payment_response'], STRING);
         $token = $this->getBearerToken();
         if (!empty($token)) {
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
@@ -3251,7 +3252,7 @@ class Api extends Rest
                     }
                     $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId];
                     $this->returnResponse($response);
-                    $payment_response = 'VERIFIED';
+                    /*$payment_response = 'VERIFIED';
                     $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                     $insertSPST = $this->dbConn->prepare($insertSP);
                     $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
@@ -3273,7 +3274,7 @@ class Api extends Rest
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                         $this->returnResponse($response);
-                    }
+                    }*/
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
                     $this->returnResponse($response);
@@ -3314,9 +3315,9 @@ class Api extends Rest
         }
 
         $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
-        $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
-        $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
-        $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
+        // $txn_id = $this->validateParameter('paymentId', $this->param['paymentId'], STRING);
+        // $payer_id = $this->validateParameter('payer_id', $this->param['payer_id'], STRING);
+        // $payment_status = $this->validateParameter('status', $this->param['status'], STRING); // Pending, Success, Hold
         $token = $this->getBearerToken();
         if (!empty($token)) {
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
@@ -3352,7 +3353,7 @@ class Api extends Rest
                     $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked.", "merchantTransactionId" => $orderId];
                     $this->returnResponse($response);
 
-                    $payment_response = 'VERIFIED';
+                    /*$payment_response = 'VERIFIED';
                     $insertSP = "INSERT INTO `ad_shop_payment` (`order_id`,`txn_id`,`payer_id`,`payment_status`,`payment_response`,`total_amount`) VALUES(:order_id,:txn_id,:payer_id,:payment_status,:payment_response,:total_amount)";
                     $insertSPST = $this->dbConn->prepare($insertSP);
                     $insertSPST->bindValue(':order_id', $orderId, PDO::PARAM_STR);
@@ -3394,7 +3395,7 @@ class Api extends Rest
                     } else {
                         $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in shop payment creations."];
                         $this->returnResponse($response);
-                    }
+                    }*/
 
                     /*$ticketTypeIds = implode(",", $this->param['ticketTypeIds']);
                     $ticketAmounts = implode(",", $this->param['ticketAmounts']);
@@ -3463,148 +3464,6 @@ class Api extends Rest
             }
         }
     }
-    /*public function checkoutPaypal()
-    {
-        if (count($this->param['productIds']) > 0) {
-            // Check if the variables are arrays or not
-            if (!is_array($this->param['productIds'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for productIds. It should be type array.");
-            }
-        } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "productIds should not be empty array");
-        }
-
-        if (count($this->param['amounts']) > 0) {
-            // Check if the variables are arrays or not
-            if (!is_array($this->param['amounts'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for amounts. It should be type array.");
-            }
-        } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Amounts should not be empty array");
-        }
-
-        $token = $this->getBearerToken();
-        if (!empty($token)) {
-            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
-            if (!empty($payload->userId)) {
-                $order_status = 'PENDING';
-                $order_at = date("Y-m-d H:i:s");
-                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
-                $insertSOST = $this->dbConn->prepare($insertSO);
-                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
-                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
-                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
-                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
-                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
-                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
-                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
-                $insertSOST->execute();
-                // Get the last insert ID
-                $orderId = $this->dbConn->lastInsertId();
-                if (!empty($orderId)) {
-                    $qty = 1;
-                    if (count($this->param['productIds']) > 0) {
-                        for ($i = 0; $i < count($this->param['productIds']); $i++) {
-                            $productId = !empty($this->param['productIds'][$i]) ? $this->param['productIds'][$i] : 0;
-                            $amount = !empty($this->param['amounts'][$i]) ? $this->param['amounts'][$i] : 0;
-                            // echo $this->param['product_id'][$i].'<br>';
-                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:item_price,:quantity)";
-                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
-                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':item_price', $amount, PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':quantity', $qty, PDO::PARAM_STR);
-                            $insertSOSTIT->execute();
-                        }
-                    }
-                    $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $orderId];
-                    $this->returnResponse($response);
-                    
-                } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
-                    $this->returnResponse($response);
-                }
-            } else {
-                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
-                $this->returnResponse($response);
-            }
-        }
-    }
-
-    public function checkoutEventPaypal()
-    {
-        $productId = $this->validateParameter('productId', $this->param['productId'], INTEGER);
-        if (count($this->param['ticketTypeIds']) > 0) {
-            // Check if the variables are arrays or not
-            if (!is_array($this->param['ticketTypeIds'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketTypeIds. It should be type array.");
-            }
-        } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketTypeIds should not be empty array");
-        }
-        if (count($this->param['ticketAmounts']) > 0) {
-            // Check if the variables are arrays or not
-            if (!is_array($this->param['ticketAmounts'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketAmounts. It should be type array.");
-            }
-        } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketAmounts should not be empty array");
-        }
-        if (count($this->param['ticketQuantities']) > 0) {
-            // Check if the variables are arrays or not
-            if (!is_array($this->param['ticketQuantities'])) {
-                $this->throwError(VALIDATE_PARAMETER_DATATYPE, "Datatype is not valid for ticketQuantities. It should be type array.");
-            }
-        } else {
-            $this->throwError(VALIDATE_PARAMETER_DATATYPE, "ticketQuantities should not be empty array");
-        }
-
-        $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
-        
-        $token = $this->getBearerToken();
-        if (!empty($token)) {
-            $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
-            if (!empty($payload->userId)) {
-                $order_status = 'PENDING';
-                $order_at = date("Y-m-d H:i:s");
-                $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`,`payment_type`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at,:payment_type)";
-                $insertSOST = $this->dbConn->prepare($insertSO);
-                $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
-                $insertSOST->bindValue(':name', $payload->name, PDO::PARAM_STR);
-                $insertSOST->bindValue(':address', $payload->address, PDO::PARAM_STR);
-                $insertSOST->bindValue(':mobile', $payload->phone, PDO::PARAM_STR);
-                $insertSOST->bindValue(':email', $payload->email, PDO::PARAM_STR);
-                $insertSOST->bindValue(':order_status', $order_status, PDO::PARAM_STR);
-                $insertSOST->bindValue(':order_at', $order_at, PDO::PARAM_STR);
-                $insertSOST->execute();
-                // Get the last insert ID
-                $orderId = $this->dbConn->lastInsertId();
-                if (!empty($orderId)) {
-                    if(!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketAmounts']) && !empty($this->param['ticketQuantities'])){
-                        for ($i=0; $i < count($this->param['ticketTypeIds']) ; $i++) { 
-                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`order_id`,`product_id`,`event_type_id`,`item_price`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:quantity)";
-                            $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
-                            $insertSOSTIT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':event_type_id', $this->param['ticketTypeIds'][$i], PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':item_price', $this->param['ticketAmounts'][$i], PDO::PARAM_STR);
-                            $insertSOSTIT->bindValue(':quantity', $this->param['ticketQuantities'][$i], PDO::PARAM_STR);
-                            $insertSOSTIT->execute();
-                        }
-                    }
-
-                    $response = ["status" => true, "code" => 200, "Message" => "Your event successfully booked.", "merchantTransactionId" => $orderId];
-                    $this->returnResponse($response);
-                } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "Something went wrong in order creations."];
-                    $this->returnResponse($response);
-                }
-            } else {
-                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
-                $this->returnResponse($response);
-            }
-        }
-    }*/
 
     public function deleteUserPost()
     {
