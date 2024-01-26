@@ -1300,7 +1300,7 @@ function finalCallAppyPayApi()
         //Get Product Id
         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $_POST['orderId'])->find_one();
         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
-        $insert_shop_payment->merchantTansactionId = !empty($appyPayApiResponseData['payment']['merchantTransactionId']) ? $appyPayApiResponseData['payment']['merchantTransactionId'] : $_POST["merchantTransactionId"];
+        $insert_shop_payment->merchantTransactionId = !empty($appyPayApiResponseData['payment']['merchantTransactionId']) ? $appyPayApiResponseData['payment']['merchantTransactionId'] : $_POST["merchantTransactionId"];
         $insert_shop_payment->member_id = $_SESSION['user']['id'];
         $insert_shop_payment->order_id = $_POST['orderId'];
         $insert_shop_payment->product_id = $productInfo['product_id'];
@@ -1335,7 +1335,7 @@ function setCheckoutCartItem()
         $prefix = 'TR'; // You can customize the prefix
         $numericId = rand(0, 999999999999); // Generate a random numeric ID
         $numericId = str_pad($numericId, 12, '0', STR_PAD_LEFT);
-        $merchantTansactionId = $prefix . $numericId;
+        $merchantTransactionId = $prefix . $numericId;
 
         $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
         $order_status = 'PENDING';
@@ -1388,7 +1388,7 @@ function setCheckoutCartItem()
                         "amount": "' . $_POST["amount"] . '",
                         "currency": "AOA",
                         "description": "Purchased Product",
-                        "merchantTransactionId": "' . $merchantTansactionId . '",
+                        "merchantTransactionId": "' . $merchantTransactionId . '",
                         "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
                         "paymentInfo": {
                             "phoneNumber": "' . $_POST["mobile"] . '"
@@ -1424,7 +1424,7 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
-                        $insert_shop_payment->merchantTansactionId = $merchantTansactionId;
+                        $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
                         $insert_shop_payment->member_id = $_SESSION['user']['id'];
                         $insert_shop_payment->order_id = $orderId;
                         $insert_shop_payment->product_id = $productInfo['product_id'];
@@ -1446,17 +1446,17 @@ function setCheckoutCartItem()
                         $shopPaymentId = $insert_shop_payment->id();
                         /*if ($shopPaymentId > 0) {
                         if ($jsonDecodeDataForSecondApi['responseStatus']['successful']) {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         }
                         }*/
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     }
 
@@ -1511,7 +1511,7 @@ function setCheckoutCartItem()
                         "amount": "' . $_POST["amount"] . '",
                         "currency": "AOA",
                         "description": "Purchased Product",
-                        "merchantTransactionId": "' . $merchantTansactionId . '",
+                        "merchantTransactionId": "' . $merchantTransactionId . '",
                         "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
                         "paymentInfo": {
                             "phoneNumber": "' . $_POST["mobile"] . '"
@@ -1547,7 +1547,7 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
-                        $insert_shop_payment->merchantTansactionId = $merchantTansactionId;
+                        $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
                         $insert_shop_payment->member_id = $_SESSION['user']['id'];
                         $insert_shop_payment->order_id = $orderId;
                         $insert_shop_payment->product_id = $productInfo['product_id'];
@@ -1569,17 +1569,17 @@ function setCheckoutCartItem()
                         $shopPaymentId = $insert_shop_payment->id();
                         /*if ($shopPaymentId > 0) {
                         if ($jsonDecodeDataForSecondApi['responseStatus']['successful']) {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         }
                         }*/
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     }
 
@@ -1655,7 +1655,7 @@ function setCheckoutCartItem()
                         "amount": "' . $_POST["amount"] . '",
                         "currency": "AOA",
                         "description": "Purchased Product",
-                        "merchantTransactionId": "' . $merchantTansactionId . '",
+                        "merchantTransactionId": "' . $merchantTransactionId . '",
                         "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
                         "paymentInfo": {
                             "phoneNumber": "' . $_POST["mobile"] . '"
@@ -1682,7 +1682,7 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
-                        $insert_shop_payment->merchantTansactionId = $merchantTansactionId;
+                        $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
                         $insert_shop_payment->member_id = $_SESSION['user']['id'];
                         $insert_shop_payment->order_id = $orderId;
                         $insert_shop_payment->product_id = $productInfo['product_id'];
@@ -1704,17 +1704,17 @@ function setCheckoutCartItem()
                         $shopPaymentId = $insert_shop_payment->id();
                         /*if ($shopPaymentId > 0) {
                         if ($jsonDecodeDataForSecondApi['responseStatus']['successful']) {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                         }
                         }*/
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTansactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                         die(json_encode($response));
                     }
 

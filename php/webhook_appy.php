@@ -27,7 +27,7 @@
     $source = $data['responseStatus']['source'];
 
     $update_shop_payment = ORM::for_table($config['db']['pre'].'shop_payment')
-            ->where('merchantTansactionId', escape_html($merchantTransactionId))
+            ->where('merchantTransactionId', escape_html($merchantTransactionId))
             ->find_one();
     $update_shop_payment->set('payment_status',  $successful);
     $update_shop_payment->set('order_status',  $successful);
