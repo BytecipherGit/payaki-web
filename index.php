@@ -108,6 +108,7 @@ $router->map('GET|POST','/training/[i:id]?', 'ad-training-video.php');
 $router->map('GET|POST','/event/[i:id]?', 'ad-event.php');
 $router->map('GET|POST','/bookevent/[i:id]?/[i:uId]?', 'bookevent.php');
 $router->map('GET|POST','/customeventpayment/?', 'customeventpayment.php');
+$router->map('GET|POST','/webhook_appy/?', 'webhook_appy.php');
 // API Routes
 
 /* Match the current request */
