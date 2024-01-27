@@ -1420,7 +1420,8 @@ function setCheckoutCartItem()
                     die(json_encode($response));
                     }
                     }*/
-                    if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                    // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                    if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
