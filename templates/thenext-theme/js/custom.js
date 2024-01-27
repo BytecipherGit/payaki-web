@@ -198,7 +198,7 @@
                     data: data,
                     dataType: 'json',
                     success: function (response) {
-                        if(response.success){
+                        if(response.success === false){
                             $('#displayTimeForLoader').show();
                             // Display time
                             const timerElement = document.getElementById('timer');
@@ -215,7 +215,7 @@
                             const timerInterval = setInterval(updateTimer, 1000);
                             // Make AJAX call after 90 seconds
                             setTimeout(function() {
-                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, accessToken:response.accessToken,orderId: response.orderId};
+                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken,orderId: response.orderId};
                                 $.ajax({
                                     type: "POST",
                                     url: ajaxurl,
