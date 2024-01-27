@@ -229,6 +229,17 @@
                                     }
                                 });
                             }, 10000); // 90 seconds
+                        } else {
+                            var appyPayData = {action: 'removeItemFromCart'};
+                                $.ajax({
+                                    type: "POST",
+                                    url: ajaxurl,
+                                    data: appyPayData,
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        alert('Remove item from cart');
+                                    }
+                                });
                         }
                         
                     }
