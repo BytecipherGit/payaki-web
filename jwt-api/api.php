@@ -3247,31 +3247,13 @@ class Api extends Rest
                 $stmt->bindValue(':sourceDetails_message', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
                 $stmt->execute();
 
-
-                /*$insertASP = "INSERT INTO `ad_shop_payment` (`merchantTransactionId`,`member_id`,`order_id`,`product_id`,`txn_id`,`payer_id`,`payment_status`,`order_status`,`total_amount`,`create_at`,`payment_response`,`code`,`message`,`source`,`sourceDetails_attempt`,`sourceDetails_type`,`sourceDetails_code`,`sourceDetails_message`) VALUES(:merchantTransactionId,:member_id,:order_id,:product_id,:txn_id,:payer_id,:payment_status,:order_status,:total_amount,:create_at,:payment_response,:code,:message,:source,:sourceDetails_attempt,:sourceDetails_type,:sourceDetails_code,:sourceDetails_message)";
-                $insertASPT = $this->dbConn->prepare($insertASP);
-                $insertASPT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
-                $insertASPT->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
-                $insertASPT->bindValue(':order_id', $orderId, PDO::PARAM_STR);
-                $insertASPT->bindValue(':product_id', $getProductDetails['product_id'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':txn_id', $appyPayApiResponseData['id'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':payer_id', '', PDO::PARAM_STR);
-                $insertASPT->bindValue(':payment_status', $appyPayApiResponseData['responseStatus']['successful'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':order_status', $appyPayApiResponseData['responseStatus']['successful'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':total_amount', $appyPayApiResponseData['payment']['amount'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':create_at', $order_at, PDO::PARAM_STR);
-                $insertASPT->bindValue(':payment_response', json_encode($appyPayApiResponseData), PDO::PARAM_STR);
-                $insertASPT->bindValue(':code', $appyPayApiResponseData['responseStatus']['code'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':message', $appyPayApiResponseData['responseStatus']['message'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':source', $appyPayApiResponseData['responseStatus']['source'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':sourceDetails_attempt', $appyPayApiResponseData['responseStatus']['sourceDetails']['attempt'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':sourceDetails_type', $appyPayApiResponseData['responseStatus']['sourceDetails']['type'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':sourceDetails_code', $appyPayApiResponseData['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
-                $insertASPT->bindValue(':sourceDetails_message', $appyPayApiResponseData['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
-                $insertASPT->execute();*/
-
+                if($appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] == true){
+                    $deleteAddToCartProduct = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id AND product_id =:product_id');
+                    $deleteAddToCartProduct->bindParam(":user_id", $payload->userId);
+                    $deleteAddToCartProduct->bindParam(":product_id", $getProductDetails['product_id']);
+                    $deleteAddToCartProduct->execute(); 
+                }
                 $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken, 'orderId' => $orderId];
-                // die(json_encode($response));
                 $this->returnResponse($response);
             }
         }
@@ -3435,6 +3417,12 @@ class Api extends Rest
                             $insertASPT->bindValue(':sourceDetails_code', $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
                             $insertASPT->bindValue(':sourceDetails_message', $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
                             $insertASPT->execute();
+                            if($jsonDecodeDataForSecondApi['responseStatus']['successful'] == true){
+                                $deleteAddToCartProduct = $this->dbConn->prepare('DELETE FROM ad_product_add_to_cart_mobile WHERE user_id =:user_id AND product_id =:product_id');
+                                $deleteAddToCartProduct->bindParam(":user_id", $payload->userId);
+                                $deleteAddToCartProduct->bindParam(":product_id", $getProductDetails['product_id']);
+                                $deleteAddToCartProduct->execute(); 
+                            }
 
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                             $this->returnResponse($response);

@@ -29,6 +29,8 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "setCartItem") {setCartItem();}
     if ($_POST['action'] == "setCheckoutCartItem") {setCheckoutCartItem();}
     if ($_POST['action'] == "finalCallAppyPayApi") {finalCallAppyPayApi();}
+    if ($_POST['action'] == "removeItemFromCart") {removeItemFromCart();}
+    
     if ($_POST['action'] == "getsubcatbyidList") {getsubcatbyidList();}
     if ($_POST['action'] == "getsubcatbyid") {getsubcatbyid();}
     if ($_POST['action'] == "getCustomFieldByCatID") {getCustomFieldByCatID();}
@@ -1255,6 +1257,14 @@ function setFavAd()
     die();
 }
 
+function removeItemFromCart(){
+    global $config;
+    // Unset a specific session variable
+    unset($_SESSION['products']);
+    header("Location: /index.php");
+    exit();
+}
+
 function finalCallAppyPayApi()
 {
     global $config;
@@ -1544,7 +1554,8 @@ function setCheckoutCartItem()
                     die(json_encode($response));
                     }
                     }*/
-                    if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                    // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                        if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
@@ -1679,7 +1690,8 @@ function setCheckoutCartItem()
                     // Decode the JSON response
                     $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
                     curl_close($curl);
-                    if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                    // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                        if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
