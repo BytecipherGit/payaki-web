@@ -3228,7 +3228,27 @@ class Api extends Rest
                 $getProductDetails->execute();
                 $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
 
-                $insertASP = "INSERT INTO `ad_shop_payment` (`merchantTransactionId`,`member_id`,`order_id`,`product_id`,`txn_id`,`payer_id`,`payment_status`,`order_status`,`total_amount`,`create_at`,`payment_response`,`code`,`message`,`source`,`sourceDetails_attempt`,`sourceDetails_type`,`sourceDetails_code`,`sourceDetails_message`) VALUES(:merchantTransactionId,:member_id,:order_id,:product_id,:txn_id,:payer_id,:payment_status,:order_status,:total_amount,:create_at,:payment_response,:code,:message,:source,:sourceDetails_attempt,:sourceDetails_type,:sourceDetails_code,:sourceDetails_message)";
+                //Update code
+                $stmt = $this->dbConn->prepare('UPDATE ad_shop_payment SET txn_id=:txn_id,payment_status = :payment_status,order_status = :order_status,total_amount = :total_amount,create_at = :create_at,payment_response = :payment_response,code = :code,message = :message,source = :source,sourceDetails_attempt = :sourceDetails_attempt,sourceDetails_type = :sourceDetails_type,sourceDetails_code = :sourceDetails_code,sourceDetails_message = :sourceDetails_message WHERE merchantTransactionId = :merchantTransactionId');
+                // Bind the parameters and execute the statement
+                $stmt->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
+                $stmt->bindValue(':txn_id', $appyPayApiResponseData['payment']['id'], PDO::PARAM_STR);
+                $stmt->bindValue(':payment_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
+                $stmt->bindValue(':order_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
+                $stmt->bindValue(':total_amount', $appyPayApiResponseData['payment']['amount'], PDO::PARAM_STR);
+                $stmt->bindValue(':create_at', $order_at, PDO::PARAM_STR);
+                $stmt->bindValue(':payment_response', json_encode($appyPayApiResponseData), PDO::PARAM_STR);
+                $stmt->bindValue(':code',  $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'], PDO::PARAM_STR);
+                $stmt->bindValue(':message',  $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'], PDO::PARAM_STR);
+                $stmt->bindValue(':source',  $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'], PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_attempt', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'], PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_type', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'], PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_code', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_message', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
+                $stmt->execute();
+
+
+                /*$insertASP = "INSERT INTO `ad_shop_payment` (`merchantTransactionId`,`member_id`,`order_id`,`product_id`,`txn_id`,`payer_id`,`payment_status`,`order_status`,`total_amount`,`create_at`,`payment_response`,`code`,`message`,`source`,`sourceDetails_attempt`,`sourceDetails_type`,`sourceDetails_code`,`sourceDetails_message`) VALUES(:merchantTransactionId,:member_id,:order_id,:product_id,:txn_id,:payer_id,:payment_status,:order_status,:total_amount,:create_at,:payment_response,:code,:message,:source,:sourceDetails_attempt,:sourceDetails_type,:sourceDetails_code,:sourceDetails_message)";
                 $insertASPT = $this->dbConn->prepare($insertASP);
                 $insertASPT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
                 $insertASPT->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
@@ -3248,7 +3268,7 @@ class Api extends Rest
                 $insertASPT->bindValue(':sourceDetails_type', $appyPayApiResponseData['responseStatus']['sourceDetails']['type'], PDO::PARAM_STR);
                 $insertASPT->bindValue(':sourceDetails_code', $appyPayApiResponseData['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
                 $insertASPT->bindValue(':sourceDetails_message', $appyPayApiResponseData['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
-                $insertASPT->execute();
+                $insertASPT->execute();*/
 
                 $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken, 'orderId' => $orderId];
                 die(json_encode($response));
@@ -3384,7 +3404,8 @@ class Api extends Rest
                         // Decode the JSON response
                         $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
                         curl_close($curl);
-                        if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                        // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                        if (!empty($jsonDecodeDataForSecondApi['id'])) {
                             //Get Product Id
                             $getProduct = "SELECT product_id FROM `ad_shop_order_item` WHERE `order_id`=:order_id";
                             $getProductDetails = $this->dbConn->prepare($getProduct);
