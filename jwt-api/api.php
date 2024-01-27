@@ -3438,10 +3438,8 @@ class Api extends Rest
 
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
                             $this->returnResponse($response);
-                            // die(json_encode($response));
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            // die(json_encode($response));
                             $this->returnResponse($response);
                         }
 
@@ -3594,7 +3592,8 @@ class Api extends Rest
                         // Decode the JSON response
                         $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
                         curl_close($curl);
-                        if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                        // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
+                            if (!empty($jsonDecodeDataForSecondApi['id'])) {
                             //Get Product Id
                             $getProduct = "SELECT product_id FROM `ad_shop_order_item` WHERE `order_id`=:order_id";
                             $getProductDetails = $this->dbConn->prepare($getProduct);
@@ -3625,11 +3624,9 @@ class Api extends Rest
                             $insertASPT->execute();
 
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            // die(json_encode($response));
                             $this->returnResponse($response);
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            // die(json_encode($response));
                             $this->returnResponse($response);
                         }
 
