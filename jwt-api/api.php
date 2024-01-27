@@ -3436,10 +3436,12 @@ class Api extends Rest
                             $insertASPT->execute();
 
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
+                            $this->returnResponse($response);
+                            // die(json_encode($response));
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
+                            // die(json_encode($response));
+                            $this->returnResponse($response);
                         }
 
                     }
@@ -3622,10 +3624,12 @@ class Api extends Rest
                             $insertASPT->execute();
 
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
+                            // die(json_encode($response));
+                            $this->returnResponse($response);
                         } else {
                             $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
+                            // die(json_encode($response));
+                            $this->returnResponse($response);
                         }
 
                     }
