@@ -3271,7 +3271,8 @@ class Api extends Rest
                 $insertASPT->execute();*/
 
                 $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken, 'orderId' => $orderId];
-                die(json_encode($response));
+                // die(json_encode($response));
+                $this->returnResponse($response);
             }
         }
     }
