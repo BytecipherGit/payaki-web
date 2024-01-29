@@ -1,7 +1,7 @@
 <?php
     global $config, $link;
     // echo 'webhook_appy.php';
-    die('webhook_appy.php');
+    // die('webhook_appy.php');
 
     // Get the raw POST data
     $payload = file_get_contents("php://input");
