@@ -1927,42 +1927,19 @@ class Api extends Rest
                             }
                             $responseArr[$key]['full_address'] = trim($fullAddress);
 
-                            //Check if product is purchased from logged in User
-                            /*$getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
-                            $getOrderData = $this->dbConn->prepare($getOrder);
-                            $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
-                            $getOrderData->execute();
-                            $getOrderData = $getOrderData->fetch(PDO::FETCH_ASSOC);
-                            if(!empty($getOrderData['order_id'])){
-                            //Check product purchase order status for logged in user
-                            $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
-                            $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
-                            $getPurchaseStatusData->bindValue(':id', $getOrderData['order_id'], PDO::PARAM_STR);
-                            $getPurchaseStatusData->execute();
-                            $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
-                            if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
-                            $responseArr[$key]['is_purchased'] = True;
-                            } else {
-                            $responseArr[$key]['is_purchased'] = False;
-                            }
-                            } else {
-                            $responseArr[$key]['is_purchased'] = False;
-                            }*/
-
-                            $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrder = "SELECT merchantTransactionId FROM ad_shop_order_item WHERE product_id = :product_id";
                             $getOrderData = $this->dbConn->prepare($getOrder);
                             $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
                             $getOrderData->execute();
                             $getOrderData = $getOrderData->fetchAll(PDO::FETCH_ASSOC);
                             if (count($getOrderData) > 0) {
                                 foreach ($getOrderData as $key => $row) {
-                                    //Check product purchase order status for logged in user
-                                    $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+                                    $getPurchaseStatus = "SELECT payment_status FROM ad_shop_payment WHERE merchantTransactionId = :merchantTransactionId";
                                     $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
-                                    $getPurchaseStatusData->bindValue(':id', $row['order_id'], PDO::PARAM_STR);
+                                    $getPurchaseStatusData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
                                     $getPurchaseStatusData->execute();
                                     $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
-                                    if ($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId) {
+                                    if ($getPurchaseStatusData['payment_status']) {
                                         $responseArr[$key]['is_purchased'] = true;
                                     } else {
                                         $responseArr[$key]['is_purchased'] = false;
@@ -2018,6 +1995,136 @@ class Api extends Rest
         }
 
     }
+    
+    // public function getTrainingPost()
+    // {
+    //     try {
+    //         $token = $this->getBearerToken();
+    //         if (!empty($token)) {
+    //             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+    //             if (!empty($payload->userId)) {
+    //                 $now = date("Y-m-d H:i:s");
+    //                 $responseArr = array();
+    //                 if (!empty($this->param['user_id'])) {
+    //                     $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.user_id = '" . $this->param['user_id'] . "' AND ap.category = 9 ORDER BY ap.created_at DESC";
+    //                 } else {
+    //                     $getpost = "SELECT ap.*,au.username as post_user_name,acm.cat_name,acs.sub_cat_name,ac.name as city_name,ads.name as state_name,adc.asciiname as country_name FROM ad_product AS ap LEFT JOIN ad_user AS au ON au.id = ap.user_id LEFT JOIN ad_catagory_main AS acm ON acm.cat_id = ap.category LEFT JOIN ad_catagory_sub AS acs ON acs.sub_cat_id = ap.sub_category LEFT JOIN ad_cities AS ac ON ac.id = ap.city LEFT JOIN ad_subadmin1 AS ads ON ads.code = ac.subadmin1_code LEFT JOIN ad_countries AS adc ON adc.code = ads.country_code WHERE ap.status='active' AND ap.category = 9 ORDER BY ap.created_at DESC";
+    //                 }
+    //                 $postData = $this->dbConn->prepare($getpost);
+    //                 $postData->execute();
+    //                 // echo "Last executed query: " . $postData->queryString;
+    //                 // exit;
+    //                 $postData = $postData->fetchAll(PDO::FETCH_ASSOC);
+    //                 if (count($postData) > 0) {
+    //                     foreach ($postData as $key => $post) {
+    //                         $responseArr[$key] = $post;
+    //                         // Get location,City, State, Country
+    //                         $fullAddress = '';
+    //                         if (!empty($post['location'])) {
+    //                             $fullAddress .= $post['location'];
+    //                         }
+    //                         if (!empty($post['city_name'])) {
+    //                             $fullAddress .= " " . $post['city_name'];
+    //                         }
+    //                         if (!empty($post['state_name'])) {
+    //                             $fullAddress .= " " . $post['state_name'];
+    //                         }
+    //                         if (!empty($post['country_name'])) {
+    //                             $fullAddress .= " " . $post['country_name'];
+    //                         }
+    //                         $responseArr[$key]['full_address'] = trim($fullAddress);
+
+    //                         //Check if product is purchased from logged in User
+    //                         /*$getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+    //                         $getOrderData = $this->dbConn->prepare($getOrder);
+    //                         $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+    //                         $getOrderData->execute();
+    //                         $getOrderData = $getOrderData->fetch(PDO::FETCH_ASSOC);
+    //                         if(!empty($getOrderData['order_id'])){
+    //                         //Check product purchase order status for logged in user
+    //                         $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+    //                         $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+    //                         $getPurchaseStatusData->bindValue(':id', $getOrderData['order_id'], PDO::PARAM_STR);
+    //                         $getPurchaseStatusData->execute();
+    //                         $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+    //                         if($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId){
+    //                         $responseArr[$key]['is_purchased'] = True;
+    //                         } else {
+    //                         $responseArr[$key]['is_purchased'] = False;
+    //                         }
+    //                         } else {
+    //                         $responseArr[$key]['is_purchased'] = False;
+    //                         }*/
+
+    //                         $getOrder = "SELECT order_id FROM ad_shop_order_item WHERE product_id = :product_id";
+    //                         $getOrderData = $this->dbConn->prepare($getOrder);
+    //                         $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
+    //                         $getOrderData->execute();
+    //                         $getOrderData = $getOrderData->fetchAll(PDO::FETCH_ASSOC);
+    //                         if (count($getOrderData) > 0) {
+    //                             foreach ($getOrderData as $key => $row) {
+    //                                 //Check product purchase order status for logged in user
+    //                                 $getPurchaseStatus = "SELECT member_id,order_status FROM ad_shop_order WHERE id = :id";
+    //                                 $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
+    //                                 $getPurchaseStatusData->bindValue(':id', $row['order_id'], PDO::PARAM_STR);
+    //                                 $getPurchaseStatusData->execute();
+    //                                 $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
+    //                                 if ($getPurchaseStatusData['order_status'] == 'PAID' && $getPurchaseStatusData['member_id'] == $payload->userId) {
+    //                                     $responseArr[$key]['is_purchased'] = true;
+    //                                 } else {
+    //                                     $responseArr[$key]['is_purchased'] = false;
+    //                                 }
+    //                             }
+    //                         } else {
+    //                             $responseArr[$key]['is_purchased'] = false;
+    //                         }
+
+    //                         if (!empty($post['screen_shot'])) {
+    //                             $screenShotArr = explode(",", $post['screen_shot']);
+    //                             if (count($screenShotArr) > 0) {
+    //                                 for ($i = 0; $i < count($screenShotArr); $i++) {
+    //                                     $responseArr[$key]['image'][$i] = $this->display_image_url . 'storage/products/' . $screenShotArr[$i];
+    //                                 }
+    //                             }
+    //                         } else {
+    //                             $responseArr[$key]['image'] = [];
+    //                         }
+    //                         if (!empty($post['promo_video'])) {
+    //                             $responseArr[$key]['promo_video'] = $this->display_image_url . 'storage/training_video/' . $post['promo_video'];
+    //                         }
+    //                         // Fetched Training Vidoe From Training Gallery table for response
+    //                         $getTrainingVideo = "SELECT tv.* FROM ad_training_gallery AS tv WHERE tv.product_id='" . $post['id'] . "'";
+    //                         $trainingVideoData = $this->dbConn->prepare($getTrainingVideo);
+    //                         $trainingVideoData->execute();
+    //                         $trainingVideoData = $trainingVideoData->fetchAll(PDO::FETCH_ASSOC);
+    //                         if (count($trainingVideoData) > 0) {
+    //                             foreach ($trainingVideoData as $key1 => $video) {
+    //                                 $responseArr[$key]['gallery'][$key1] = $video;
+    //                                 $responseArr[$key]['gallery'][$key1]['training_video'] = $this->display_image_url . 'storage/training_video/' . $video['training_video'];
+    //                             }
+    //                         }
+    //                     }
+    //                     $response = ["status" => true, "code" => 200, "Message" => "Training listing successfully fetched.", "data" => $responseArr];
+    //                     $this->returnResponse($response);
+    //                 } else {
+    //                     $response = ["status" => false, "code" => 400, "Message" => "Record not found."];
+    //                     $this->returnResponse($response);
+    //                 }
+    //             } else {
+    //                 $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+    //                 $this->returnResponse($response);
+    //             }
+    //         } else {
+    //             $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+    //             $this->returnResponse($response);
+    //         }
+
+    //     } catch (Exception $e) {
+    //         $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+    //         $this->returnResponse($response);
+    //     }
+
+    // }
 
     public function getEventPost()
     {
