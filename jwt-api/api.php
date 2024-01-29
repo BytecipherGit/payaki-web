@@ -3229,10 +3229,9 @@ class Api extends Rest
                 $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
 
                 //Update code
-                $stmt = $this->dbConn->prepare('UPDATE ad_shop_payment SET txn_id=:txn_id,payment_status = :payment_status,order_status = :order_status,total_amount = :total_amount,create_at = :create_at,payment_response = :payment_response,code = :code,message = :message,source = :source,sourceDetails_attempt = :sourceDetails_attempt,sourceDetails_type = :sourceDetails_type,sourceDetails_code = :sourceDetails_code,sourceDetails_message = :sourceDetails_message WHERE merchantTransactionId = :merchantTransactionId');
+                $stmt = $this->dbConn->prepare('UPDATE ad_shop_payment SET payment_status = :payment_status,order_status = :order_status,total_amount = :total_amount,create_at = :create_at,payment_response = :payment_response,code = :code,message = :message,source = :source,sourceDetails_attempt = :sourceDetails_attempt,sourceDetails_type = :sourceDetails_type,sourceDetails_code = :sourceDetails_code,sourceDetails_message = :sourceDetails_message WHERE merchantTransactionId = :merchantTransactionId');
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
-                $stmt->bindValue(':txn_id', $appyPayApiResponseData['payment']['id'], PDO::PARAM_STR);
                 $stmt->bindValue(':payment_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
                 $stmt->bindValue(':order_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
                 $stmt->bindValue(':total_amount', $appyPayApiResponseData['payment']['amount'], PDO::PARAM_STR);
