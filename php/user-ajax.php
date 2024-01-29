@@ -30,7 +30,7 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == "setCheckoutCartItem") {setCheckoutCartItem();}
     if ($_POST['action'] == "finalCallAppyPayApi") {finalCallAppyPayApi();}
     if ($_POST['action'] == "removeItemFromCart") {removeItemFromCart();}
-
+    
     if ($_POST['action'] == "getsubcatbyidList") {getsubcatbyidList();}
     if ($_POST['action'] == "getsubcatbyid") {getsubcatbyid();}
     if ($_POST['action'] == "getCustomFieldByCatID") {getCustomFieldByCatID();}
@@ -1257,8 +1257,7 @@ function setFavAd()
     die();
 }
 
-function removeItemFromCart()
-{
+function removeItemFromCart(){
     global $config;
     // Unset a specific session variable
     unset($_SESSION['products']);
@@ -1556,7 +1555,7 @@ function setCheckoutCartItem()
                     }
                     }*/
                     // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
-                    if (!empty($jsonDecodeDataForSecondApi['id'])) {
+                        if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
@@ -1614,17 +1613,13 @@ function setCheckoutCartItem()
                 $productArr = explode(',', $_POST["productIds"]);
                 foreach ($productArr as $key => $productId) {
                     $qty = 1;
-                    $getASOI = ORM::for_table($config['db']['pre'] . 'shop_order_item')->where('member_id', $_POST['userId'])->where('product_id', $productId)->find_one();
-                    if (empty($getASOI->id)) {
-                        $productDetails = ORM::for_table($config['db']['pre'] . 'product')->find_one($productId);
-                        $insertSOIT = ORM::for_table($config['db']['pre'] . 'shop_order_item')->create();
-                        $insertSOIT->member_id = $_POST['userId'];
-                        $insertSOIT->order_id = $orderId;
-                        $insertSOIT->product_id = $productDetails->id;
-                        $insertSOIT->item_price = $productDetails->price;
-                        $insertSOIT->quantity = $qty;
-                        $insertSOIT->save();
-                    }
+                    $productDetails = ORM::for_table($config['db']['pre'] . 'product')->find_one($productId);
+                    $insertSOIT = ORM::for_table($config['db']['pre'] . 'shop_order_item')->create();
+                    $insertSOIT->order_id = $orderId;
+                    $insertSOIT->product_id = $productDetails->id;
+                    $insertSOIT->item_price = $productDetails->price;
+                    $insertSOIT->quantity = $qty;
+                    $insertSOIT->save();
                 }
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
@@ -1696,7 +1691,7 @@ function setCheckoutCartItem()
                     $jsonDecodeDataForSecondApi = json_decode($responseFromSecondApi, true);
                     curl_close($curl);
                     // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
-                    if (!empty($jsonDecodeDataForSecondApi['id'])) {
+                        if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
                         $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
