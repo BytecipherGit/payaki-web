@@ -26,48 +26,44 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
             $totalAmount = $totalAmount + ($_POST['quantity'][$i] * $_POST['price'][$i]);
         }
     }
-    $order_id = 0;
+    // $order_id = 0;
     if(isset($_POST["proceedPayment"])) {
-        $insert_so = ORM::for_table($config['db']['pre'].'shop_order')->create();
-        $insert_so->member_id = $member_id;
-        $insert_so->name = $_POST['name'];
-        $insert_so->address = $_POST['address'];
-        $insert_so->mobile = $_POST['contactNumber'];
-        $insert_so->email = $_POST['emailAddress'];
-        $insert_so->order_status = "PENDING";
-        $insert_so->order_at = date("Y-m-d H:i:s");
-        $insert_so->save();
-        $orderId = $insert_so->id();
-        // insert order item details
-        if(!empty($orderId)) {
+        // $insert_so = ORM::for_table($config['db']['pre'].'shop_order')->create();
+        // $insert_so->member_id = $member_id;
+        // $insert_so->name = $_POST['name'];
+        // $insert_so->address = $_POST['address'];
+        // $insert_so->mobile = $_POST['contactNumber'];
+        // $insert_so->email = $_POST['emailAddress'];
+        // $insert_so->order_status = "PENDING";
+        // $insert_so->order_at = date("Y-m-d H:i:s");
+        // $insert_so->save();
+        // $orderId = $insert_so->id();
+        // // insert order item details
+        // if(!empty($orderId)) {
+        $prefix = 'TR'; // You can customize the prefix
+        $numericId = rand(0, 999999999999); // Generate a random numeric ID
+        $numericId = str_pad($numericId, 12, '0', STR_PAD_LEFT);
+        $merchantTransactionId = $prefix . $numericId;
             if(!empty($_POST['ticketId']) && !empty($_POST['price']) && !empty($_POST['quantity'])){
                 for ($i=0; $i < count($_POST['ticketId']) ; $i++) { 
                     $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
-                    $insert_soi->order_id = $orderId;
+                    $insert_soi->merchantTransactionId = $merchantTransactionId;
                     $insert_soi->product_id = $_POST['pId'];
                     $insert_soi->event_type_id = $_POST['ticketId'][$i];
                     $insert_soi->item_price = $_POST['price'][$i];
+                    $insert_soi->currency_code = 'AOA';
+                    $insert_soi->currency = 'Kz';
                     $insert_soi->quantity = $_POST['quantity'][$i];
                     $insert_soi->save();
                 }
             }
-            // $ticketTypeIds = implode(",", $_POST['ticketId']);
-            // $ticketAmounts = implode(",", $_POST['price']);
-            // $ticketQuantities = implode(",", $_POST['quantity']);
-            // $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
-            // $insert_soi->order_id = $orderId;
-            // $insert_soi->product_id = $_POST['pId'];
-            // $insert_soi->event_type_id = $ticketTypeIds;
-            // $insert_soi->item_price = $ticketAmounts;
-            // $insert_soi->quantity = $ticketQuantities;
-            // $insert_soi->save();
-        }
+        // }
     }
    
     $payableAmount = price_format($totalAmount,'AOA');
     $page = new HtmlTemplate('templates/' .$config['tpl_name'].'/customeventpayment.tpl');
     $page->SetParameter ('OVERALL_HEADER', create_header($lang['PROFILE']));
-    $page->SetParameter ('ITEM', $orderId);
+    $page->SetParameter ('ITEM', $merchantTransactionId);
     $page->SetParameter ('TYPE', "event");
     $page->SetParameter('TOTALAMOUNTPAYBLE', $totalAmount);
     $page->SetParameter('DISPLAYTOTALAMOUNTPAYBLE', $payableAmount);
@@ -76,7 +72,7 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
     $page->SetParameter('PHONE', $_POST["contactNumber"]);
     $page->SetParameter('EMAIL', $_POST["emailAddress"]);
     $page->SetParameter('CARTITEM', $title);
-    $page->SetParameter('ORDERID', $orderId);
+    $page->SetParameter('ORDERID', $merchantTransactionId);
     $page->SetParameter('OVERALL_FOOTER', create_footer());
     $page->CreatePageEcho();
     exit();
