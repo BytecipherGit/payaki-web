@@ -215,7 +215,7 @@
                             const timerInterval = setInterval(updateTimer, 1000);
                             // Make AJAX call after 90 seconds
                             setTimeout(function() {
-                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken,orderId: response.orderId};
+                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
                                 $.ajax({
                                     type: "POST",
                                     url: ajaxurl,
