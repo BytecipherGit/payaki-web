@@ -3606,7 +3606,7 @@ class Api extends Rest
                         for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
                             $currencyCode = 'AOA';
                             $currency = 'Kz';
-                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`product_id`,`event_type_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:order_id,:product_id,:event_type_id,:item_price,:currency_code,:currency,:quantity)";
+                            $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`product_id`,`event_type_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:event_type_id,:item_price,:currency_code,:currency,:quantity)";
                             $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                             $insertSOSTIT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
                             $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
