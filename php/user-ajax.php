@@ -1602,7 +1602,6 @@ function setCheckoutCartItem()
                     // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
                         if (!empty($jsonDecodeDataForSecondApi['id'])) {
                         //Get Product Id
-                        $productInfo = ORM::for_table($config['db']['pre'] . 'shop_order_item')->select('product_id')->where('order_id', $orderId)->find_one();
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
                         $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
                         $insert_shop_payment->transactionId = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';

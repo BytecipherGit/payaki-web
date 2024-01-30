@@ -207,7 +207,7 @@
                                 timerElement.innerText = `Time: ${seconds} seconds`;
                                 seconds++;
                                 // Stop the interval after 90 seconds
-                                if (seconds > 90) {
+                                if (seconds > 89) {
                                     clearInterval(timerInterval);
                                     console.log('Interval stopped.');
                                 }
