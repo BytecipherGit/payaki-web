@@ -3302,7 +3302,7 @@ class Api extends Rest
         $transactionId = $this->validateParameter('transactionId', $this->param['transactionId'], STRING);
         $merchantTransactionId = $this->validateParameter('merchantTransactionId', $this->param['merchantTransactionId'], STRING);
         $accessToken = $this->validateParameter('accessToken', $this->param['accessToken'], STRING);
-        $orderId = $this->validateParameter('orderId', $this->param['orderId'], STRING);
+        // $orderId = $this->validateParameter('orderId', $this->param['orderId'], STRING);
         $order_at = date('Y-m-d H:i:s');
         $token = $this->getBearerToken();
         if (!empty($token)) {
@@ -3329,9 +3329,9 @@ class Api extends Rest
                 $appyPayApiResponseData = json_decode($appyPayApiResponse, true);
                 curl_close($curl);
                 //Get Product Id
-                $getProduct = "SELECT product_id FROM `ad_shop_order_item` WHERE `order_id`=:order_id";
+                $getProduct = "SELECT product_id FROM `ad_shop_order_item` WHERE `merchantTransactionId`=:merchantTransactionId";
                 $getProductDetails = $this->dbConn->prepare($getProduct);
-                $getProductDetails->bindValue(':order_id', $orderId, PDO::PARAM_STR);
+                $getProductDetails->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
                 $getProductDetails->execute();
                 $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
 
@@ -3359,7 +3359,7 @@ class Api extends Rest
                     $deleteAddToCartProduct->bindParam(":product_id", $getProductDetails['product_id']);
                     $deleteAddToCartProduct->execute(); 
                 }
-                $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken, 'orderId' => $orderId];
+                $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken];
                 $this->returnResponse($response);
             }
         }

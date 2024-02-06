@@ -207,7 +207,7 @@
                                 timerElement.innerText = `Time: ${seconds} seconds`;
                                 seconds++;
                                 // Stop the interval after 90 seconds
-                                if (seconds > 89) {
+                                if (seconds > 90) {
                                     clearInterval(timerInterval);
                                     console.log('Interval stopped.');
                                 }
@@ -228,7 +228,7 @@
                                         }
                                     }
                                 });
-                            }, 10000); // 90 seconds
+                            }, 90000); // 90 seconds
                         } else {
                             var appyPayData = {action: 'removeItemFromCart'};
                                 $.ajax({
