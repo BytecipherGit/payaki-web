@@ -200,6 +200,7 @@
                     success: function (response) {
                         if(response.success === false){
                             $('#displayTimeForLoader').show();
+                            $('#payment_form').hide();
                             // Display time
                             const timerElement = document.getElementById('timer');
                             let seconds = 0;
