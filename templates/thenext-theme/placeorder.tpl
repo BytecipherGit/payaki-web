@@ -27,6 +27,13 @@
                         <h3>Shipping Details </h3>
                     </div>-->
                     <div class="content with-padding">
+                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group" id="success" style="text-align:center; display:none;">
+                                <h4 style="color:green;">Transaction successfully done.</h4>
+                            </div>
+                        </div>
+                     </div>
                         <div class="row">
                         <div class="col-md-4">
                         </div>
@@ -37,9 +44,7 @@
                         <div class="form-group" style="text-align:center">
                                    <h2>Multicaixa Express</h2>
                         </div>
-                        <div class="form-group" id="success" style="text-align:center; display:none;">
-                            <h3 style="color:green;">Transaction successfully done.</h3>
-                        </div>
+                        
                             <form id="payment_form" class="form-horizontal" method="post" enctype="multipart/form-data" action="{CUSTOMPAYMENT}">
                                 <div class="form-group" style="text-align:center">
                                     <div class="col-sm-12">

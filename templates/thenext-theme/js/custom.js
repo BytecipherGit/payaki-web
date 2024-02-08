@@ -216,7 +216,7 @@
                         if (response !== '') {
                             if(response.success){
                                 $('#displayTimeForLoader').hide();
-                                $('#success').html('<h5 style="color:green;">'+response.message+'</h5>');
+                                $('#success').html('<h4 style="color:green;">'+response.message+'</h4>');
                                 $('#success').show();
                                 clearInterval(timerInterval);
                                 var appyPayData = {action: 'removeItemFromCart'};
@@ -234,7 +234,7 @@
                                 }), 3000);
                             } else {
                                 $('#displayTimeForLoader').hide();
-                                $('#success').html('<h5 style="color:red;">'+response.message+'</h5>');
+                                $('#success').html('<h4 style="color:red;">'+response.message+'</h4>');
                                 $('#success').show();
                                 $('#payment_form').show();
                                 clearInterval(timerInterval);   
@@ -251,7 +251,7 @@
                                     success: function (response) {
                                         if(response.success){
                                             $('#displayTimeForLoader').hide();
-                                            $('#success').html('<h3 style="color:green;">'+response.message+'</h3>');
+                                            $('#success').html('<h4 style="color:green;">'+response.message+'</h4>');
                                             $('#success').show();
                                             clearInterval(timerInterval);
                                             var appyPayData = {action: 'removeItemFromCart'};
@@ -269,7 +269,7 @@
                                             }), 3000);
                                         } else {
                                             $('#displayTimeForLoader').hide();
-                                            $('#success').html('<h3 style="color:red;">'+response.message+'</h3>');
+                                            $('#success').html('<h4 style="color:red;">'+response.message+'</h4>');
                                             $('#success').show();
                                             clearInterval(timerInterval);   
                                         }
