@@ -224,8 +224,9 @@
                                     data: appyPayData,
                                     dataType: 'json',
                                     success: function (response) {
-                                        alert(response.message);
-                                        location.href = "http://themindcrm.com/payaki-web/";
+                                        setInterval($('#success').show(), 3000);
+                                        // location.href = "http://themindcrm.com/payaki-web";
+                                        location.href = siteurl;
                                     }
                                 });
                         } else {
@@ -249,8 +250,9 @@
                                                         data: appyPayData,
                                                         dataType: 'json',
                                                         success: function (response) {
-                                                            alert(response.message);
-                                                            window.location.href = "http://themindcrm.com/payaki-web/";
+                                                            setInterval($('#success').show(), 3000);
+                                                            // location.href = "http://themindcrm.com/payaki-web";
+                                                            location.href = siteurl;
                                                         }
                                                     });
                                         }
