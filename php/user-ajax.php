@@ -1261,8 +1261,10 @@ function removeItemFromCart(){
     global $config;
     // Unset a specific session variable
     unset($_SESSION['products']);
-    header("Location: /index.php");
-    exit();
+    $response = ["status" => true, "code" => 200, "message" => "Item successfully removed from cart"];
+    die(json_encode($response));
+    // header("Location: /index.php");
+    // exit();
 }
 
 function finalCallAppyPayApi()

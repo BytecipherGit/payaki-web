@@ -214,8 +214,20 @@
                     dataType: 'json',
                     success: function (response) {
                         if(response.code == 200){
-                            alert(response.message);
+                            $('#displayTimeForLoader').hide();
+                            // alert(response.message);
                             clearInterval(timerInterval);
+                                var appyPayData = {action: 'removeItemFromCart'};
+                                $.ajax({
+                                    type: "POST",
+                                    url: ajaxurl,
+                                    data: appyPayData,
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        alert(response.message);
+                                        location.href = "http://themindcrm.com/payaki-web/";
+                                    }
+                                });
                         } else {
                                 setTimeout(function() {
                                 // var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
@@ -227,43 +239,25 @@
                                     dataType: 'json',
                                     success: function (response) {
                                         if(response.status){
-                                            alert('AppyPay Api Successfully Called');
+                                            $('#displayTimeForLoader').hide();
+                                            // alert('AppyPay Api Successfully Called');
                                             clearInterval(timerInterval);
+                                                var appyPayData = {action: 'removeItemFromCart'};
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: ajaxurl,
+                                                        data: appyPayData,
+                                                        dataType: 'json',
+                                                        success: function (response) {
+                                                            alert(response.message);
+                                                            window.location.href = "http://themindcrm.com/payaki-web/";
+                                                        }
+                                                    });
                                         }
                                     }
                                 });
                             }, 90000); // 90 seconds
                         }
-                        // if(response.code === false){
-                        //     // Make AJAX call after 90 seconds
-                        //     setTimeout(function() {
-                        //         var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
-                        //         $.ajax({
-                        //             type: "POST",
-                        //             url: ajaxurl,
-                        //             data: appyPayData,
-                        //             dataType: 'json',
-                        //             success: function (response) {
-                        //                 if(response.status){
-                        //                     alert('AppyPay Api Successfully Called');
-                        //                     clearInterval(timerInterval);
-                        //                 }
-                        //             }
-                        //         });
-                        //     }, 90000); // 90 seconds
-                        // } else {
-                        //     var appyPayData = {action: 'removeItemFromCart'};
-                        //         $.ajax({
-                        //             type: "POST",
-                        //             url: ajaxurl,
-                        //             data: appyPayData,
-                        //             dataType: 'json',
-                        //             success: function (response) {
-                        //                 alert('Remove item from cart');
-                        //             }
-                        //         });
-                        // }
-                        
                     }
                 });
             }
