@@ -1926,28 +1926,26 @@ class Api extends Rest
                                 $fullAddress .= " " . $post['country_name'];
                             }
                             $responseArr[$key]['full_address'] = trim($fullAddress);
-
-                            $getOrder = "SELECT merchantTransactionId FROM ad_shop_order_item WHERE product_id = :product_id";
+                            $getOrder = "SELECT merchantTransactionId FROM ad_shop_order_item WHERE product_id = :product_id ORDER BY id DESC LIMIT 1";
                             $getOrderData = $this->dbConn->prepare($getOrder);
                             $getOrderData->bindValue(':product_id', $post['id'], PDO::PARAM_STR);
                             $getOrderData->execute();
-                            $getOrderData = $getOrderData->fetchAll(PDO::FETCH_ASSOC);
-                            if (count($getOrderData) > 0) {
-                                foreach ($getOrderData as $key => $row) {
-                                    $getPurchaseStatus = "SELECT payment_status FROM ad_shop_payment WHERE merchantTransactionId = :merchantTransactionId";
+                            $getOrderData = $getOrderData->fetch(PDO::FETCH_ASSOC);
+                            if(!empty($getOrderData)){
+                                $getPurchaseStatus = "SELECT payment_status FROM ad_shop_payment WHERE merchantTransactionId = :merchantTransactionId";
                                     $getPurchaseStatusData = $this->dbConn->prepare($getPurchaseStatus);
-                                    $getPurchaseStatusData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
+                                    $getPurchaseStatusData->bindValue(':merchantTransactionId', $getOrderData['merchantTransactionId'], PDO::PARAM_STR);
                                     $getPurchaseStatusData->execute();
                                     $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
                                     if ($getPurchaseStatusData['payment_status']) {
                                         $responseArr[$key]['is_purchased'] = true;
-                                    } /*else {
+                                    } else {
                                         $responseArr[$key]['is_purchased'] = false;
-                                    }*/
-                                }
+                                    }
                             } else {
                                 $responseArr[$key]['is_purchased'] = false;
                             }
+                            
 
                             if (!empty($post['screen_shot'])) {
                                 $screenShotArr = explode(",", $post['screen_shot']);
