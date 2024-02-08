@@ -1941,9 +1941,9 @@ class Api extends Rest
                                     $getPurchaseStatusData = $getPurchaseStatusData->fetch(PDO::FETCH_ASSOC);
                                     if ($getPurchaseStatusData['payment_status']) {
                                         $responseArr[$key]['is_purchased'] = true;
-                                    } else {
+                                    } /*else {
                                         $responseArr[$key]['is_purchased'] = false;
-                                    }
+                                    }*/
                                 }
                             } else {
                                 $responseArr[$key]['is_purchased'] = false;
