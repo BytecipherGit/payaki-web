@@ -1263,8 +1263,6 @@ function removeItemFromCart(){
     unset($_SESSION['products']);
     $response = ["status" => true, "code" => 200, "message" => "Thank you for purchsing product from Payaki"];
     die(json_encode($response));
-    // header("Location: /index.php");
-    // exit();
 }
 
 function finalCallAppyPayApi()
