@@ -3532,17 +3532,18 @@ class Api extends Rest
                         $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         $this->returnResponse($response);
                     } else {
-                        $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
+                        // $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
+                        $response = ["status" => false, "code" => 400, "Message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "transactionId" => "", "success" => "", "accessToken" => $authorization];
                         $this->returnResponse($response);
                     }
 
                 } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "Authorize token not generated."];
+                    $response = ["status" => false, "code" => 400, "Message" => "Authorize token not generated.", "merchantTransactionId" => "", "transactionId" => "", "success" => "", "accessToken" => ""];
                     $this->returnResponse($response);
                 }
 
             } else {
-                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token.", "merchantTransactionId" => "", "transactionId" => "", "success" => "", "accessToken" => ""];
                 $this->returnResponse($response);
             }
         }
@@ -3703,17 +3704,18 @@ class Api extends Rest
                         $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         $this->returnResponse($response);
                     } else {
-                        $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
+                        $response = ["status" => false, "code" => 400, "Message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "transactionId" => "", "success" => "", "accessToken" => $authorization];
+
                         $this->returnResponse($response);
                     }
 
                 } else {
-                    $response = ["status" => false, "code" => 400, "Message" => "Authorize token not generated."];
+                    $response = ["status" => false, "code" => 400, "Message" => "Authorize token not generated.", "merchantTransactionId" => "", "transactionId" => "", "success" => "", "accessToken" => ""];
                     $this->returnResponse($response);
                 }
 
             } else {
-                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                $response = ["status" => false, "code" => 400, "Message" => "User not found by given token.", "merchantTransactionId" => "", "transactionId" => "", "success" => "", "accessToken" => ""];
                 $this->returnResponse($response);
             }
         }
