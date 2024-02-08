@@ -37,6 +37,9 @@
                         <div class="form-group" style="text-align:center">
                                    <h2>Multicaixa Express</h2>
                         </div>
+                        <div class="form-group" id="success" style="text-align:center; display:none;">
+                            <h3 style="color:green;">Transaction successfully done.</h3>
+                        </div>
                             <form id="payment_form" class="form-horizontal" method="post" enctype="multipart/form-data" action="{CUSTOMPAYMENT}">
                                 <div class="form-group" style="text-align:center">
                                     <div class="col-sm-12">
