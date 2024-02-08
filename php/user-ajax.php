@@ -1268,11 +1268,13 @@ function removeItemFromCart(){
 function finalCallAppyPayApi()
 {
     global $config;
-    if (isset($_POST["transactionId"]) && isset($_POST["merchantTransactionId"]) && isset($_POST["accessToken"])) {
+    // if (isset($_POST["transactionId"]) && isset($_POST["merchantTransactionId"]) && isset($_POST["accessToken"])) {
+    if (isset($_POST["merchantTransactionId"]) && isset($_POST["accessToken"])) {
         
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges/' . $_POST["transactionId"],
+            // CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges/' . $_POST["transactionId"],
+            CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges/' . $_POST["merchantTransactionId"],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -1307,7 +1309,7 @@ function finalCallAppyPayApi()
         $insert_shop_payment->sourceDetails_message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'] : '';
         if ($insert_shop_payment->save()) {
             // echo ORM::get_last_query();
-            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "shopPaymentId" => $shopPaymentId];
+            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
             die(json_encode($response));
         }
 
@@ -1324,8 +1326,6 @@ function setCheckoutCartItem()
         $merchantTransactionId = $prefix . $numericId;
 
         $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
-        $order_status = 'PENDING';
-        $order_at = date("Y-m-d H:i:s");
         if ($_POST["type"] == 'post_product') {
             if (!empty($_POST["productIds"])) {
                 $qty = 1;
@@ -1419,15 +1419,11 @@ function setCheckoutCartItem()
                         $insert_shop_payment->sourceDetails_type = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'] : '';
                         $insert_shop_payment->sourceDetails_code = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'] : '';
                         $insert_shop_payment->sourceDetails_message = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'] : '';
-                        if($insert_shop_payment->save()){
-                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
-                        } else {
-                            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
-                            die(json_encode($response));
-                        }
+                        $insert_shop_payment->save();
+                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization, 'orderId' => $orderId];
+                        $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
                         die(json_encode($response));
                     }
 
@@ -1523,7 +1519,7 @@ function setCheckoutCartItem()
                         $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
                         die(json_encode($response));
                     }
 
@@ -1531,6 +1527,7 @@ function setCheckoutCartItem()
 
             }
         } else {
+            
                 $productArr = explode(',', $_POST["productIds"]);
                 foreach ($productArr as $key => $productId) {
                     $qty = 1;
@@ -1626,10 +1623,10 @@ function setCheckoutCartItem()
                         $insert_shop_payment->sourceDetails_message = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'] : '';
                         $insert_shop_payment->save();
                         $shopPaymentId = $insert_shop_payment->id();
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => true, "code" => 200, "message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
                     } else {
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
                         die(json_encode($response));
                     }
 

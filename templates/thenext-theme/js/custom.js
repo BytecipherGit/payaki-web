@@ -191,6 +191,21 @@
                     return;
                 }
                 $this.addClass('button-loader');
+                $('#displayTimeForLoader').show();
+                $('#payment_form').hide();
+                // Display time
+                const timerElement = document.getElementById('timer');
+                let seconds = 0;
+                function updateTimer() {
+                    timerElement.innerText = `Time: ${seconds} seconds`;
+                    seconds++;
+                    // Stop the interval after 90 seconds
+                    if (seconds > 90) {
+                        clearInterval(timerInterval);
+                        console.log('Interval stopped.');
+                    }
+                }
+                const timerInterval = setInterval(updateTimer, 1000);
                 var data = {action: action, productIds: productIds, userId: userId, mobile:mobile, amount:amount, type:type};
                 $.ajax({
                     type: "POST",
@@ -198,25 +213,13 @@
                     data: data,
                     dataType: 'json',
                     success: function (response) {
-                        if(response.success === false){
-                            $('#displayTimeForLoader').show();
-                            $('#payment_form').hide();
-                            // Display time
-                            const timerElement = document.getElementById('timer');
-                            let seconds = 0;
-                            function updateTimer() {
-                                timerElement.innerText = `Time: ${seconds} seconds`;
-                                seconds++;
-                                // Stop the interval after 90 seconds
-                                if (seconds > 90) {
-                                    clearInterval(timerInterval);
-                                    console.log('Interval stopped.');
-                                }
-                            }
-                            const timerInterval = setInterval(updateTimer, 1000);
-                            // Make AJAX call after 90 seconds
-                            setTimeout(function() {
-                                var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
+                        if(response.code == 200){
+                            alert(response.message);
+                            clearInterval(timerInterval);
+                        } else {
+                                setTimeout(function() {
+                                // var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
+                                var appyPayData = {action: 'finalCallAppyPayApi', merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
                                 $.ajax({
                                     type: "POST",
                                     url: ajaxurl,
@@ -230,18 +233,36 @@
                                     }
                                 });
                             }, 90000); // 90 seconds
-                        } else {
-                            var appyPayData = {action: 'removeItemFromCart'};
-                                $.ajax({
-                                    type: "POST",
-                                    url: ajaxurl,
-                                    data: appyPayData,
-                                    dataType: 'json',
-                                    success: function (response) {
-                                        alert('Remove item from cart');
-                                    }
-                                });
                         }
+                        // if(response.code === false){
+                        //     // Make AJAX call after 90 seconds
+                        //     setTimeout(function() {
+                        //         var appyPayData = {action: 'finalCallAppyPayApi', transactionId: response.transactionId, merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
+                        //         $.ajax({
+                        //             type: "POST",
+                        //             url: ajaxurl,
+                        //             data: appyPayData,
+                        //             dataType: 'json',
+                        //             success: function (response) {
+                        //                 if(response.status){
+                        //                     alert('AppyPay Api Successfully Called');
+                        //                     clearInterval(timerInterval);
+                        //                 }
+                        //             }
+                        //         });
+                        //     }, 90000); // 90 seconds
+                        // } else {
+                        //     var appyPayData = {action: 'removeItemFromCart'};
+                        //         $.ajax({
+                        //             type: "POST",
+                        //             url: ajaxurl,
+                        //             data: appyPayData,
+                        //             dataType: 'json',
+                        //             success: function (response) {
+                        //                 alert('Remove item from cart');
+                        //             }
+                        //         });
+                        // }
                         
                     }
                 });
