@@ -48,7 +48,7 @@
                             <form id="payment_form" class="form-horizontal" method="post" enctype="multipart/form-data" action="{CUSTOMPAYMENT}">
                                 <div class="form-group" style="text-align:center">
                                     <div class="col-sm-12">
-                                        <input type="text" class="form-control" min="9" placeholder="Enter Mobile Number" name="mobile" id="mobile"/>
+                                        <input style="border: 1px solid purple;" type="text" class="form-control" min="9" placeholder="Enter Mobile Number" name="mobile" id="mobile"/>
                                         <span id="mobile_msg" class="text-danger" style="display:none;">Enter mobile number</span>
                                     </div>
                                 </div>
