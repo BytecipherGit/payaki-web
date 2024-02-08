@@ -1293,23 +1293,37 @@ function finalCallAppyPayApi()
         $appyPayApiResponseData = json_decode($appyPayApiResponse, true);
         curl_close($curl);
         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->where('merchantTransactionId', $appyPayApiResponseData['payment']['merchantTransactionId'])->find_one();
+        // $insert_shop_payment->merchantTransactionId = !empty($appyPayApiResponseData['payment']['merchantTransactionId']) ? $appyPayApiResponseData['payment']['merchantTransactionId'] : $_POST["merchantTransactionId"];
+        // $insert_shop_payment->transactionId = !empty($appyPayApiResponseData['payment']['id']) ? $appyPayApiResponseData['payment']['id'] : $_POST["transactionId"];
+        // $insert_shop_payment->payment_status = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] : '';
+        // $insert_shop_payment->order_status = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful'] : '';
+        // $insert_shop_payment->total_amount = !empty($appyPayApiResponseData['payment']['amount']) ? $appyPayApiResponseData['payment']['amount'] : 0;
+        // $insert_shop_payment->create_at = date('Y-m-d H:i:s');
+        // $insert_shop_payment->payment_response = json_encode($appyPayApiResponseData);
+        // $insert_shop_payment->code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'] : '';
+        // $insert_shop_payment->message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'] : '';
+        // $insert_shop_payment->source = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'] : '';
+        // $insert_shop_payment->sourceDetails_attempt = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'] : '';
+        // $insert_shop_payment->sourceDetails_type = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'] : '';
+        // $insert_shop_payment->sourceDetails_code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'] : '';
+        // $insert_shop_payment->sourceDetails_message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'] : '';
         $insert_shop_payment->merchantTransactionId = !empty($appyPayApiResponseData['payment']['merchantTransactionId']) ? $appyPayApiResponseData['payment']['merchantTransactionId'] : $_POST["merchantTransactionId"];
         $insert_shop_payment->transactionId = !empty($appyPayApiResponseData['payment']['id']) ? $appyPayApiResponseData['payment']['id'] : $_POST["transactionId"];
-        $insert_shop_payment->payment_status = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] : '';
-        $insert_shop_payment->order_status = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['successful'] : '';
-        $insert_shop_payment->total_amount = !empty($appyPayApiResponseData['payment']['amount']) ? $appyPayApiResponseData['payment']['amount'] : 0;
+        $insert_shop_payment->payment_status = $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'];
+        $insert_shop_payment->order_status = $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'];
+        $insert_shop_payment->total_amount = $appyPayApiResponseData['payment']['amount'];
         $insert_shop_payment->create_at = date('Y-m-d H:i:s');
         $insert_shop_payment->payment_response = json_encode($appyPayApiResponseData);
-        $insert_shop_payment->code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'] : '';
-        $insert_shop_payment->message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'] : '';
-        $insert_shop_payment->source = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'] : '';
-        $insert_shop_payment->sourceDetails_attempt = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'] : '';
-        $insert_shop_payment->sourceDetails_type = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'] : '';
-        $insert_shop_payment->sourceDetails_code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'] : '';
-        $insert_shop_payment->sourceDetails_message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'] : '';
+        $insert_shop_payment->code = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'];
+        $insert_shop_payment->message = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'];
+        $insert_shop_payment->source = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'];
+        $insert_shop_payment->sourceDetails_attempt = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'];
+        $insert_shop_payment->sourceDetails_type = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'];
+        $insert_shop_payment->sourceDetails_code = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'];
+        $insert_shop_payment->sourceDetails_message = $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'];
         if ($insert_shop_payment->save()) {
             // echo ORM::get_last_query();
-            $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done."];
+            $response = ["status" => true, "code" => 200, "message" => $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'],"success" => $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful']];
             die(json_encode($response));
         }
 
@@ -1324,7 +1338,6 @@ function setCheckoutCartItem()
         $numericId = rand(0, 999999999999); // Generate a random numeric ID
         $numericId = str_pad($numericId, 12, '0', STR_PAD_LEFT);
         $merchantTransactionId = $prefix . $numericId;
-
         $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
         if ($_POST["type"] == 'post_product') {
             if (!empty($_POST["productIds"])) {
@@ -1406,21 +1419,22 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
                         $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
-                        $insert_shop_payment->transactionId = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';
-                        $insert_shop_payment->payment_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
-                        $insert_shop_payment->order_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
+                        $insert_shop_payment->transactionId = $jsonDecodeDataForSecondApi['id'];
+                        $insert_shop_payment->payment_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
+                        $insert_shop_payment->order_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
                         $insert_shop_payment->total_amount = !empty($_POST["amount"]) ? $_POST["amount"] : 0;
                         $insert_shop_payment->create_at = date('Y-m-d H:i:s');
                         $insert_shop_payment->payment_response = json_encode($jsonDecodeDataForSecondApi);
-                        $insert_shop_payment->code = !empty($jsonDecodeDataForSecondApi['responseStatus']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['code'] : '';
-                        $insert_shop_payment->message = !empty($jsonDecodeDataForSecondApi['responseStatus']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['message'] : '';
-                        $insert_shop_payment->source = !empty($jsonDecodeDataForSecondApi['responseStatus']['source']) ? $jsonDecodeDataForSecondApi['responseStatus']['source'] : '';
-                        $insert_shop_payment->sourceDetails_attempt = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'] : '';
-                        $insert_shop_payment->sourceDetails_type = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'] : '';
-                        $insert_shop_payment->sourceDetails_code = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'] : '';
-                        $insert_shop_payment->sourceDetails_message = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'] : '';
+                        $insert_shop_payment->code = $jsonDecodeDataForSecondApi['responseStatus']['code'];
+                        $insert_shop_payment->message = $jsonDecodeDataForSecondApi['responseStatus']['message'];
+                        $insert_shop_payment->source = $jsonDecodeDataForSecondApi['responseStatus']['source'];
+                        $insert_shop_payment->sourceDetails_attempt = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'];
+                        $insert_shop_payment->sourceDetails_type = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'];
+                        $insert_shop_payment->sourceDetails_code = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'];
+                        $insert_shop_payment->sourceDetails_message = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'];
                         $insert_shop_payment->save();
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        // $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => true, "code" => $jsonDecodeDataForSecondApi['responseStatus']['code'], "message" => $jsonDecodeDataForSecondApi['responseStatus']['message'], "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
                     } else {
                         $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
@@ -1501,22 +1515,23 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
                         $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
-                        $insert_shop_payment->transactionId = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';
-                        $insert_shop_payment->payment_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
-                        $insert_shop_payment->order_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
+                        $insert_shop_payment->transactionId = $jsonDecodeDataForSecondApi['id'];
+                        $insert_shop_payment->payment_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
+                        $insert_shop_payment->order_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
                         $insert_shop_payment->total_amount = !empty($_POST["amount"]) ? $_POST["amount"] : 0;
                         $insert_shop_payment->create_at = date('Y-m-d H:i:s');
                         $insert_shop_payment->payment_response = json_encode($jsonDecodeDataForSecondApi);
-                        $insert_shop_payment->code = !empty($jsonDecodeDataForSecondApi['responseStatus']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['code'] : '';
-                        $insert_shop_payment->message = !empty($jsonDecodeDataForSecondApi['responseStatus']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['message'] : '';
-                        $insert_shop_payment->source = !empty($jsonDecodeDataForSecondApi['responseStatus']['source']) ? $jsonDecodeDataForSecondApi['responseStatus']['source'] : '';
-                        $insert_shop_payment->sourceDetails_attempt = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'] : '';
-                        $insert_shop_payment->sourceDetails_type = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'] : '';
-                        $insert_shop_payment->sourceDetails_code = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'] : '';
-                        $insert_shop_payment->sourceDetails_message = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'] : '';
+                        $insert_shop_payment->code = $jsonDecodeDataForSecondApi['responseStatus']['code'];
+                        $insert_shop_payment->message = $jsonDecodeDataForSecondApi['responseStatus']['message'];
+                        $insert_shop_payment->source = $jsonDecodeDataForSecondApi['responseStatus']['source'];
+                        $insert_shop_payment->sourceDetails_attempt = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'];
+                        $insert_shop_payment->sourceDetails_type = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'];
+                        $insert_shop_payment->sourceDetails_code = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'];
+                        $insert_shop_payment->sourceDetails_message = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'];
                         $insert_shop_payment->save();
                         $shopPaymentId = $insert_shop_payment->id();
-                        $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        // $response = ["status" => true, "code" => 200, "message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => true, "code" => $jsonDecodeDataForSecondApi['responseStatus']['code'], "message" => $jsonDecodeDataForSecondApi['responseStatus']['message'], "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
                     } else {
                         $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
@@ -1608,22 +1623,22 @@ function setCheckoutCartItem()
                         //Get Product Id
                         $insert_shop_payment = ORM::for_table($config['db']['pre'] . 'shop_payment')->create();
                         $insert_shop_payment->merchantTransactionId = $merchantTransactionId;
-                        $insert_shop_payment->transactionId = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';
-                        $insert_shop_payment->payment_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
-                        $insert_shop_payment->order_status = !empty($jsonDecodeDataForSecondApi['responseStatus']['successful']) ? $jsonDecodeDataForSecondApi['responseStatus']['successful'] : '';
+                        $insert_shop_payment->transactionId = $jsonDecodeDataForSecondApi['id'];
+                        $insert_shop_payment->payment_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
+                        $insert_shop_payment->order_status = $jsonDecodeDataForSecondApi['responseStatus']['successful'];
                         $insert_shop_payment->total_amount = !empty($_POST["amount"]) ? $_POST["amount"] : 0;
                         $insert_shop_payment->create_at = date('Y-m-d H:i:s');
                         $insert_shop_payment->payment_response = json_encode($jsonDecodeDataForSecondApi);
-                        $insert_shop_payment->code = !empty($jsonDecodeDataForSecondApi['responseStatus']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['code'] : '';
-                        $insert_shop_payment->message = !empty($jsonDecodeDataForSecondApi['responseStatus']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['message'] : '';
-                        $insert_shop_payment->source = !empty($jsonDecodeDataForSecondApi['responseStatus']['source']) ? $jsonDecodeDataForSecondApi['responseStatus']['source'] : '';
-                        $insert_shop_payment->sourceDetails_attempt = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'] : '';
-                        $insert_shop_payment->sourceDetails_type = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'] : '';
-                        $insert_shop_payment->sourceDetails_code = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'] : '';
-                        $insert_shop_payment->sourceDetails_message = !empty($jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message']) ? $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'] : '';
+                        $insert_shop_payment->code = $jsonDecodeDataForSecondApi['responseStatus']['code'];
+                        $insert_shop_payment->message = $jsonDecodeDataForSecondApi['responseStatus']['message'];
+                        $insert_shop_payment->source = $jsonDecodeDataForSecondApi['responseStatus']['source'];
+                        $insert_shop_payment->sourceDetails_attempt = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['attempt'];
+                        $insert_shop_payment->sourceDetails_type = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['type'];
+                        $insert_shop_payment->sourceDetails_code = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'];
+                        $insert_shop_payment->sourceDetails_message = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'];
                         $insert_shop_payment->save();
                         $shopPaymentId = $insert_shop_payment->id();
-                        $response = ["status" => true, "code" => 200, "message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
+                        $response = ["status" => true, "code" => $jsonDecodeDataForSecondApi['responseStatus']['code'], "message" => $jsonDecodeDataForSecondApi['responseStatus']['message'], "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
                     } else {
                         $response = ["status" => false, "code" => 400, "message" => "Transaction gets failed. No response from payment gatway", "merchantTransactionId" => $merchantTransactionId, "accessToken" => $authorization];
@@ -1634,7 +1649,6 @@ function setCheckoutCartItem()
 
             // }
         }
-
     }
     die();
 }
