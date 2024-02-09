@@ -213,7 +213,74 @@
                     data: data,
                     dataType: 'json',
                     success: function (response) {
-                        if(response.status === true && response.code === 200){
+                        if(response.code === 211){
+                            $('#displayTimeForLoader').hide();
+                            $('#success').html('<h4 style="color:red;">'+response.message+'</h4>');
+                            $('#success').show();
+                            $('#payment_form').show();
+                            clearInterval(timerInterval);   
+                            var appyPayData = {action: 'finalCallAppyPayApi', merchantTransactionId: response.merchantTransactionId, accessToken:response.accessToken};
+                                $.ajax({
+                                    type: "POST",
+                                    url: ajaxurl,
+                                    data: appyPayData,
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        if(response.success){
+                                            $('#displayTimeForLoader').hide();
+                                            $('#success').html('<h4 style="color:green;">'+response.message+'</h4>');
+                                            $('#success').show();
+                                            clearInterval(timerInterval);
+                                            var appyPayData = {action: 'removeItemFromCart'};
+                                            setInterval(
+                                            $.ajax({
+                                                type: "POST",
+                                                url: ajaxurl,
+                                                data: appyPayData,
+                                                dataType: 'json',
+                                                success: function (response) {
+                                                    if(response.status){
+                                                        location.href = siteurl;
+                                                    }
+                                                }
+                                            }), 3000);
+                                        } else {
+                                            $('#displayTimeForLoader').hide();
+                                            $('#success').html('<h4 style="color:red;">'+response.message+'</h4>');
+                                            $('#success').show();
+                                            clearInterval(timerInterval);   
+                                        }
+                                    }
+                                });
+                        } else {
+                            if(response.success){
+                                $('#displayTimeForLoader').hide();
+                                $('#success').html('<h4 style="color:green;">'+response.message+'</h4>');
+                                $('#success').show();
+                                clearInterval(timerInterval);
+                                var appyPayData = {action: 'removeItemFromCart'};
+                                setInterval(
+                                $.ajax({
+                                    type: "POST",
+                                    url: ajaxurl,
+                                    data: appyPayData,
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        if(response.status){
+                                            location.href = siteurl;
+                                        }
+                                    }
+                                }), 3000);
+                            } else {
+                                $('#displayTimeForLoader').hide();
+                                $('#success').html('<h4 style="color:red;">'+response.message+'</h4>');
+                                $('#success').show();
+                                $('#payment_form').show();
+                                clearInterval(timerInterval);   
+                            }
+                        }
+                        
+                        /*if(response.status === true && response.code === 200){
                             if(response.success){
                                 $('#displayTimeForLoader').hide();
                                 $('#success').html('<h4 style="color:green;">'+response.message+'</h4>');
@@ -276,7 +343,7 @@
                                     }
                                 });
                                 }, 90000); // 90 seconds
-                        }
+                        }*/
                         /*if (response !== '') {
                             if(response.success){
                                 $('#displayTimeForLoader').hide();
