@@ -1542,7 +1542,6 @@ function setCheckoutCartItem()
 
             }
         } else {
-            
                 $productArr = explode(',', $_POST["productIds"]);
                 foreach ($productArr as $key => $productId) {
                     $qty = 1;
