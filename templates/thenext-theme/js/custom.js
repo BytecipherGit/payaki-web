@@ -191,6 +191,7 @@
                     return;
                 }
                 $this.addClass('button-loader');
+                $('#success').hide();
                 $('#displayTimeForLoader').show();
                 $('#payment_form').hide();
                 // Display time
