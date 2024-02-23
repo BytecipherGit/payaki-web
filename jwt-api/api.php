@@ -3430,6 +3430,7 @@ class Api extends Rest
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => 'https://login.microsoftonline.com/appypaydev.onmicrosoft.com/oauth2/token',
+                    // CURLOPT_URL => 'https://login.microsoftonline.com/appypay.co.ao/oauth2/token',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -3438,6 +3439,7 @@ class Api extends Rest
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => 'GET',
                     CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=5afeadcb-dd1c-4ad1-b5e7-84c9599b6b86&client_secret=LWW8Q~EL3cQ_cfBPmE37DeGVSSOaMj~zFYTxsdBX&resource=2aed7612-de64-46b5-9e59-1f48f8902d14',
+                    // CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=57731eac-efb1-4d76-a249-6957663ce8ca&client_secret=7eP8Q~WQ3foIUCfxoBxyItJit6MjifU8uLTSvawD&resource=bee57785-7a19-4f1c-9c8d-aa03f2f0e333',
                     CURLOPT_HTTPHEADER => array(
                         'Content-Type: application/x-www-form-urlencoded',
                         'Cookie: fpc=AncQbIi-FMVBpMA3DQ_OhVe4iW3OAQAAAFmX_9wOAAAA',
@@ -3456,6 +3458,7 @@ class Api extends Rest
                     $curl = curl_init();
                     curl_setopt_array($curl, array(
                         CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges',
+                        // CURLOPT_URL => 'https://api.appypay.co.ao/v1.2/charges',
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_ENCODING => '',
                         CURLOPT_MAXREDIRS => 10,
@@ -3464,20 +3467,35 @@ class Api extends Rest
                         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                         CURLOPT_CUSTOMREQUEST => 'POST',
                         CURLOPT_POSTFIELDS => '{
-                                "amount": "' . $totalAmount . '",
-                                "currency": "AOA",
-                                "description": "Purchased Product",
-                                "merchantTransactionId": "' . $merchantTransactionId . '",
-                                "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
-                                "paymentInfo": {
-                                    "phoneNumber": "' . $mobile . '"
-                                },
-                                "notify": {
-                                    "name": "' . $payload->name . '",
-                                    "telephone": "' . $payload->phone . '",
-                                    "email": "' . $payload->email . '"
-                                }
-                            }',
+                            "amount": "' . $totalAmount . '",
+                            "currency": "AOA",
+                            "description": "Purchased Product",
+                            "merchantTransactionId": "' . $merchantTransactionId . '",
+                            "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
+                            "paymentInfo": {
+                                "phoneNumber": "' . $mobile . '"
+                            },
+                            "notify": {
+                                "name": "' . $payload->name . '",
+                                "telephone": "' . $payload->phone . '",
+                                "email": "' . $payload->email . '"
+                            }
+                        }',
+                        // CURLOPT_POSTFIELDS => '{
+                        //         "amount": "' . $totalAmount . '",
+                        //         "currency": "AOA",
+                        //         "description": "Purchased Product",
+                        //         "merchantTransactionId": "' . $merchantTransactionId . '",
+                        //         "paymentMethod": "GPO_03a83f68-6dfc-4b19-ba8f-50ad65b9ac99",
+                        //         "paymentInfo": {
+                        //             "phoneNumber": "' . $mobile . '"
+                        //         },
+                        //         "notify": {
+                        //             "name": "' . $payload->name . '",
+                        //             "telephone": "' . $payload->phone . '",
+                        //             "email": "' . $payload->email . '"
+                        //         }
+                        //     }',
                         CURLOPT_HTTPHEADER => array(
                             'Accept: application/json',
                             'Accept-Language: pt',
@@ -3619,6 +3637,7 @@ class Api extends Rest
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => 'https://login.microsoftonline.com/appypaydev.onmicrosoft.com/oauth2/token',
+                    // CURLOPT_URL => 'https://login.microsoftonline.com/appypay.co.ao/oauth2/token',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => '',
                     CURLOPT_MAXREDIRS => 10,
@@ -3627,6 +3646,7 @@ class Api extends Rest
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => 'GET',
                     CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=5afeadcb-dd1c-4ad1-b5e7-84c9599b6b86&client_secret=LWW8Q~EL3cQ_cfBPmE37DeGVSSOaMj~zFYTxsdBX&resource=2aed7612-de64-46b5-9e59-1f48f8902d14',
+                    // CURLOPT_POSTFIELDS => 'grant_type=client_credentials&client_id=57731eac-efb1-4d76-a249-6957663ce8ca&client_secret=7eP8Q~WQ3foIUCfxoBxyItJit6MjifU8uLTSvawD&resource=bee57785-7a19-4f1c-9c8d-aa03f2f0e333',
                     CURLOPT_HTTPHEADER => array(
                         'Content-Type: application/x-www-form-urlencoded',
                         'Cookie: fpc=AncQbIi-FMVBpMA3DQ_OhVe4iW3OAQAAAFmX_9wOAAAA',
@@ -3645,6 +3665,7 @@ class Api extends Rest
                     $curl = curl_init();
                     curl_setopt_array($curl, array(
                         CURLOPT_URL => 'https://gwy-api-tst.appypay.co.ao/v2.0/charges',
+                        // CURLOPT_URL => 'https://api.appypay.co.ao/v1.2/charges',
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_ENCODING => '',
                         CURLOPT_MAXREDIRS => 10,
@@ -3653,20 +3674,35 @@ class Api extends Rest
                         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                         CURLOPT_CUSTOMREQUEST => 'POST',
                         CURLOPT_POSTFIELDS => '{
-                                "amount": "' . $totalAmount . '",
-                                "currency": "AOA",
-                                "description": "Purchased Product",
-                                "merchantTransactionId": "' . $merchantTransactionId . '",
-                                "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
-                                "paymentInfo": {
-                                    "phoneNumber": "' . $mobile . '"
-                                },
-                                "notify": {
-                                    "name": "' . $payload->name . '",
-                                    "telephone": "' . $payload->phone . '",
-                                    "email": "' . $payload->email . '"
-                                }
-                            }',
+                            "amount": "' . $totalAmount . '",
+                            "currency": "AOA",
+                            "description": "Purchased Product",
+                            "merchantTransactionId": "' . $merchantTransactionId . '",
+                            "paymentMethod": "GPO_d16765a2-d951-4f08-9db8-2f9a6b5a8b45",
+                            "paymentInfo": {
+                                "phoneNumber": "' . $mobile . '"
+                            },
+                            "notify": {
+                                "name": "' . $payload->name . '",
+                                "telephone": "' . $payload->phone . '",
+                                "email": "' . $payload->email . '"
+                            }
+                        }',
+                        // CURLOPT_POSTFIELDS => '{
+                        //         "amount": "' . $totalAmount . '",
+                        //         "currency": "AOA",
+                        //         "description": "Purchased Product",
+                        //         "merchantTransactionId": "' . $merchantTransactionId . '",
+                        //         "paymentMethod": "GPO_03a83f68-6dfc-4b19-ba8f-50ad65b9ac99",
+                        //         "paymentInfo": {
+                        //             "phoneNumber": "' . $mobile . '"
+                        //         },
+                        //         "notify": {
+                        //             "name": "' . $payload->name . '",
+                        //             "telephone": "' . $payload->phone . '",
+                        //             "email": "' . $payload->email . '"
+                        //         }
+                        //     }',
                         CURLOPT_HTTPHEADER => array(
                             'Accept: application/json',
                             'Accept-Language: pt',
