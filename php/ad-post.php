@@ -395,6 +395,9 @@ function ajax_post_advertise()
                 $item_insrt->user_id = $_SESSION['user']['id'];
                 $item_insrt->seller_name = validate_input($_POST['seller_name']);
                 $item_insrt->product_name = validate_input($post_title);
+                $item_insrt->featured = !empty($_POST['featured']) ? $_POST['featured'] : 0;
+                $item_insrt->urgent = !empty($_POST['urgent']) ? $_POST['urgent'] : 0;
+                $item_insrt->highlight = !empty($_POST['highlight']) ? $_POST['highlight'] : 0;
                 $item_insrt->slug = $slug;
                 $item_insrt->status = validate_input($status);
                 $item_insrt->category = validate_input($_POST['catid']);
