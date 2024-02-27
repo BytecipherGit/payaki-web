@@ -1455,7 +1455,7 @@ function setCheckoutCartItem()
                         $insert_shop_payment->sourceDetails_message = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'];
                         $insert_shop_payment->save();
                             
-                        if($jsonDecodeDataForSecondApi['responseStatus']['successful']){
+                        // if($jsonDecodeDataForSecondApi['responseStatus']['successful']){
                             $trans_insert = ORM::for_table($config['db']['pre'] . 'transaction')->create();
                             $trans_insert->product_name = !empty($product->product_name) ? $product->product_name : '';
                             $trans_insert->product_id = !empty($product->id) ? $product->id : '';
@@ -1469,7 +1469,7 @@ function setCheckoutCartItem()
                             $trans_insert->transaction_method = 'Subscription';
                             $trans_insert->taxes_ids = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';
                             $trans_insert->save();
-                        }
+                        // }
                         // $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         $response = ["status" => true, "code" => $jsonDecodeDataForSecondApi['responseStatus']['code'], "message" => $jsonDecodeDataForSecondApi['responseStatus']['message'], "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
