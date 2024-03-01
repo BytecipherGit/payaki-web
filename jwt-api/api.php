@@ -3393,6 +3393,7 @@ class Api extends Rest
         $merchantTransactionId = $this->validateParameter('merchantTransactionId', $this->param['merchantTransactionId'], STRING);
         $mobile = $this->validateParameter('mobile', $this->param['mobile'], STRING);
         $totalAmount = $this->validateParameter('totalAmount', $this->param['totalAmount'], INTEGER);
+        $order_at = date('Y-m-d H:i:s');
         $token = $this->getBearerToken();
         if (!empty($token)) {
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
