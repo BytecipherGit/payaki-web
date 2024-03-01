@@ -1339,6 +1339,8 @@ function setCheckoutCartItem()
         $numericId = rand(0, 999999999999); // Generate a random numeric ID
         $numericId = str_pad($numericId, 12, '0', STR_PAD_LEFT);
         $merchantTransactionId = $prefix . $numericId;
+        $product = ORM::for_table($config['db']['pre'] . 'product')->find_one($_POST["productIds"]);
+        
         $user = ORM::for_table($config['db']['pre'] . 'user')->find_one($_POST["userId"]);
         if ($_POST["type"] == 'post_product') {
             if (!empty($_POST["productIds"])) {
@@ -1452,6 +1454,22 @@ function setCheckoutCartItem()
                         $insert_shop_payment->sourceDetails_code = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'];
                         $insert_shop_payment->sourceDetails_message = $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'];
                         $insert_shop_payment->save();
+                            
+                        // if($jsonDecodeDataForSecondApi['responseStatus']['successful']){
+                            $trans_insert = ORM::for_table($config['db']['pre'] . 'transaction')->create();
+                            $trans_insert->product_name = !empty($product->product_name) ? $product->product_name : '';
+                            $trans_insert->product_id = !empty($product->id) ? $product->id : '';
+                            $trans_insert->seller_id = !empty($product->user_id) ? $product->user_id : '';
+                            $trans_insert->status = 'success';
+                            $trans_insert->base_amount = !empty($_POST["amount"]) ? $_POST["amount"] : 0;
+                            $trans_insert->amount = !empty($_POST["amount"]) ? $_POST["amount"] : 0;
+                            $trans_insert->currency_code = 'AOA';
+                            $trans_insert->transaction_time = time();
+                            $trans_insert->transaction_description = 'Post new product';
+                            $trans_insert->transaction_method = 'Subscription';
+                            $trans_insert->taxes_ids = !empty($jsonDecodeDataForSecondApi['id']) ? $jsonDecodeDataForSecondApi['id'] : '';
+                            $trans_insert->save();
+                        // }
                         // $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         $response = ["status" => true, "code" => $jsonDecodeDataForSecondApi['responseStatus']['code'], "message" => $jsonDecodeDataForSecondApi['responseStatus']['message'], "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         die(json_encode($response));
