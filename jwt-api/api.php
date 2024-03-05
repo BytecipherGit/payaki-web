@@ -3540,7 +3540,11 @@ class Api extends Rest
                         $urgent = $getPDetails['urgent'];
                         $highlight = $getPDetails['highlight'];
                         $transaction_time = time();
-                        $status = 'success';
+                        if($jsonDecodeDataForSecondApi['responseStatus']['successful'] == true){
+                            $status = 'success';
+                        } else {
+                            $status = 'failed';
+                        }
                         $payment_id = $jsonDecodeDataForSecondApi['id'];
                         $transaction_gatway = 'Appy';
                         $transaction_ip = '';
