@@ -3358,22 +3358,34 @@ class Api extends Rest
                 $getProductDetails->execute();
                 $getProductDetails = $getProductDetails->fetch(PDO::FETCH_ASSOC);
 
+                $payment_status = !empty($appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] : '';
+                $order_status = !empty($appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful']) ? $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] : '';
+                $total_amount = !empty($appyPayApiResponseData['payment']['amount']) ? $appyPayApiResponseData['payment']['amount'] : 0;
+                $payment_response = !empty($appyPayApiResponseData) ? json_encode($appyPayApiResponseData) : '';
+                $code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'] : '';
+                $message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'] : '';
+                $source = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'] : '';
+                $sourceDetails_attempt = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'] : '';
+                $sourceDetails_type = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'] : '';
+                $sourceDetails_code = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'] : '';
+                $sourceDetails_message = !empty($appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message']) ? $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'] : '';
+
                 //Update code
                 $stmt = $this->dbConn->prepare('UPDATE ad_shop_payment SET payment_status = :payment_status,order_status = :order_status,total_amount = :total_amount,create_at = :create_at,payment_response = :payment_response,code = :code,message = :message,source = :source,sourceDetails_attempt = :sourceDetails_attempt,sourceDetails_type = :sourceDetails_type,sourceDetails_code = :sourceDetails_code,sourceDetails_message = :sourceDetails_message WHERE merchantTransactionId = :merchantTransactionId');
                 // Bind the parameters and execute the statement
                 $stmt->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
-                $stmt->bindValue(':payment_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
-                $stmt->bindValue(':order_status', $appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'], PDO::PARAM_STR);
-                $stmt->bindValue(':total_amount', $appyPayApiResponseData['payment']['amount'], PDO::PARAM_STR);
+                $stmt->bindValue(':payment_status', $payment_status, PDO::PARAM_STR);
+                $stmt->bindValue(':order_status', $order_status, PDO::PARAM_STR);
+                $stmt->bindValue(':total_amount', $total_amount, PDO::PARAM_STR);
                 $stmt->bindValue(':create_at', $order_at, PDO::PARAM_STR);
-                $stmt->bindValue(':payment_response', json_encode($appyPayApiResponseData), PDO::PARAM_STR);
-                $stmt->bindValue(':code', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['code'], PDO::PARAM_STR);
-                $stmt->bindValue(':message', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['message'], PDO::PARAM_STR);
-                $stmt->bindValue(':source', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['source'], PDO::PARAM_STR);
-                $stmt->bindValue(':sourceDetails_attempt', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['attempt'], PDO::PARAM_STR);
-                $stmt->bindValue(':sourceDetails_type', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['type'], PDO::PARAM_STR);
-                $stmt->bindValue(':sourceDetails_code', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
-                $stmt->bindValue(':sourceDetails_message', $appyPayApiResponseData['payment']['transactionEvents'][0]['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
+                $stmt->bindValue(':payment_response', $payment_response, PDO::PARAM_STR);
+                $stmt->bindValue(':code', $code, PDO::PARAM_STR);
+                $stmt->bindValue(':message', $message, PDO::PARAM_STR);
+                $stmt->bindValue(':source', $source, PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_attempt', $sourceDetails_attempt, PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_type', $sourceDetails_type, PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_code', $sourceDetails_code, PDO::PARAM_STR);
+                $stmt->bindValue(':sourceDetails_message', $sourceDetails_message, PDO::PARAM_STR);
                 $stmt->execute();
 
                 if ($appyPayApiResponseData['payment']['transactionEvents']['responseStatus']['successful'] == true) {
