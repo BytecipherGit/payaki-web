@@ -3393,9 +3393,13 @@ class Api extends Rest
                     $deleteAddToCartProduct->bindParam(":user_id", $payload->userId);
                     $deleteAddToCartProduct->bindParam(":product_id", $getProductDetails['product_id']);
                     $deleteAddToCartProduct->execute();
+                    $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken];
+                    $this->returnResponse($response);
+                } else {
+                    $response = ["status" => true, "code" => 400, "Message" => "Transaction failed", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => 'false', "accessToken" => $accessToken];
+                    $this->returnResponse($response);
                 }
-                $response = ["status" => true, "code" => 200, "Message" => "Transaction successfully done.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => $appyPayApiResponseData['responseStatus']['successful'], "accessToken" => $accessToken];
-                $this->returnResponse($response);
+                
             }
         }
     }
