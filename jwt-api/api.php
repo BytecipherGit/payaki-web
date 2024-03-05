@@ -3640,9 +3640,10 @@ class Api extends Rest
                         $currency = 'Kz';
                         $productId = !empty($this->param['productIds'][$i]) ? $this->param['productIds'][$i] : 0;
                         $amount = !empty($this->param['amounts'][$i]) ? $this->param['amounts'][$i] : 0;
-                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`product_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:item_price,:currency_code,:currency,:quantity)";
+                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:item_price,:currency_code,:currency,:quantity)";
                         $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                         $insertSOSTIT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':item_price', $amount, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
@@ -3847,9 +3848,10 @@ class Api extends Rest
                     for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
                         $currencyCode = 'AOA';
                         $currency = 'Kz';
-                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`product_id`,`event_type_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:event_type_id,:item_price,:currency_code,:currency,:quantity)";
+                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`event_type_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:event_type_id,:item_price,:currency_code,:currency,:quantity)";
                         $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                         $insertSOSTIT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':event_type_id', $this->param['ticketTypeIds'][$i], PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':item_price', $this->param['ticketAmounts'][$i], PDO::PARAM_STR);

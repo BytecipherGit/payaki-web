@@ -1347,6 +1347,7 @@ function setCheckoutCartItem()
                 $qty = 1;
                 $insertSOIT = ORM::for_table($config['db']['pre'] . 'shop_order_item')->create();
                 $insertSOIT->merchantTransactionId = $merchantTransactionId;
+                $insertSOIT->user_id = $_POST["userId"];
                 $insertSOIT->product_id = $_POST["productIds"];
                 $insertSOIT->item_price = $_POST["amount"];
                 $insertSOIT->currency_code = 'AOA';
@@ -1603,6 +1604,7 @@ function setCheckoutCartItem()
                 $productDetails = ORM::for_table($config['db']['pre'] . 'product')->find_one($productId);
                 $insertSOIT = ORM::for_table($config['db']['pre'] . 'shop_order_item')->create();
                 $insertSOIT->merchantTransactionId = $merchantTransactionId;
+                $insertSOIT->user_id = $_POST["userId"];
                 $insertSOIT->product_id = $productDetails->id;
                 $insertSOIT->item_price = $productDetails->price;
                 $insertSOIT->currency_code = 'AOA';
