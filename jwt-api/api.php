@@ -3498,6 +3498,13 @@ class Api extends Rest
                     // if (!empty($jsonDecodeDataForSecondApi['id']) && $jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
                     if (!empty($jsonDecodeDataForSecondApi['id'])) {
 
+                        //Get Product from shop_order_details
+                        $getProductId = "SELECT product_id FROM `ad_shop_order_item` WHERE  `merchantTransactionId`=:merchantTransactionId";
+                        $getPId = $this->dbConn->prepare($getProductId);
+                        $getPId->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
+                        $getPId->execute();
+                        $getPId = $getPId->fetch(PDO::FETCH_ASSOC);
+
                         $insertASP = "INSERT INTO `ad_shop_payment` (`merchantTransactionId`,`transactionId`,`payment_status`,`order_status`,`total_amount`,`create_at`,`payment_response`,`code`,`message`,`source`,`sourceDetails_attempt`,`sourceDetails_type`,`sourceDetails_code`,`sourceDetails_message`) VALUES(:merchantTransactionId,:transactionId,:payment_status,:order_status,:total_amount,:create_at,:payment_response,:code,:message,:source,:sourceDetails_attempt,:sourceDetails_type,:sourceDetails_code,:sourceDetails_message)";
                         $insertASPT = $this->dbConn->prepare($insertASP);
                         $insertASPT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
@@ -3515,7 +3522,58 @@ class Api extends Rest
                         $insertASPT->bindValue(':sourceDetails_code', $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['code'], PDO::PARAM_STR);
                         $insertASPT->bindValue(':sourceDetails_message', $jsonDecodeDataForSecondApi['responseStatus']['sourceDetails']['message'], PDO::PARAM_STR);
                         $insertASPT->execute();
-                        
+
+                        //Get Product product details from product
+                        $getPD = "SELECT * FROM `ad_product` WHERE `id`=:id";
+                        $getPDetails = $this->dbConn->prepare($getPD);
+                        $getPDetails->bindValue(':id', $getPId['product_id'], PDO::PARAM_STR);
+                        $getPDetails->execute();
+                        $getPDetails = $getPDetails->fetch(PDO::FETCH_ASSOC);
+
+                        $product_name = $getPDetails['product_name'];
+                        $product_id = $getPDetails['id'];
+                        $seller_id = $getPDetails['user_id'];
+                        $amount = $getPDetails['price'];
+                        $currency_code = 'AOA';
+                        $base_amount = $getPDetails['price'];
+                        $featured = $getPDetails['featured'];
+                        $urgent = $getPDetails['urgent'];
+                        $highlight = $getPDetails['highlight'];
+                        $transaction_time = time();
+                        $status = 'success';
+                        $payment_id = $jsonDecodeDataForSecondApi['id'];
+                        $transaction_gatway = 'Appy';
+                        $transaction_ip = '';
+                        $transaction_description = '';
+                        $transaction_method = '';
+                        $frequency = '';
+                        $billing = '';
+                        $taxes_ids = $jsonDecodeDataForSecondApi['id'];
+
+                        $insertTransactionHistory = "INSERT INTO `ad_transaction` (`product_name`,`product_id`,`seller_id`,`amount`,`currency_code`,`base_amount`,`featured`,`urgent`,`highlight`,`transaction_time`,`status`,`payment_id`,`transaction_gatway`,`transaction_ip`,`transaction_description`,`transaction_method`,`frequency`,`billing`,`taxes_ids`) VALUES(:product_name,:product_id,:seller_id,:amount,:currency_code,:base_amount,:featured,:urgent,:highlight,:transaction_time,:status,:payment_id,:transaction_gatway,:transaction_ip,:transaction_description,:transaction_method,:frequency,:billing,:taxes_ids)";
+
+                        $insertTH = $this->dbConn->prepare($insertTransactionHistory);
+                        $insertTH->bindValue(':product_name', $product_name, PDO::PARAM_STR);
+                        $insertTH->bindValue(':product_id', $product_id, PDO::PARAM_STR);
+                        $insertTH->bindValue(':seller_id', $seller_id, PDO::PARAM_STR);
+                        $insertTH->bindValue(':amount', $amount, PDO::PARAM_STR);
+                        $insertTH->bindValue(':currency_code', $currency_code, PDO::PARAM_STR);
+                        $insertTH->bindValue(':base_amount', $base_amount, PDO::PARAM_STR);
+                        $insertTH->bindValue(':featured', $featured, PDO::PARAM_STR);
+                        $insertTH->bindValue(':urgent', $urgent, PDO::PARAM_STR);
+                        $insertTH->bindValue(':highlight', $highlight, PDO::PARAM_STR);
+                        $insertTH->bindValue(':transaction_time', $transaction_time, PDO::PARAM_STR);
+                        $insertTH->bindValue(':status', $status, PDO::PARAM_STR);
+                        $insertTH->bindValue(':payment_id', $payment_id, PDO::PARAM_STR);
+                        $insertTH->bindValue(':transaction_gatway', $transaction_gatway, PDO::PARAM_STR);
+                        $insertTH->bindValue(':transaction_ip', $transaction_ip, PDO::PARAM_STR);
+                        $insertTH->bindValue(':transaction_description', $transaction_description, PDO::PARAM_STR);
+                        $insertTH->bindValue(':transaction_method', $transaction_method, PDO::PARAM_STR);
+                        $insertTH->bindValue(':frequency', $frequency, PDO::PARAM_STR);
+                        $insertTH->bindValue(':billing', $billing, PDO::PARAM_STR);
+                        $insertTH->bindValue(':taxes_ids', $taxes_ids, PDO::PARAM_STR);
+                        $insertTH->execute();
+
                         $response = ["status" => true, "code" => 200, "Message" => "Post successfully added.", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $jsonDecodeDataForSecondApi['id'], "success" => $jsonDecodeDataForSecondApi['responseStatus']['successful'], "accessToken" => $authorization];
                         $this->returnResponse($response);
                     } else {
