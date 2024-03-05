@@ -48,6 +48,7 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
                 for ($i=0; $i < count($_POST['ticketId']) ; $i++) { 
                     $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
                     $insert_soi->merchantTransactionId = $merchantTransactionId;
+                    $insert_soi->user_id = $member_id;
                     $insert_soi->product_id = $_POST['pId'];
                     $insert_soi->event_type_id = $_POST['ticketId'][$i];
                     $insert_soi->item_price = $_POST['price'][$i];
