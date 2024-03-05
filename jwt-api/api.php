@@ -3546,7 +3546,7 @@ class Api extends Rest
                         $transaction_ip = '';
                         $transaction_description = '';
                         $transaction_method = '';
-                        $frequency = '';
+                        $frequency = 'MONTHLY';
                         $billing = '';
                         $taxes_ids = $jsonDecodeDataForSecondApi['id'];
 
