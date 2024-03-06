@@ -1349,6 +1349,10 @@ function setCheckoutCartItem()
                 $insertSOIT->merchantTransactionId = $merchantTransactionId;
                 $insertSOIT->user_id = $_POST["userId"];
                 $insertSOIT->product_id = $_POST["productIds"];
+                $insertSOIT->type = 'purchased';
+                $insertSOIT->event_type_id = '';
+                $insertSOIT->product_name = $product->product_name;
+                $insertSOIT->event_name = '';
                 $insertSOIT->item_price = $_POST["amount"];
                 $insertSOIT->currency_code = 'AOA';
                 $insertSOIT->currency = 'Kz';
@@ -1606,6 +1610,10 @@ function setCheckoutCartItem()
                 $insertSOIT->merchantTransactionId = $merchantTransactionId;
                 $insertSOIT->user_id = $_POST["userId"];
                 $insertSOIT->product_id = $productDetails->id;
+                $insertSOIT->type = 'purchased';
+                $insertSOIT->event_type_id = '';
+                $insertSOIT->product_name = $productDetails->product_name;
+                $insertSOIT->event_name = '';
                 $insertSOIT->item_price = $productDetails->price;
                 $insertSOIT->currency_code = 'AOA';
                 $insertSOIT->currency = 'Kz';
