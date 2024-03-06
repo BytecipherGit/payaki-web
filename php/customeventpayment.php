@@ -45,12 +45,18 @@ if(isset($_SESSION['user']['id']) && !empty($_POST['uId']) && !empty($_POST['pId
         $numericId = str_pad($numericId, 12, '0', STR_PAD_LEFT);
         $merchantTransactionId = $prefix . $numericId;
             if(!empty($_POST['ticketId']) && !empty($_POST['price']) && !empty($_POST['quantity'])){
-                for ($i=0; $i < count($_POST['ticketId']) ; $i++) { 
+                for ($i=0; $i < count($_POST['ticketId']) ; $i++) {
+                    $eventName = '';
+                    $getEventDetails = ORM::for_table($config['db']['pre'] . 'product_event_types')->select('ticket_type')->where('id', $_POST['ticketId'][$i])->find_one();
+                    $eventName = $getEventDetails->ticket_type;
                     $insert_soi = ORM::for_table($config['db']['pre'].'shop_order_item')->create();
                     $insert_soi->merchantTransactionId = $merchantTransactionId;
                     $insert_soi->user_id = $member_id;
                     $insert_soi->product_id = $_POST['pId'];
+                    $insert_soi->type = 'event';
                     $insert_soi->event_type_id = $_POST['ticketId'][$i];
+                    $insert_soi->product_name = $title;
+                    $insert_soi->event_name = $eventName;
                     $insert_soi->item_price = $_POST['price'][$i];
                     $insert_soi->currency_code = 'AOA';
                     $insert_soi->currency = 'Kz';

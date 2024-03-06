@@ -328,12 +328,12 @@ class Api extends Rest
 
                 $subject = 'Payaki - Email Confirmation';
                 $body = '<p>Greetings from Payaki Team!</p>
-						                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
-						                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
-						                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
-						                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
-						                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
-						                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
+							                        <p>Thanks for registering with Payaki. We are thrilled to have you as a registered member and
+							                        hope that you find our service beneficial. Before we get you started please activate your account by clicking on the link below</p>
+							                        <p><a href="' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '" target="_other" rel="nofollow">' . $siteUrl . '/signup?confirm=' . $confirm_id . '&amp;user=' . $user_id . '</a
+							                        ></p><p>After your Account activation you will have Post Ad, Chat with sellers and more. Once you have your Profile filled in you are ready togo.</p><p>Have further questions? You can find answers in our FAQ Section at</p>
+							                        <p><a href="' . $siteUrl . '/contact" target="_other" rel="nofollow" >' . $siteUrl . '/contact</a></p>Sincerely,<br /><br />Payaki Team!<br />
+							                        <a href="' . $siteUrl . '" target="_other" rel="nofollow">' . $siteUrl . '</a>';
                 $this->sendMail($email, $subject, $body);
 
                 $response = ["status" => true, "code" => 200, "Message" => "We have sent confirmation email to your registred email. Please verify it. ", "token" => $token, "data" => $user, "otp" => $otp];
@@ -1146,10 +1146,18 @@ class Api extends Rest
                         $qty = 1;
                         $currency_code = 'AOA';
                         $currency = 'Kz';
-                        $soi = 'INSERT INTO ad_shop_order_item (id, merchantTransactionId, product_id, item_price, currency_code, currency, quantity) VALUES(null, :merchantTransactionId, :product_id, :item_price, :currency_code, :currency, :quantity)';
+                        $type = 'purchased';
+                        $event_type_id = '';
+                        $eventName = '';
+                        $soi = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`type`,`event_type_id`,`product_name`,`event_name`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:user_id,:product_id,:type,:event_type_id,:product_name,:event_name,:item_price,:currency_code,:currency,:quantity)";
                         $stmt = $this->dbConn->prepare($soi);
                         $stmt->bindParam(':merchantTransactionId', $merchantTransactionId);
+                        $stmt->bindParam(':user_id', $userId); 
                         $stmt->bindParam(':product_id', $last_id);
+                        $stmt->bindParam(':type', $type);
+                        $stmt->bindParam(':event_type_id', $event_type_id);
+                        $stmt->bindParam(':product_name', $productName);
+                        $stmt->bindParam(':event_name', $eventName);
                         $stmt->bindParam(':item_price', $amount);
                         $stmt->bindParam(':currency_code', $currency_code);
                         $stmt->bindParam(':currency', $currency);
@@ -1711,6 +1719,129 @@ class Api extends Rest
                     } else {
                         $response = ["status" => true, "code" => 200, "Message" => "No post found.", "data" => $responseArr];
                         $this->returnResponse($response);
+                    }
+                } else {
+                    $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
+                    $this->returnResponse($response);
+                }
+            } else {
+                $response = ["status" => false, "code" => 400, "Message" => "Authorization token not found."];
+                $this->returnResponse($response);
+            }
+
+        } catch (Exception $e) {
+            $response = ["status" => false, "code" => 400, "Message" => $e->getMessage()];
+            $this->returnResponse($response);
+        }
+
+    }
+
+    public function getOrderListing()
+    {
+        try {
+            $type = $this->validateParameter('type', $this->param['type'], STRING);
+            $token = $this->getBearerToken();
+            if (!empty($token)) {
+                $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
+                if (!empty($payload->userId)) {
+                    $responseArr = array();
+                    if ($type == 'purchased') {
+                        $getSOI = "SELECT merchantTransactionId, COUNT(*) AS total FROM ad_shop_order_item WHERE user_id=:userId and type=:type GROUP BY merchantTransactionId";
+                        $getSOIData = $this->dbConn->prepare($getSOI);
+                        $getSOIData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                        $getSOIData->bindValue(':type', $type, PDO::PARAM_STR);
+                        $getSOIData->execute();
+                        // echo "Last executed query: " . $getSOIData->queryString;
+                        // exit;
+                        $getSOIData = $getSOIData->fetchAll(PDO::FETCH_ASSOC);
+                        if (count($getSOIData) > 0) {
+                            foreach ($getSOIData as $key => $row) {
+                                if (!empty($row['merchantTransactionId'])) {
+                                    $getSOID = "SELECT * FROM ad_shop_order_item WHERE merchantTransactionId=:merchantTransactionId";
+                                    $getSOIDData = $this->dbConn->prepare($getSOID);
+                                    $getSOIDData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
+                                    $getSOIDData->execute();
+                                    $getSOIDData = $getSOIDData->fetchAll(PDO::FETCH_ASSOC);
+                                    if (count($getSOIDData) > 0) {
+                                        foreach ($getSOIDData as $key1 => $row1) {
+                                            $responseArr['purchasedList'][$key]['products'][$key1]['productName'] = $row1['product_name'];
+                                            $responseArr['purchasedList'][$key]['products'][$key1]['amount'] = $row1['item_price'];
+                                        }
+                                    }
+                                    $getSP = "SELECT * FROM ad_shop_payment WHERE merchantTransactionId = :merchantTransactionId";
+                                    $getSPData = $this->dbConn->prepare($getSP);
+                                    $getSPData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
+                                    $getSPData->execute();
+                                    $getSPData = $getSPData->fetch(PDO::FETCH_ASSOC);
+                                    if (!empty($getSPData['id'])) {
+                                        $responseArr['purchasedList'][$key]['transactionTime'] = $getSPData['create_at'];
+                                        $responseArr['purchasedList'][$key]['transactionGatway'] = 'Appy';
+                                        if ($getSPData['payment_status'] == true) {
+                                            $responseArr['purchasedList'][$key]['status'] = 'completed';
+                                        } else {
+                                            $responseArr['purchasedList'][$key]['status'] = 'failed';
+                                        }
+                                        $responseArr['purchasedList'][$key]['totalAmount'] = $getSPData['total_amount'];
+                                    }
+
+                                }
+
+                            }
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction listing successfully fetched.", "data" => $responseArr];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => true, "code" => 200, "Message" => "No post found.", "data" => $responseArr];
+                            $this->returnResponse($response);
+                        }
+                    } else {
+                        $getSOI = "SELECT merchantTransactionId, product_id, product_name, COUNT(*) AS total  FROM ad_shop_order_item  WHERE user_id = :userId AND type = :type GROUP BY merchantTransactionId, product_id, product_name";
+                        $getSOIData = $this->dbConn->prepare($getSOI);
+                        $getSOIData->bindValue(':userId', $payload->userId, PDO::PARAM_STR);
+                        $getSOIData->bindValue(':type', $type, PDO::PARAM_STR);
+                        $getSOIData->execute();
+                        // echo "Last executed query: " . $getSOIData->queryString;
+                        // exit;
+                        $getSOIData = $getSOIData->fetchAll(PDO::FETCH_ASSOC);
+                        if(count($getSOIData) > 0){
+                            foreach ($getSOIData as $key => $row) {
+                                if (!empty($row['merchantTransactionId'])) {
+                                    $getSOID = "SELECT * FROM ad_shop_order_item WHERE merchantTransactionId=:merchantTransactionId";
+                                    $getSOIDData = $this->dbConn->prepare($getSOID);
+                                    $getSOIDData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
+                                    $getSOIDData->execute();
+                                    $getSOIDData = $getSOIDData->fetchAll(PDO::FETCH_ASSOC);
+                                    if (count($getSOIDData) > 0) {
+                                        foreach ($getSOIDData as $key1 => $row1) {
+                                            $responseArr['eventList'][$key]['tickets'][$key1]['ticketType'] = $row1['event_name'];
+                                            $responseArr['eventList'][$key]['tickets'][$key1]['quantity'] = $row1['quantity'];
+                                            $responseArr['eventList'][$key]['tickets'][$key1]['amount'] = $row1['item_price'];
+                                        }
+                                    }
+                                    $getSP = "SELECT * FROM ad_shop_payment WHERE merchantTransactionId = :merchantTransactionId";
+                                    $getSPData = $this->dbConn->prepare($getSP);
+                                    $getSPData->bindValue(':merchantTransactionId', $row['merchantTransactionId'], PDO::PARAM_STR);
+                                    $getSPData->execute();
+                                    $getSPData = $getSPData->fetch(PDO::FETCH_ASSOC);
+                                    if (!empty($getSPData['id'])) {
+                                        $responseArr['eventList'][$key]['eventTitle'] = $row['product_name'];
+                                        $responseArr['eventList'][$key]['transactionTime'] = $getSPData['create_at'];
+                                        $responseArr['eventList'][$key]['transactionGatway'] = 'Appy';
+                                        if ($getSPData['payment_status'] == true) {
+                                            $responseArr['eventList'][$key]['status'] = 'completed';
+                                        } else {
+                                            $responseArr['eventList'][$key]['status'] = 'failed';
+                                        }
+                                        $responseArr['eventList'][$key]['totalAmount'] = $getSPData['total_amount'];
+                                    }
+
+                                }
+                            }
+                            $response = ["status" => true, "code" => 200, "Message" => "Transaction listing successfully fetched.", "data" => $responseArr];
+                            $this->returnResponse($response);
+                        } else {
+                            $response = ["status" => true, "code" => 200, "Message" => "No post found.", "data" => $responseArr];
+                            $this->returnResponse($response);
+                        }
                     }
                 } else {
                     $response = ["status" => false, "code" => 400, "Message" => "User not found by given token."];
@@ -3399,7 +3530,7 @@ class Api extends Rest
                     $response = ["status" => true, "code" => 400, "Message" => "Transaction failed", "merchantTransactionId" => $merchantTransactionId, "transactionId" => $appyPayApiResponseData['id'], "success" => 'false', "accessToken" => $accessToken];
                     $this->returnResponse($response);
                 }
-                
+
             }
         }
     }
@@ -3540,7 +3671,7 @@ class Api extends Rest
                         $urgent = $getPDetails['urgent'];
                         $highlight = $getPDetails['highlight'];
                         $transaction_time = time();
-                        if($jsonDecodeDataForSecondApi['responseStatus']['successful'] == true){
+                        if ($jsonDecodeDataForSecondApi['responseStatus']['successful'] == true) {
                             $status = 'success';
                         } else {
                             $status = 'failed';
@@ -3636,15 +3767,30 @@ class Api extends Rest
                 $qty = 1;
                 if (count($this->param['productIds']) > 0) {
                     for ($i = 0; $i < count($this->param['productIds']); $i++) {
+                        $type = 'purchased';
                         $currencyCode = 'AOA';
                         $currency = 'Kz';
                         $productId = !empty($this->param['productIds'][$i]) ? $this->param['productIds'][$i] : 0;
+                        $event_type_id = '';
+                        $eventName = '';
+                        $productName = '';
+                        $getProduct = $this->dbConn->prepare("SELECT * FROM ad_product WHERE id =:id");
+                        $getProduct->bindParam(":id", $productId);
+                        $getProduct->execute();
+                        $getProductData = $getProduct->fetch(PDO::FETCH_ASSOC);
+                        if(!empty($getProductData['product_name'])){
+                            $productName = $getProductData['product_name'];
+                        }
                         $amount = !empty($this->param['amounts'][$i]) ? $this->param['amounts'][$i] : 0;
-                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:item_price,:currency_code,:currency,:quantity)";
+                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`type`,`event_type_id`,`product_name`,`event_name`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:user_id,:product_id,:type,:event_type_id,:product_name,:event_name,:item_price,:currency_code,:currency,:quantity)";
                         $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                         $insertSOSTIT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':type', $type, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':event_type_id', $event_type_id, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':event_name', $eventName, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':item_price', $amount, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':currency', $currency, PDO::PARAM_STR);
@@ -3831,6 +3977,15 @@ class Api extends Rest
             $payload = GlobalJWT::decode($token, SECRETE_KEY, ['HS256']);
             if (!empty($payload->userId)) {
                 $order_at = date("Y-m-d H:i:s");
+                //Get Product Details
+                $productName = '';
+                $getProduct = $this->dbConn->prepare("SELECT * FROM ad_product WHERE id =:id");
+                $getProduct->bindParam(":id", $productId);
+                $getProduct->execute();
+                $getProductData = $getProduct->fetch(PDO::FETCH_ASSOC);
+                if(!empty($getProductData['product_name'])){
+                    $productName = $getProductData['product_name'];
+                }
                 // $insertSO = "INSERT INTO `ad_shop_order` (`member_id`,`name`,`address`,`mobile`,`email`,`order_status`,`order_at`) VALUES(:member_id,:name,:address,:mobile,:email,:order_status,:order_at)";
                 // $insertSOST = $this->dbConn->prepare($insertSO);
                 // $insertSOST->bindValue(':member_id', $payload->userId, PDO::PARAM_STR);
@@ -3846,14 +4001,26 @@ class Api extends Rest
                 // if (!empty($orderId)) {
                 if (!empty($this->param['ticketTypeIds']) && !empty($this->param['ticketAmounts']) && !empty($this->param['ticketQuantities'])) {
                     for ($i = 0; $i < count($this->param['ticketTypeIds']); $i++) {
+                        $eventName = '';
+                        $getEvent = $this->dbConn->prepare("SELECT * FROM ad_product_event_types WHERE id =:id");
+                        $getEvent->bindParam(":id", $this->param['ticketTypeIds'][$i]);
+                        $getEvent->execute();
+                        $getEventData = $getEvent->fetch(PDO::FETCH_ASSOC);
+                        if(!empty($getEventData['ticket_type'])){
+                            $eventName = $getEventData['ticket_type'];
+                        }
                         $currencyCode = 'AOA';
                         $currency = 'Kz';
-                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`event_type_id`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:product_id,:event_type_id,:item_price,:currency_code,:currency,:quantity)";
+                        $type = 'event';
+                        $insertSOIT = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`type`,`event_type_id`,`product_name`,`event_name`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:user_id,:product_id,:type,:event_type_id,:product_name,:event_name,:item_price,:currency_code,:currency,:quantity)";
                         $insertSOSTIT = $this->dbConn->prepare($insertSOIT);
                         $insertSOSTIT->bindValue(':merchantTransactionId', $merchantTransactionId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':user_id', $payload->userId, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':product_id', $productId, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':type', $type, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':event_type_id', $this->param['ticketTypeIds'][$i], PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':product_name', $productName, PDO::PARAM_STR);
+                        $insertSOSTIT->bindValue(':event_name', $eventName, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':item_price', $this->param['ticketAmounts'][$i], PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':currency_code', $currencyCode, PDO::PARAM_STR);
                         $insertSOSTIT->bindValue(':currency', $currency, PDO::PARAM_STR);
