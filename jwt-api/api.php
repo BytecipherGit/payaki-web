@@ -1146,7 +1146,7 @@ class Api extends Rest
                         $qty = 1;
                         $currency_code = 'AOA';
                         $currency = 'Kz';
-                        $type = 'purchased';
+                        $type = 'transaction';
                         $event_type_id = '';
                         $eventName = '';
                         $soi = "INSERT INTO `ad_shop_order_item` (`merchantTransactionId`,`user_id`,`product_id`,`type`,`event_type_id`,`product_name`,`event_name`,`item_price`,`currency_code`,`currency`,`quantity`) VALUES(:merchantTransactionId,:user_id,:product_id,:type,:event_type_id,:product_name,:event_name,:item_price,:currency_code,:currency,:quantity)";
